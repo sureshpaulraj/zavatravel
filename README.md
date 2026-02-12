@@ -1,204 +1,214 @@
-<div align="center">
+# 🧠 Zava Travel Inc. — Multi-Agent Social Media Content Creator
 
-# Agents League @ TechConnect
+**Track**: Reasoning Agents with Microsoft Foundry | **Hackathon**: Agents League @ TechConnect
 
-<img width="4404" height="2475" alt="agentsleague-techconnect" src="https://github.com/user-attachments/assets/b786593d-d0b7-49a2-8fe0-e9a67b24b4ac" />
-
-## 🏟️ Welcome to the Arena!
-
-</div>
-
-**A 2-hour in-person AI agent hackathon for Microsoft employees at TechConnect!**
-
-Build innovative AI agents using GitHub Copilot, Microsoft Foundry, or M365 Agents Toolkit. Battle alongside your colleagues, showcase your skills, and compete for recognition from your peers and Microsoft product teams.
+> Three AI agents collaborate in a group chat to generate, review, and publish platform-ready social media content for Zava Travel Inc.
 
 ---
 
-## ⚠️ IMPORTANT: Security and Confidentiality Notice
+## 🏗️ Architecture
 
-**This is a PUBLIC repository. DO NOT upload confidential information.**
+```
+Campaign Brief (User Input)
+        │
+        ▼
+┌─────────────────────────────────────────────────┐
+│         GROUP CHAT ORCHESTRATOR                  │
+│         (Round-Robin Speaker Selection)          │
+│                                                  │
+│   Creator → Reviewer → Creator → Reviewer → Publisher
+└─────────────────────────────────────────────────┘
+     │              │              │
+     ▼              ▼              ▼
+┌──────────┐ ┌──────────┐ ┌──────────┐
+│ CREATOR  │ │ REVIEWER │ │PUBLISHER │
+│(Azure AI)│ │(Copilot) │ │(Azure AI)│
+│          │ │          │ │          │
+│ Chain-of │ │  ReAct   │ │  Self-   │
+│ Thought  │ │ Pattern  │ │Reflection│
+└──────────┘ └──────────┘ └──────────┘
+                                │
+                                ▼
+                    3 Platform-Ready Posts
+                  (LinkedIn, Twitter, Instagram)
+```
 
-Before contributing or submitting your project, please read the **[DISCLAIMER.md](DISCLAIMER.md)** to understand:
-- What content is prohibited (credentials, PII, confidential data, etc.)
-- Your responsibilities regarding security and intellectual property
-- Best practices for protecting sensitive information
-
-**Quick Checklist:**
-- ❌ No API keys, passwords, or credentials
-- ❌ No customer data or PII
-- ❌ No Microsoft Confidential information
-- ✅ Only public, General-level content
+| Agent | Engine | Reasoning Pattern | Role |
+|-------|--------|-------------------|------|
+| **Creator** | Azure OpenAI (GPT-5.x) | Chain-of-Thought (5 steps) | Drafts content with visible reasoning |
+| **Reviewer** | GitHub Copilot SDK | ReAct (Observe → Think → Act → Result) | Reviews brand alignment & quality |
+| **Publisher** | Azure OpenAI (GPT-5.x) | Self-Reflection (validate constraints) | Formats for LinkedIn, Twitter, Instagram |
 
 ---
 
-## What's Agents League @ TechConnect?
+## 🚀 Quick Start
 
-An **in-person hackathon experience** combining:
+### Prerequisites
 
-- **⚔️ Live battles** - Compete in real-time with your fellow Microsoft colleagues
-- **🎯 Build fast** - 100 minutes to create something awesome
-- **🚀 Submit & compete** - Judges review projects after the event
-- **🎖️ Recognition** - Winners announced soon after with prizes and bragging rights
+- Python 3.10+
+- Azure Subscription with AI Foundry project & deployed reasoning model
+- Azure CLI (`az login`)
+- GitHub Copilot CLI (authenticated with `/login`)
 
-**Open to all skill levels!** Whether you're an AI expert or just getting started, there's a track for you.
+### Setup
 
-## ⏰ Event Schedule
+```powershell
+# 1. Create virtual environment
+python -m venv venv
+.\venv\Scripts\Activate.ps1
 
-- **10 min** — Welcome & Track Overview
-- **100 min** — Build Your Agent
-- **10 min** — Wrap-up
+# 2. Install dependencies
+pip install -r requirements.txt
 
-*Winners will be announced after the event once judges review all submissions!*
+# 3. Configure environment
+copy .env.sample .env
+# Edit .env with your Azure endpoints
 
-## Prerequisites
+# 4. Authenticate
+az login
 
-Before you begin, make sure you have the following ready:
+# 5. Run the workflow
+python workflow_social_media.py
+```
 
-- **💻 Laptop** — Bring your own device
-- **🔑 Tenant with M365 Copilot License, Microsoft Azure, and GitHub Copilot** — Required for building agents
-- **🛠️ VS Code installed** — Your development environment
-- **🥳 Excitement to build something new** - Your developer mindset
+### Environment Variables (`.env`)
 
-Use AI assisted development with tools like [GitHub Copilot in VS Code](https://code.visualstudio.com/docs/copilot/overview), the [GitHub Copilot CLI](https://github.com/features/copilot/cli/), or the [GitHub Copilot CLI SDK](https://github.com/github/copilot-sdk).
+```env
+AZURE_AI_FOUNDRY_PROJECT_ENDPOINT=https://<resource>.services.ai.azure.com/api/projects/<project>
+AZURE_OPENAI_ENDPOINT=https://<resource>.services.ai.azure.com
+AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=<your-deployed-model>
+```
 
-> 📋 **Note:** Each track has specific prerequisites. Check the starter kit for your chosen track for detailed setup instructions. Please visit [Tech Connect Skills Quest 2026](https://microsoft.sharepoint.com/teams/MCAPSAcademy/Build%20your%20expertise/Forms/AllItems.aspx?id=%2Fteams%2FMCAPSAcademy%2FBuild%20your%20expertise%2FTech%20Connect%20Skills%20Quest%202026&sortField=LinkFilename&isAscending=true&viewid=4debaa93%2Dc7aa%2D431d%2D8f63%2D5c847d43cc7d&csf=1&CID=fe43b07a%2De29a%2D4b12%2D9f1c%2D46c5ff8190a1&FolderCTID=0x012000C226F5A26C5B434FB9127BCC8CFDE8C0) for video and PDF guides to set up resources. 
+---
 
+## 📋 Demo Campaign
 
-## Challenge Tracks
+The default campaign showcases Zava Travel's **"Wander More, Spend Less"** summer adventure:
 
-Pick one track and build something awesome!
+| Attribute | Value |
+|-----------|-------|
+| **Company** | Zava Travel Inc. (zavatravel.com) |
+| **Industry** | Budget-friendly adventure travel |
+| **Audience** | Millennials & Gen-Z adventure seekers |
+| **Tone** | Adventurous & Inspiring |
+| **Destinations** | Bali, Patagonia, Iceland, Vietnam, Costa Rica |
+| **Hashtags** | #ZavaTravel #WanderMore #AdventureAwaits #TravelOnABudget |
 
-| Track | Tool | Challenge | Starter Kit |
-|-------|------|-----------|-------------|
-| 🎨 **Creative Apps** | GitHub Copilot | Build innovative creative applications using AI-assisted development | [View →](./starter-kits/1-creative-apps/) |
-| 🧠 **Reasoning Agents** | Microsoft Foundry | Create intelligent agents that solve complex problems through multi-step reasoning | [View →](./starter-kits/2-reasoning-agents/) |
-| 💼 **Enterprise Agents** | M365 Agents Toolkit | Build business-ready knowledge agents integrated with Microsoft 365 | [View →](./starter-kits/3-enterprise-agents/) |
+### Example Output
 
-## How to Participate
+The system produces three platform-ready posts:
 
-### 1. Choose Your Track
+- **LinkedIn**: Professional-adventurous, 1-3 paragraphs, 3-5 hashtags
+- **X/Twitter**: Under 280 characters, punchy, 2-3 hashtags
+- **Instagram**: Visual-friendly, emojis, 5-10 hashtags, image suggestions
 
-- **Creative Apps** - Build with GitHub Copilot
-- **Reasoning Agents** - Build with Microsoft Foundry  
-- **Enterprise Agents** - Build with M365 Agents Toolkit
+---
 
-Browse [`starter-kits/`](./starter-kits/) for setup guides and examples
+## 📁 Project Structure
 
-### 2. Build Your Agent
+```
+├── workflow_social_media.py        # Main entry point
+├── agents/
+│   ├── creator.py                  # Chain-of-Thought agent instructions
+│   ├── reviewer.py                 # ReAct agent instructions
+│   └── publisher.py                # Self-Reflection agent instructions
+├── orchestration/
+│   ├── speaker_selection.py        # Round-robin + fast-track logic
+│   └── termination.py              # 3 termination conditions
+├── grounding/
+│   ├── file_search.py              # Azure File Search integration
+│   └── brand-guidelines.md         # Zava Travel brand guidelines
+├── tools/
+│   └── filesystem_mcp.py           # MCP filesystem integration
+├── utils/
+│   ├── formatting.py               # Platform validation
+│   ├── transcript_formatter.py     # Conversation display
+│   └── markdown_formatter.py       # Export to markdown
+├── config/
+│   └── env_loader.py               # Environment validation
+├── test-data/                      # Synthetic test data
+│   ├── campaign-briefs/            # 5 campaign brief inputs
+│   ├── expected-outputs/           # Golden reference posts
+│   ├── grounding/                  # Brand guidelines document
+│   ├── safety-tests/               # 16 content safety test cases
+│   ├── evaluation-baselines/       # Quality score thresholds
+│   └── edge-cases/                 # 8 edge case inputs
+├── output/                         # Generated posts saved here
+├── .env.sample                     # Environment template
+├── requirements.txt                # Python dependencies
+└── constitution.md                 # Project governing principles
+```
 
-You have **100 minutes** to:
+---
 
-- Follow your starter kit instructions
-- Create something unique and functional
-- Include screenshots or a demo video in your submission
+## 🧠 Reasoning Patterns
 
-### 3. Submit Your Project
+### Creator — Chain-of-Thought
+```
+Step 1: Identify the campaign objective
+Step 2: Consider audience interests and pain points
+Step 3: Draft an attention-grabbing hook
+Step 4: Build the body with value and destination highlights
+Step 5: Close with a clear call-to-action
+```
 
-Submit your project before Feb 13, 2026 (11:59 PM PT) using the [project submission template](https://github.com/microsoft/agentsleague-techconnect/issues/new?template=project.yml)
+### Reviewer — ReAct
+```
+Observation: The draft uses "cheap travel" language
+Thought:    Zava's brand voice is "adventurous & inspiring" — should feel empowering
+Action:     Recommend replacing "cheap" with "budget-savvy adventure"
+Result:     Revised draft maintains aspirational tone while communicating value
+```
 
-⚠️ **Before submitting**: 
-- Read the [Disclaimer](./DISCLAIMER.md) - No confidential information allowed
-- Review the [Code of Conduct](./CODE_OF_CONDUCT.md)
-- Ensure your repository is public and includes a README
+### Publisher — Self-Reflection
+```
+Draft:  [formatted LinkedIn post]
+Check:  Professional-adventurous tone? ✓
+Check:  3-5 hashtags including #ZavaTravel? ✓
+Check:  CTA with zavatravel.com? ✓
+Final:  [polished post ready for publication]
+```
 
-**⚠️ Your Microsoft alias is required for submission!**
+---
 
-### 4. Wait for Results
+## 🔒 Security
 
-- Judges will review all submissions after the event
-- Winners announced via email/Teams
-- Show off your badge when you win! 🏆
+- ✅ `DefaultAzureCredential` — no hardcoded API keys
+- ✅ `.env` excluded via `.gitignore`
+- ✅ `.env.sample` with placeholders only
+- ✅ No PII, customer data, or confidential content
+- ✅ All Azure resource names parameterized
 
-## Judging
+---
 
-Projects are evaluated by Microsoft product teams **after the event** using this rubric:
+## 🎯 Hackathon Milestones
 
-- **Accuracy & Relevance (25%)** — Meets challenge requirements
-- **Reasoning & Multi-step Thinking (25%)** — Clear problem-solving approach
-- **Creativity & Originality (20%)** — Novel ideas or unexpected execution
-- **User Experience & Presentation (15%)** — Clear documentation, screenshots/video
-- **Technical Implementation (15%)** — Solid patterns, creative use of tools
+| # | Milestone | Status |
+|---|-----------|--------|
+| 1 | Environment setup (Foundry + model deployment) | ✅ |
+| 2 | Agent creation (Creator, Reviewer, Publisher) | ✅ |
+| 3 | Grounding knowledge (File Search + brand guidelines) | ✅ |
+| 4 | External tools (MCP filesystem integration) | ✅ |
 
-## Prizes & Recognition
+### Bonus Features (Optional)
 
-### 🏆 Track Winners
+| Feature | Package | Status |
+|---------|---------|--------|
+| Observability | `azure-monitor-opentelemetry` | 📋 Ready |
+| Content Safety | `azure-ai-contentsafety` | 📋 Ready |
+| Agentic Evaluation | `azure-ai-evaluation` | 📋 Ready |
 
-| Award | Description |
-|-------|-------------|
-| 🎨 **Creative Apps Champion** | Best project in the Creative Apps track |
-| 🧠 **Reasoning Master** | Best project in the Reasoning Agents track |
-| 💼 **Enterprise MVP** | Best project in the Enterprise Agents track |
+---
 
-### ⭐ In-room Awards
+## 📚 Resources
 
-| Award | Description |
-|-------|-------------|
-| 🚀 **Speed Demon** | First to submit a working project |
-| 🔧 **Hackiest Hack** | Scrappiest solution that somehow works |
-| **🐛 Bug Whisperer** | Spent 40 minutes debugging… it was a missing comma |
-| **🧱 It Worked Yesterday Award** | The demo broke exactly when someone important walked by. |
-| **🧙 Used Magic** | No one understands how it works, including them |
-| **🔌 Turning it Off and On Award** | Solved everything by turning it off and on again |
-| **🎨 Fake It Till You Make It** | UI looks amazing, backend doesn't exist |
-| **📢 Hype Machine** | Talked about their idea more than they coded |
-| **🎪 Last Minute Legend** | Did everything in the final hour
+- [Microsoft Foundry Documentation](https://learn.microsoft.com/azure/ai-foundry/)
+- [Microsoft Agent Framework](https://github.com/microsoft/agent-framework)
+- [GitHub Copilot SDK](https://github.com/github/copilot-sdk)
+- [Starter Code Repository](https://github.com/sureshpaulraj/aiagent-maf-githubcopilotsdk)
 
+---
 
-### 🎖️ For All Participants
+⚠️ **Security Notice**: This is a PUBLIC repository. See [DISCLAIMER.md](DISCLAIMER.md) for guidelines. See also the [original hackathon README](README_OLD.md) for competition rules.
 
-- **Digital Badge** - Everyone who submits a project receives a badge
-- **Eternal glory** - You battled in the Agents League arena!
-
-## Resources
-
-### 📦 Starter Kits (with setup guides & examples)
-
-- [Creative Apps](./starter-kits/1-creative-apps/) - GitHub Copilot
-- [Reasoning Agents](./starter-kits/2-reasoning-agents/) - Microsoft Foundry  
-- [Enterprise Agents](./starter-kits/3-enterprise-agents/) - M365 Toolkit
-
-### 🆘 Need Help?
-
-- **Raise your hand** - Roaming experts are here to help
-- **Ask your tablemates** - Collaborate and learn together
-- **Check the starter kits** - Step-by-step guides included
-
-### 5. Submit Your Project
-
-**Submission Deadline**: Feb 13, 2026 at 11.59pm 
-
-Open a new issue in this repo using the [project submission template](https://github.com/microsoft/agentsleague-techconnect/issues/new?template=project.yml)
-
-⚠️ **Before submitting**: 
-- Read the [Disclaimer](./DISCLAIMER.md) - No confidential information allowed
-- Review the [Code of Conduct](./CODE_OF_CONDUCT.md)
-- Ensure your repository is public and includes a README
-
-### 💬 Community
-
-Community voting and discussions
-
-[![Agents League Discord](https://img.shields.io/badge/Discord-Agents_League_Discord_Channel-yellow?style=for-the-badge&logo=github&color=00001&logoColor=fff)](https://aka.ms/agentsleague/discord)
-
-Community and Guidance 
-
-[![Microsoft Foundry Discord](https://dcbadge.limes.pink/api/server/nTYy5BXMWG)](https://discord.gg/nTYy5BXMWG)
-
-If you have product feedback or errors while building visit:
-
-[![Microsoft Foundry Developer Forum](https://img.shields.io/badge/GitHub-Microsoft_Foundry_Developer_Forum-blue?style=for-the-badge&logo=github&color=000000&logoColor=fff)](https://aka.ms/foundry/forum)
-
-<div align="center">
-
-## 🚀 Ready to Compete?
-
-### Pick your track and start building!
-
-[📦 Browse Starter Kits](./starter-kits/) • [📝 Submit Your Project](https://github.com/microsoft/agentsleague-techconnect/issues/new?template=project.yml)
-
-**Questions?** Raise your hand and ask a roaming expert!
-
-
-*Agents League @ TechConnect - Brought to you by the Developer Advocacy team*
-
-</div>
+**Good luck! Wander More, Spend Less 🌍✈️**

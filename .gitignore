@@ -343,6 +343,42 @@ paket-files/
 **/__pycache__/
 *.pyc
 
+# Local workspace artifacts
+.stubs/
+.work-folder-info
+
+# Python-specific additions for hackathon project
+venv/
+env/
+ENV/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Environment files
+.env.local
+
+# Output files
+output/*.md
+output/*.json
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Test artifacts
+.pytest_cache/
+htmlcov/
+
 # Cake - Uncomment if you are using it
 #tools/**
 #!tools/packages.config

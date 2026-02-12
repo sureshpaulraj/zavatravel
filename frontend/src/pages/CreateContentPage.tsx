@@ -1,0 +1,314 @@
+import { useState, useTransition } from 'react'
+import {
+  Card,
+  Title1,
+  Title2,
+  Title3,
+  Body1,
+  Body2,
+  Caption1,
+  Button,
+  Input,
+  Textarea,
+  Spinner,
+  MessageBar,
+  MessageBarBody,
+  Badge,
+  TabList,
+  Tab,
+  makeStyles,
+} from '@fluentui/react-components'
+import {
+  SparkleRegular,
+  DocumentCopyRegular,
+  CheckmarkRegular,
+} from '@fluentui/react-icons'
+import { type CampaignBrief, getMockResult, type WorkflowResult, type AgentMessage } from '../services/api'
+
+const useStyles = makeStyles({
+  page: { maxWidth: '1200px', margin: '0 auto' },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: '400px 1fr',
+    gap: '24px',
+    '@media (max-width: 1024px)': {
+      gridTemplateColumns: '1fr',
+    },
+  },
+  formCard: {
+    padding: '28px',
+    borderRadius: '12px',
+    height: 'fit-content',
+    position: 'sticky' as const,
+    top: '32px',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    marginTop: '20px',
+  },
+  resultArea: { display: 'flex', flexDirection: 'column', gap: '20px' },
+  postCard: {
+    padding: '24px',
+    borderRadius: '12px',
+    border: '1px solid #E2E8F0',
+    transition: 'box-shadow 0.2s',
+    ':hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.08)' },
+  },
+  postContent: {
+    whiteSpace: 'pre-wrap' as const,
+    lineHeight: 1.7,
+    padding: '16px',
+    background: '#F8FAFC',
+    borderRadius: '8px',
+    marginTop: '12px',
+    fontSize: '14px',
+    border: '1px solid #E2E8F0',
+  },
+  transcriptMsg: {
+    padding: '16px',
+    borderRadius: '8px',
+    marginBottom: '12px',
+    borderLeft: '4px solid',
+  },
+  charCount: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginTop: '4px',
+  },
+  platformHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  statsRow: {
+    display: 'flex',
+    gap: '16px',
+    marginTop: '12px',
+    flexWrap: 'wrap' as const,
+  },
+})
+
+const DEFAULT_BRIEF: CampaignBrief = {
+  brand_name: 'Zava Travel Inc.',
+  industry: 'Travel — Budget-Friendly Adventure',
+  target_audience: 'Millennials & Gen-Z adventure seekers',
+  key_message: 'Wander More, Spend Less — affordable curated itineraries to dream destinations starting at $699',
+  destinations: 'Bali, Patagonia, Iceland, Vietnam, Costa Rica',
+  platforms: ['LinkedIn', 'Twitter', 'Instagram'],
+}
+
+const PLATFORM_CONFIG: Record<string, { emoji: string; color: string; bg: string; label: string }> = {
+  linkedin: { emoji: '💼', color: '#0077B5', bg: '#F0F8FF', label: 'LinkedIn' },
+  twitter: { emoji: '𝕏', color: '#1DA1F2', bg: '#F0F8FF', label: 'X / Twitter' },
+  instagram: { emoji: '📸', color: '#E4405F', bg: '#FFF0F3', label: 'Instagram' },
+}
+
+const AGENT_COLORS: Record<string, { border: string; bg: string }> = {
+  Creator: { border: '#0891B2', bg: '#F0FDFF' },
+  Reviewer: { border: '#F97316', bg: '#FFF7ED' },
+  Publisher: { border: '#059669', bg: '#F0FDF4' },
+}
+
+export default function CreateContentPage() {
+  const styles = useStyles()
+  const [brief, setBrief] = useState<CampaignBrief>(DEFAULT_BRIEF)
+  const [result, setResult] = useState<WorkflowResult | null>(null)
+  const [, startTransition] = useTransition()
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [activeTab, setActiveTab] = useState<string>('posts')
+  const [copied, setCopied] = useState<string | null>(null)
+
+  const handleGenerate = () => {
+    setIsGenerating(true)
+    setResult(null)
+    // Simulate async workflow — in production this calls the Python backend
+    startTransition(() => {
+      setTimeout(() => {
+        setResult(getMockResult())
+        setIsGenerating(false)
+      }, 3000)
+    })
+  }
+
+  const copyToClipboard = (text: string, platform: string) => {
+    navigator.clipboard.writeText(text)
+    setCopied(platform)
+    setTimeout(() => setCopied(null), 2000)
+  }
+
+  const updateBrief = (field: keyof CampaignBrief, value: string) => {
+    setBrief(prev => ({ ...prev, [field]: value }))
+  }
+
+  return (
+    <div className={styles.page}>
+      <Title1 style={{ marginBottom: '4px' }}>✨ Create Social Media Content</Title1>
+      <Body1 style={{ color: '#64748B', marginBottom: '24px' }}>
+        Submit a campaign brief and let three AI agents collaborate to create platform-ready posts
+      </Body1>
+
+      <div className={styles.grid}>
+        {/* Left: Form */}
+        <Card className={styles.formCard}>
+          <Title3>📋 Campaign Brief</Title3>
+          <div className={styles.form}>
+            <div>
+              <Caption1 style={{ fontWeight: 600, marginBottom: '4px', display: 'block' }}>Brand</Caption1>
+              <Input value={brief.brand_name} onChange={(_, d) => updateBrief('brand_name', d.value)} style={{ width: '100%' }} />
+            </div>
+            <div>
+              <Caption1 style={{ fontWeight: 600, marginBottom: '4px', display: 'block' }}>Industry</Caption1>
+              <Input value={brief.industry} onChange={(_, d) => updateBrief('industry', d.value)} style={{ width: '100%' }} />
+            </div>
+            <div>
+              <Caption1 style={{ fontWeight: 600, marginBottom: '4px', display: 'block' }}>Target Audience</Caption1>
+              <Input value={brief.target_audience} onChange={(_, d) => updateBrief('target_audience', d.value)} style={{ width: '100%' }} />
+            </div>
+            <div>
+              <Caption1 style={{ fontWeight: 600, marginBottom: '4px', display: 'block' }}>Key Message</Caption1>
+              <Textarea value={brief.key_message} onChange={(_, d) => updateBrief('key_message', d.value)} rows={3} style={{ width: '100%' }} />
+            </div>
+            <div>
+              <Caption1 style={{ fontWeight: 600, marginBottom: '4px', display: 'block' }}>Destinations</Caption1>
+              <Input value={brief.destinations} onChange={(_, d) => updateBrief('destinations', d.value)} style={{ width: '100%' }} />
+            </div>
+
+            <Button
+              appearance="primary"
+              icon={isGenerating ? <Spinner size="tiny" /> : <SparkleRegular />}
+              size="large"
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              style={{ background: '#0891B2', marginTop: '8px' }}
+            >
+              {isGenerating ? 'Agents Working...' : 'Generate Content'}
+            </Button>
+          </div>
+        </Card>
+
+        {/* Right: Results */}
+        <div className={styles.resultArea}>
+          {isGenerating && (
+            <Card style={{ padding: '40px', textAlign: 'center', borderRadius: '12px' }}>
+              <Spinner size="large" label="" />
+              <Title3 style={{ marginTop: '16px' }}>Agents Collaborating...</Title3>
+              <Body2 style={{ color: '#64748B', marginTop: '8px' }}>
+                Creator → Reviewer → Publisher working on your Zava Travel content
+              </Body2>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '20px' }}>
+                <Badge appearance="filled" style={{ background: '#0891B2', padding: '6px 16px' }}>✍️ Creator: Drafting...</Badge>
+                <Badge appearance="outline" style={{ borderColor: '#F97316', color: '#F97316', padding: '6px 16px' }}>🔍 Reviewer: Waiting</Badge>
+                <Badge appearance="outline" style={{ borderColor: '#059669', color: '#059669', padding: '6px 16px' }}>📤 Publisher: Waiting</Badge>
+              </div>
+            </Card>
+          )}
+
+          {result && (
+            <>
+              {/* Success Bar */}
+              <MessageBar intent="success">
+                <MessageBarBody>
+                  ✅ Content generated in {result.duration_seconds}s — {result.termination_reason}
+                </MessageBarBody>
+              </MessageBar>
+
+              {/* Tabs */}
+              <TabList selectedValue={activeTab} onTabSelect={(_, d) => setActiveTab(d.value as string)}>
+                <Tab value="posts">📝 Platform Posts</Tab>
+                <Tab value="transcript">🧠 Agent Transcript</Tab>
+              </TabList>
+
+              {activeTab === 'posts' && (
+                <>
+                  {Object.entries(result.posts).map(([platform, content]: [string, string]) => {
+                    const config = PLATFORM_CONFIG[platform]
+                    return (
+                      <Card key={platform} className={styles.postCard}>
+                        <div className={styles.platformHeader}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ fontSize: '24px' }}>{config.emoji}</span>
+                            <Title3>{config.label}</Title3>
+                          </div>
+                          <Button
+                            appearance="subtle"
+                            icon={copied === platform ? <CheckmarkRegular /> : <DocumentCopyRegular />}
+                            onClick={() => copyToClipboard(content, platform)}
+                          >
+                            {copied === platform ? 'Copied!' : 'Copy'}
+                          </Button>
+                        </div>
+                        {platform === 'twitter' && (
+                          <div className={styles.charCount}>
+                            <Caption1 style={{ color: content.length > 280 ? '#EF4444' : '#059669' }}>
+                              {content.length}/280 characters
+                            </Caption1>
+                          </div>
+                        )}
+                        <div className={styles.postContent}>{content}</div>
+                      </Card>
+                    )
+                  })}
+                </>
+              )}
+
+              {activeTab === 'transcript' && (
+                <Card style={{ padding: '24px', borderRadius: '12px' }}>
+                  <Title3 style={{ marginBottom: '16px' }}>Agent Collaboration Transcript</Title3>
+                  {result.transcript.map((msg: AgentMessage, i: number) => {
+                    const colors = AGENT_COLORS[msg.agent_name] || { border: '#CBD5E1', bg: '#F8FAFC' }
+                    return (
+                      <div
+                        key={i}
+                        className={styles.transcriptMsg}
+                        style={{ borderLeftColor: colors.border, background: colors.bg }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                          <Title3 style={{ color: colors.border }}>{msg.agent_name}</Title3>
+                          <Badge appearance="outline" size="small" style={{ borderColor: colors.border, color: colors.border }}>
+                            {msg.reasoning_pattern}
+                          </Badge>
+                        </div>
+                        <Body2 style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{msg.content}</Body2>
+                      </div>
+                    )
+                  })}
+                </Card>
+              )}
+
+              {/* Workflow Stats */}
+              <Card style={{ padding: '20px', borderRadius: '12px' }}>
+                <Title3 style={{ marginBottom: '8px' }}>📊 Workflow Summary</Title3>
+                <div className={styles.statsRow}>
+                  <Badge appearance="filled" size="large" style={{ background: '#0891B2', padding: '8px 16px' }}>
+                    ⏱️ {result.duration_seconds}s
+                  </Badge>
+                  <Badge appearance="filled" size="large" style={{ background: '#059669', padding: '8px 16px' }}>
+                    💬 {result.transcript.length} agent turns
+                  </Badge>
+                  <Badge appearance="filled" size="large" style={{ background: '#F97316', padding: '8px 16px' }}>
+                    📋 3 platform posts
+                  </Badge>
+                  <Badge appearance="filled" size="large" style={{ background: '#7C3AED', padding: '8px 16px' }}>
+                    🔒 Security: Clean
+                  </Badge>
+                </div>
+              </Card>
+            </>
+          )}
+
+          {!result && !isGenerating && (
+            <Card style={{ padding: '60px', textAlign: 'center', borderRadius: '12px', border: '2px dashed #CBD5E1' }}>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>✈️</div>
+              <Title2 style={{ color: '#94A3B8' }}>Ready to Create</Title2>
+              <Body1 style={{ color: '#94A3B8', marginTop: '8px' }}>
+                Fill in the campaign brief and click "Generate Content" to start the multi-agent workflow
+              </Body1>
+            </Card>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

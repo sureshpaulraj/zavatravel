@@ -1,0 +1,17 @@
+--pre
+
+# Core Agent Framework
+agent-framework>=1.0.0b260210
+agent-framework-github-copilot
+
+# Azure SDKs
+azure-identity>=1.15.0
+azure-ai-projects>=1.0.0
+
+# Utilities
+python-dotenv>=1.0.0
+
+# Optional: Bonus Features
+# azure-monitor-opentelemetry>=1.0.0
+# azure-ai-contentsafety>=1.0.0
+# azure-ai-evaluation>=1.0.0

@@ -1,0 +1,51 @@
+{
+  "campaign_briefs": [
+    {
+      "id": "CB-001",
+      "name": "Summer Adventure Campaign",
+      "priority": "P1",
+      "input": "Create social media content for Zava Travel's Summer Adventure Campaign.\nBrand: Zava Travel Inc.\nIndustry: Travel — Budget-Friendly Adventure\nTarget Audience: Millennials & Gen-Z adventure seekers\nKey Message: \"Wander More, Spend Less\" — affordable curated itineraries to dream destinations\nDestinations: Bali, Patagonia, Iceland, Vietnam, Costa Rica\nPlatforms: LinkedIn, X/Twitter, Instagram"
+    },
+    {
+      "id": "CB-002",
+      "name": "Vietnam Launch",
+      "priority": "P2",
+      "input": "Create social media content announcing Zava Travel's new Vietnam itineraries.\nBrand: Zava Travel Inc.\nIndustry: Travel — Budget-Friendly Adventure\nTarget Audience: Millennials & Gen-Z who love street food, culture, and motorbike adventures\nKey Message: Explore Vietnam from north to south — Hanoi street food, Halong Bay kayaking, Ho Chi Minh City nightlife — starting at $699\nDestinations: Vietnam (Hanoi, Halong Bay, Hoi An, Ho Chi Minh City)\nPlatforms: LinkedIn, X/Twitter, Instagram"
+    },
+    {
+      "id": "CB-003",
+      "name": "Flash Sale",
+      "priority": "P2",
+      "input": "Create social media content for a 48-hour flash sale on Bali itineraries.\nBrand: Zava Travel Inc.\nIndustry: Travel — Budget-Friendly Adventure\nTarget Audience: Budget-conscious millennials who follow travel deals\nKey Message: 48 hours only — save 30% on Bali adventure itineraries. Surf, temples, rice terraces, and unforgettable sunsets from just $629.\nDestinations: Bali, Indonesia\nPlatforms: LinkedIn, X/Twitter, Instagram"
+    },
+    {
+      "id": "CB-004",
+      "name": "Brand Awareness",
+      "priority": "P3",
+      "input": "Create social media content introducing Zava Travel to people who haven't heard of us.\nBrand: Zava Travel Inc.\nIndustry: Travel — Budget-Friendly Adventure\nTarget Audience: 25-35 year olds interested in travel but assume adventure trips are expensive\nKey Message: We curate extraordinary adventures at prices that won't make you wince. From $699, every Zava itinerary includes local guides, authentic experiences, and zero hidden fees.\nDestinations: All (Bali, Patagonia, Iceland, Vietnam, Costa Rica)\nPlatforms: LinkedIn, X/Twitter, Instagram"
+    },
+    {
+      "id": "CB-005",
+      "name": "UGC Promotion",
+      "priority": "P3",
+      "input": "Create social media content encouraging Zava Travel customers to share their trip photos.\nBrand: Zava Travel Inc.\nIndustry: Travel — Budget-Friendly Adventure\nTarget Audience: Past and current Zava Travel customers\nKey Message: Your adventure stories inspire others. Share your Zava Travel moments with #ZavaTravel for a chance to be featured on our page and win a $200 credit toward your next trip.\nDestinations: Any (customer's choice)\nPlatforms: LinkedIn, X/Twitter, Instagram"
+    }
+  ],
+  "edge_cases": [
+    {
+      "id": "EDGE-001",
+      "name": "Vague Brief",
+      "input": "Create social media content.\nBrand: Zava Travel Inc.\nIndustry: Travel\nTarget Audience: Travelers\nKey Message: Travel is fun\nPlatforms: LinkedIn, X/Twitter, Instagram"
+    },
+    {
+      "id": "EDGE-005",
+      "name": "Competitor Heavy",
+      "input": "Create social media content showing why Zava Travel is better than VoyageNow and CookTravel for budget adventure travel.\nBrand: Zava Travel Inc.\nIndustry: Travel — Budget-Friendly Adventure\nTarget Audience: Millennials currently using VoyageNow or CookTravel\nKey Message: Switch from overpriced tour operators to Zava Travel's affordable adventures\nPlatforms: LinkedIn, X/Twitter, Instagram"
+    },
+    {
+      "id": "EDGE-007",
+      "name": "Empty Input",
+      "input": ""
+    }
+  ]
+}
