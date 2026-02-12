@@ -1,0 +1,266 @@
+name: Validate Submissions
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'submission')
+    
+    steps:
+      - name: Validate all submission fields
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            console.log('Validating submission issue #' + issue.number);
+            
+            const body = issue.body || '';
+            const errors = [];
+            const warnings = [];
+            
+            // Helper function to extract field value
+            function getFieldValue(fieldName) {
+              const regex = new RegExp(`### ${fieldName}\\s*\\n\\s*([\\s\\S]*?)(?=\\n### |$)`, 'i');
+              const match = body.match(regex);
+              if (!match) return null;
+              return match[1].trim();
+            }
+            
+            // Helper function to check if value is empty or placeholder
+            function isEmpty(value, placeholders = []) {
+              if (!value || value === '_No response_') return true;
+              for (const p of placeholders) {
+                if (value.toLowerCase().includes(p.toLowerCase())) return true;
+              }
+              return false;
+            }
+            
+            // === Required Fields Validation ===
+            
+            // 1. Track
+            const track = getFieldValue('Track');
+            if (isEmpty(track)) {
+              errors.push('**Track** - Please select which track you are submitting to');
+            } else {
+              const validTracks = ['Creative Apps', 'Reasoning Agents', 'Enterprise Agents'];
+              if (!validTracks.some(t => track.includes(t))) {
+                errors.push('**Track** - Invalid track selected');
+              }
+            }
+            
+            // 2. Project Name
+            const projectName = getFieldValue('Project Name');
+            if (isEmpty(projectName, ['My Awesome Agent'])) {
+              errors.push('**Project Name** - Please provide your project name');
+            }
+            
+            // 3. Microsoft Alias
+            const msAlias = getFieldValue('Microsoft Alias');
+            if (isEmpty(msAlias, ['youralias'])) {
+              errors.push('**Microsoft Alias** - Please provide your Microsoft alias');
+            }
+            
+            // 4. GitHub Username
+            const ghUsername = getFieldValue('GitHub Username');
+            if (isEmpty(ghUsername, ['@username'])) {
+              errors.push('**GitHub Username** - Please provide your GitHub username');
+            }
+            
+            // 5. Repository URL
+            const repoUrl = getFieldValue('Repository URL');
+            if (isEmpty(repoUrl, ['https://github.com/username/project'])) {
+              errors.push('**Repository URL** - Please provide your GitHub repository URL');
+            } else if (!repoUrl.match(/^https:\/\/github\.com\/[\w-]+\/[\w.-]+/)) {
+              errors.push('**Repository URL** - Invalid format. Must be: https://github.com/username/repo');
+            }
+            
+            // 6. Project Description
+            const description = getFieldValue('Project Description');
+            if (isEmpty(description, ['My agent helps users with'])) {
+              errors.push('**Project Description** - Please describe your project');
+            }
+            
+            // 7. Demo Video or Screenshots
+            const demo = getFieldValue('Demo Video or Screenshots');
+            if (isEmpty(demo, ['Add screenshots', 'video links'])) {
+              errors.push('**Demo Video or Screenshots** - Please provide demo materials');
+            }
+            
+            // 8. Primary Programming Language
+            const language = getFieldValue('Primary Programming Language');
+            if (isEmpty(language)) {
+              errors.push('**Primary Programming Language** - Please select your primary language');
+            }
+            
+            // 9. Key Technologies Used
+            const technologies = getFieldValue('Key Technologies Used');
+            if (isEmpty(technologies, ['Azure OpenAI, LangChain'])) {
+              errors.push('**Key Technologies Used** - Please list the technologies used');
+            }
+            
+            // 10. Submission Requirements (checkboxes)
+            const requirements = getFieldValue('Submission Requirements');
+            if (requirements) {
+              const checkedCount = (requirements.match(/\[X\]/gi) || []).length;
+              if (checkedCount < 5) {
+                errors.push('**Submission Requirements** - Please confirm all 5 requirements are checked');
+              }
+            } else {
+              errors.push('**Submission Requirements** - Please confirm all requirements');
+            }
+            
+            // 11. Technical Highlights
+            const highlights = getFieldValue('Technical Highlights');
+            if (isEmpty(highlights, ["I'm proud that my agent can"])) {
+              errors.push('**Technical Highlights** - Please describe what you are proud of');
+            }
+            
+            // 12. Quick Setup Summary
+            const quickSetup = getFieldValue('Quick Setup Summary');
+            if (isEmpty(quickSetup, ['Clone the repo', 'npm install'])) {
+              errors.push('**Quick Setup Summary** - Please provide setup instructions');
+            }
+            
+            // === Report Validation Results ===
+            
+            if (errors.length > 0) {
+              const errorList = errors.map(e => `- ❌ ${e}`).join('\n');
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `## ⚠️ Submission Validation Failed\n\nPlease fix the following issues and update your submission:\n\n${errorList}\n\n---\n*Edit this issue to re-trigger validation.*`
+              });
+              
+              // Add needs-update label
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  labels: ['needs-update']
+                });
+              } catch (e) {
+                console.log('Could not add needs-update label');
+              }
+              
+              return;
+            }
+            
+            // All validations passed - remove needs-update label if present
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                name: 'needs-update'
+              });
+            } catch (e) {
+              // Label might not exist
+            }
+            
+            // Add validation success label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              labels: ['validated']
+            });
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: '## ✅ Submission Validated!\n\nThank you for participating in **Agents League @ TechConnect**!\n\n**Track:** ' + track + '\n**Project:** ' + projectName + '\n\nJudges will review your project during the evaluation period (Feb 13-20, 2026).\n\n🍀 Good luck!'
+            });
+            
+      - name: Check repository accessibility
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body || '';
+            
+            // Extract repository URL from issue body
+            const regex = /### Repository URL\s*\n\s*([\s\S]*?)(?=\n### |$)/i;
+            const match = body.match(regex);
+            if (!match) return;
+            
+            const repoUrl = match[1].trim();
+            if (!repoUrl || repoUrl === '_No response_') return;
+            
+            const repoMatch = repoUrl.match(/github\.com\/([\w-]+)\/([\w.-]+)/);
+            if (!repoMatch) return;
+            
+            const repoOwner = repoMatch[1];
+            const repoName = repoMatch[2].replace(/\.git$/, '');
+            
+            try {
+              // Check if repository is public and accessible
+              const { data: repo } = await github.rest.repos.get({
+                owner: repoOwner,
+                repo: repoName
+              });
+              
+              console.log('✓ Repository is public and accessible');
+              
+              const warnings = [];
+              
+              // Check for README.md
+              try {
+                await github.rest.repos.getContent({
+                  owner: repoOwner,
+                  repo: repoName,
+                  path: 'README.md'
+                });
+                console.log('✓ README.md found');
+              } catch (e) {
+                warnings.push('Your repository should include a comprehensive `README.md` file with setup instructions');
+              }
+              
+              // Check for .env or hardcoded secrets indicators
+              try {
+                await github.rest.repos.getContent({
+                  owner: repoOwner,
+                  repo: repoName,
+                  path: '.env'
+                });
+                warnings.push('Found `.env` file in repository - ensure it does not contain real secrets');
+              } catch (e) {
+                // .env not found, which is good
+              }
+              
+              // Post warnings if any
+              if (warnings.length > 0) {
+                const warningList = warnings.map(w => `- ⚠️ ${w}`).join('\n');
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: `## 📋 Repository Review Notes\n\n${warningList}`
+                });
+              }
+              
+            } catch (error) {
+              console.log('❌ Repository not accessible: ' + error.message);
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: '## ❌ Repository Access Error\n\nCould not access the repository. Please ensure:\n- The repository URL is correct\n- The repository is **public** (not private)\n- The repository exists\n\n*This does not invalidate your submission, but judges must be able to access your code.*'
+              });
+              
+              // Add warning label
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  labels: ['repo-inaccessible']
+                });
+              } catch (e) {
+                console.log('Could not add label');
+              }

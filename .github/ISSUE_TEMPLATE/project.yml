@@ -1,0 +1,180 @@
+name: "🏆 Project Submission"
+description: "Submit your Agents League @ TechConnect project"
+title: "[Submission]: "
+labels: ["submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🎉 Thank you for participating in Agents League @ TechConnect!
+        
+        Please fill out this form completely to submit your project. All fields are required for evaluation.
+        
+        **⏰ Submit before the hackathon ends!**
+        
+        ---
+        
+        ## ⚠️ IMPORTANT: Security and Confidentiality Notice
+        
+        **DO NOT upload confidential or sensitive information to this public repository.**
+        
+        Before submitting, ensure your project does NOT contain:
+        - ❌ API keys, passwords, tokens, or credentials
+        - ❌ Customer data or personally identifiable information (PII)
+        - ❌ Microsoft Confidential information
+        - ❌ Proprietary code or trade secrets
+        - ❌ Pre-release product information under NDA
+        
+        Please review the **[DISCLAIMER.md](../../DISCLAIMER.md)** for complete guidelines on protecting confidential content and understanding your responsibilities as a contributor.
+        
+        By submitting, you confirm your project contains only General-level, non-confidential information suitable for public release.
+        
+        ---
+
+  - type: dropdown
+    id: track
+    attributes:
+      label: "Track"
+      description: "Which Agents League track are you submitting to?"
+      options:
+        - "🎨 Creative Apps - GitHub Copilot"
+        - "🧠 Reasoning Agents - Microsoft Foundry"
+        - "💼 Enterprise Agents - M365 Agents Toolkit"
+    validations:
+      required: true
+
+  - type: input
+    id: project-name
+    attributes:
+      label: "Project Name"
+      description: "What is your project called?"
+      placeholder: "My Awesome Agent"
+    validations:
+      required: true
+
+  - type: input
+    id: microsoft-alias
+    attributes:
+      label: "Microsoft Alias"
+      description: "Your Microsoft alias (e.g., johndoe) - Please mention all your members if you participated as a group"
+      placeholder: "youralias"
+    validations:
+      required: true
+
+  - type: input
+    id: github-username
+    attributes:
+      label: "GitHub Username"
+      description: "Your GitHub username - Please mention all your members if you participated as a group"
+      placeholder: "@username"
+    validations:
+      required: true
+
+  - type: input
+    id: repo-url
+    attributes:
+      label: "Repository URL"
+      description: "Link to your GitHub repository with the project code"
+      placeholder: "https://github.com/username/project"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Project Description"
+      description: "Provide a clear overview of your project (150 words max - keep it concise!)"
+      placeholder: "My agent helps users with..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: demo
+    attributes:
+      label: "Demo Video or Screenshots"
+      description: "Paste links to demo materials or drag & drop screenshots here"
+      placeholder: "Add screenshots, GIFs, or video links..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: "Primary Programming Language"
+      options:
+        - "Python"
+        - "TypeScript/JavaScript"
+        - "C#/.NET"
+        - "No-code/Low-code (Copilot Studio)"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: technologies
+    attributes:
+      label: "Key Technologies Used"
+      description: "List the main technologies, frameworks, and services used"
+      placeholder: "e.g., Azure OpenAI, LangChain, Microsoft Graph, Adaptive Cards..."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: requirements
+    attributes:
+      label: "Submission Requirements"
+      description: "Please confirm that your submission meets all requirements"
+      options:
+        - label: "My project meets the track-specific challenge requirements"
+          required: true
+        - label: "My repository includes a README.md with setup instructions"
+          required: true
+        - label: "My code does not contain hardcoded API keys or secrets"
+          required: true
+        - label: "I have included demo materials (video or screenshots)"
+          required: true
+        - label: "My project is my own work created during this hackathon"
+          required: true
+
+  - type: textarea
+    id: highlights
+    attributes:
+      label: "Technical Highlights"
+      description: "What are you most proud of in your implementation? (2-3 sentences)"
+      placeholder: "I'm proud that my agent can..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: quick-setup
+    attributes:
+      label: "Quick Setup Summary"
+      description: "Brief summary of how to run your project"
+      placeholder: |
+        1. Clone the repo
+        2. npm install
+        3. npm start
+    validations:
+      required: true
+
+  - type: input
+    id: team-members
+    attributes:
+      label: "Team Members (if any)"
+      description: "List Microsoft aliases of any team members (comma-separated)"
+      placeholder: "alias1, alias2, alias3"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        ## 📋 What Happens Next?
+        
+        1. **Table Voting** - Demo your project to your tablemates and vote for favorites
+        2. **Product Team Review** - Microsoft product teams will review top submissions
+        3. **Winners Announced** - Winners announced at the end of the event!
+        
+        **Good luck! 🚀**
