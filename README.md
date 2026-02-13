@@ -91,15 +91,7 @@ az login
 
 You can run the workflow in two ways:
 
-#### Option A: CLI Only (no frontend)
-
-```powershell
-python workflow_social_media.py
-```
-
-Output is printed to the console and saved to `./output/social-posts-*.md`.
-
-#### Option B: Full Stack (frontend + API server)
+#### Option A: Full Stack (frontend + API server)
 
 Open **two terminals**:
 
@@ -119,6 +111,14 @@ npm run dev
 ```
 
 Then open http://localhost:5173, log in with a demo account, and click **Generate Content**.
+
+#### Option B: CLI Only (no frontend)
+
+```powershell
+python workflow_social_media.py
+```
+
+Output is printed to the console and saved to `./output/social-posts-*.md`.
 
 #### Demo Accounts
 
