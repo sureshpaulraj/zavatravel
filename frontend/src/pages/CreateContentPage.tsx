@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import {
   Card,
-  Title1,
   Title2,
   Title3,
   Body1,
@@ -37,10 +36,11 @@ const useStyles = makeStyles({
   },
   formCard: {
     padding: '28px',
-    borderRadius: '12px',
+    borderRadius: '16px',
     height: 'fit-content',
     position: 'sticky' as const,
     top: '32px',
+    borderTop: '4px solid #0891B2',
   },
   form: {
     display: 'flex',
@@ -148,8 +148,11 @@ export default function CreateContentPage() {
 
   return (
     <div className={styles.page}>
-      <Title1 style={{ marginBottom: '4px' }}>✨ Create Social Media Content</Title1>
-      <Body1 style={{ color: '#64748B', marginBottom: '24px' }}>
+      <div style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: '28px', color: '#1E3A5F', marginBottom: '4px' }}>
+        ✨ Create Social Media{' '}
+        <span style={{ color: '#D63B2F', fontSize: '32px' }}>Content</span>
+      </div>
+      <Body1 style={{ color: '#64748B', marginBottom: '24px', fontFamily: "'Poppins', sans-serif" }}>
         Submit a campaign brief and let three AI agents collaborate to create platform-ready posts
       </Body1>
 
@@ -185,7 +188,15 @@ export default function CreateContentPage() {
               size="large"
               onClick={handleGenerate}
               disabled={isGenerating}
-              style={{ background: '#0891B2', marginTop: '8px' }}
+              style={{
+                background: 'linear-gradient(135deg, #F97316 0%, #D63B2F 100%)',
+                border: 'none',
+                marginTop: '8px',
+                fontFamily: "'Poppins', sans-serif",
+                fontWeight: 700,
+                borderRadius: '10px',
+                boxShadow: '0 4px 14px rgba(249,115,22,0.3)',
+              }}
             >
               {isGenerating ? 'Agents Working...' : 'Generate Content'}
             </Button>

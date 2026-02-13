@@ -3,14 +3,12 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import {
   makeStyles,
   Button,
-  Title3,
   Body1,
   Caption1,
   Avatar,
   Tooltip,
 } from '@fluentui/react-components'
 import {
-  AirplaneRegular,
   HomeRegular,
   AddRegular,
   SignOutRegular,
@@ -24,23 +22,41 @@ const useStyles = makeStyles({
   },
   sidebar: {
     width: '260px',
-    background: 'linear-gradient(180deg, #1E3A5F 0%, #0891B2 100%)',
+    background: 'linear-gradient(180deg, #102840 0%, #1E3A5F 40%, #0891B2 100%)',
     color: 'white',
     display: 'flex',
     flexDirection: 'column',
-    padding: '24px 16px',
-    boxShadow: '4px 0 20px rgba(0,0,0,0.1)',
+    padding: '20px 16px',
+    boxShadow: '4px 0 20px rgba(0,0,0,0.15)',
   },
-  logo: {
+  logoArea: {
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
-    gap: '12px',
-    padding: '8px 12px',
-    marginBottom: '32px',
+    marginBottom: '28px',
+    padding: '8px 0',
   },
-  logoText: {
+  logoImg: {
+    width: '100px',
+    height: '100px',
+    objectFit: 'contain' as const,
+    marginBottom: '6px',
+    filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))',
+  },
+  logoTitle: {
     color: 'white',
-    fontWeight: 700,
+    fontWeight: 800,
+    fontSize: '20px',
+    fontFamily: "'Poppins', sans-serif",
+    letterSpacing: '0.5px',
+  },
+  logoTagline: {
+    fontSize: '10px',
+    color: '#F5A623',
+    fontWeight: 600,
+    letterSpacing: '1.5px',
+    textTransform: 'uppercase' as const,
+    marginTop: '2px',
   },
   nav: {
     display: 'flex',
@@ -53,6 +69,7 @@ const useStyles = makeStyles({
     color: 'rgba(255,255,255,0.8)',
     borderRadius: '8px',
     padding: '10px 12px',
+    fontFamily: "'Poppins', sans-serif",
     ':hover': {
       background: 'rgba(255,255,255,0.15)',
       color: 'white',
@@ -65,6 +82,8 @@ const useStyles = makeStyles({
     borderRadius: '8px',
     padding: '10px 12px',
     fontWeight: 600,
+    fontFamily: "'Poppins', sans-serif",
+    boxShadow: 'inset 3px 0 0 #F97316',
   },
   userSection: {
     borderTop: '1px solid rgba(255,255,255,0.2)',
@@ -99,9 +118,10 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className={styles.layout}>
       <nav className={styles.sidebar}>
-        <div className={styles.logo}>
-          <AirplaneRegular style={{ fontSize: '28px' }} />
-          <Title3 className={styles.logoText}>Zava Travel</Title3>
+        <div className={styles.logoArea}>
+          <img src="/zava-logo.png" alt="Zava Travel" className={styles.logoImg} />
+          <span className={styles.logoTitle}>Zava Travel</span>
+          <span className={styles.logoTagline}>Budget Friendly Adventures</span>
         </div>
 
         <div className={styles.nav}>

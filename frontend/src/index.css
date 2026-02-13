@@ -1,9 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
 :root {
   --zava-teal: #0891B2;
   --zava-orange: #F97316;
   --zava-sand: #FFF7ED;
   --zava-navy: #1E3A5F;
   --zava-green: #059669;
+  --zava-red: #D63B2F;
+  --zava-sunset: #E8522E;
+  --zava-gold: #F5A623;
+  --zava-sky: #87CEEB;
 }
 
 * {
@@ -13,7 +19,7 @@
 }
 
 body {
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Poppins', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--zava-sand);
   color: var(--zava-navy);
   min-height: 100vh;
@@ -35,4 +41,19 @@ a {
 
 a:hover {
   color: var(--zava-orange);
+}
+
+/* Adventure accent animations */
+@keyframes subtlePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
 }
