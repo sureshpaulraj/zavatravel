@@ -1,100 +1,78 @@
 """
-File Search Integration for Brand Guidelines
+Brand Guidelines Grounding
 
-Handles uploading and attaching brand guidelines documents to agents
-using Azure AI Foundry File Search tool.
+Reads the brand-guidelines markdown file and embeds the content directly
+into the Creator agent's system instructions so it can reference brand
+voice, tone, colours, hashtags, and constraints during content generation.
+
+This avoids the need for vector-store / File Search APIs and works with
+any Azure OpenAI deployment (Chat Completions or Responses).
 """
 
+from __future__ import annotations
+
 import os
-from azure.ai.projects import AIProjectClient
-from azure.ai.projects.models import FileSearchTool
-from azure.identity import DefaultAzureCredential
+
+from agent_framework import Agent
 
 
-def upload_brand_guidelines(project_client: AIProjectClient, file_path: str) -> str:
-    """
-    Upload brand guidelines document to Azure AI Foundry.
-    
-    Args:
-        project_client: AIProjectClient instance
-        file_path: Path to brand guidelines document (.docx or .md)
-        
-    Returns:
-        str: File ID for use with FileSearchTool
-        
-    Raises:
-        FileNotFoundError: If file_path doesn't exist
-        Exception: If upload fails
-    """
+def _load_brand_guidelines(file_path: str) -> str | None:
+    """Read the brand-guidelines file and return its content."""
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f"Brand guidelines not found: {file_path}")
-    
+        print(f"⚠️ Brand guidelines not found: {file_path}")
+        return None
     try:
-        print(f"📄 Uploading brand guidelines: {file_path}")
-        file = project_client.files.upload(
-            file_path=file_path,
-            purpose="assistants"
-        )
-        print(f"✅ Brand guidelines uploaded successfully (ID: {file.id})")
-        return file.id
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        print(f"📄 Loaded brand guidelines ({len(content):,} chars) from {file_path}")
+        return content
     except Exception as e:
-        print(f"❌ Failed to upload brand guidelines: {e}")
-        raise
-
-
-def attach_file_search_tool(agent, file_id: str) -> None:
-    """
-    Attach File Search tool to an agent with uploaded document.
-    
-    Args:
-        agent: Agent instance to attach tool to
-        file_id: File ID from upload_brand_guidelines()
-    """
-    try:
-        file_search_tool = FileSearchTool(file_ids=[file_id])
-        agent.tools.append(file_search_tool)
-        print(f"✅ File Search tool attached to {getattr(agent, 'name', 'agent')}")
-    except Exception as e:
-        print(f"⚠️ Failed to attach File Search tool: {e}")
-        print("   Continuing without grounding...")
+        print(f"❌ Failed to read brand guidelines: {e}")
+        return None
 
 
 def create_grounded_agent(
     client,
     name: str,
     instructions: str,
-    project_client: AIProjectClient,
-    brand_guidelines_path: str
-):
+    brand_guidelines_path: str = "grounding/brand-guidelines.md",
+) -> Agent:
     """
-    Create an agent with File Search grounding.
-    
+    Create an Agent whose instructions include the full brand guidelines.
+
+    The guidelines are appended to the agent's system instructions inside a
+    clearly delimited ``<brand-guidelines>`` block so the model can reference
+    specific brand rules (voice, tone, hashtags, competitors to avoid, etc.)
+    during content generation.
+
     Args:
-        client: Azure OpenAI client
-        name: Agent name
-        instructions: Agent system instructions
-        project_client: AIProjectClient for file upload
-        brand_guidelines_path: Path to brand guidelines document
-        
+        client: Any chat client (``AzureOpenAIChatClient``, etc.).
+        name: Agent display name.
+        instructions: Base system-prompt instructions.
+        brand_guidelines_path: Path to the brand-guidelines markdown file.
+
     Returns:
-        Agent instance with File Search tool attached
+        ``Agent`` instance with grounded instructions.
     """
-    # Create base agent
-    agent = client.create_agent(
-        name=name,
-        instructions=instructions + "\n\nUse File Search to reference brand guidelines when generating content. Cite specific elements in your reasoning."
-    )
-    
-    # Upload and attach brand guidelines if file exists
-    if os.path.exists(brand_guidelines_path):
-        try:
-            file_id = upload_brand_guidelines(project_client, brand_guidelines_path)
-            attach_file_search_tool(agent, file_id)
-        except Exception as e:
-            print(f"⚠️ Grounding setup failed: {e}")
-            print("   Agent will continue without File Search...")
+    guidelines = _load_brand_guidelines(brand_guidelines_path)
+
+    if guidelines:
+        instructions += (
+            "\n\n"
+            "## Brand Guidelines Reference\n"
+            "Use the following brand guidelines when generating content. "
+            "Cite specific brand elements (voice, tone, hashtags, pricing, "
+            "competitor restrictions) in your reasoning.\n\n"
+            "<brand-guidelines>\n"
+            f"{guidelines}\n"
+            "</brand-guidelines>"
+        )
+        print("✅ Brand guidelines embedded in Creator instructions")
     else:
-        print(f"⚠️ Brand guidelines not found: {brand_guidelines_path}")
-        print("   Agent will continue without grounding...")
-    
-    return agent
+        print("⚠️ Creator will run without brand guidelines grounding")
+
+    return Agent(
+        client=client,
+        name=name,
+        instructions=instructions,
+    )

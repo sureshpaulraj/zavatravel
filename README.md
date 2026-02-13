@@ -46,6 +46,7 @@ Campaign Brief (User Input)
 ### Prerequisites
 
 - Python 3.10+
+- Node.js 18+ and npm (for MCP filesystem server)
 - Azure Subscription with AI Foundry project & deployed reasoning model
 - Azure CLI (`az login`)
 - GitHub Copilot CLI (authenticated with `/login`)
@@ -58,7 +59,10 @@ python -m venv venv
 .\venv\Scripts\Activate.ps1
 
 # 2. Install dependencies
-pip install -r requirements.txt
+pip install --pre -r requirements.txt
+npm install -g @modelcontextprotocol/server-filesystem
+# Optional: only needed if using MCP_TRANSPORT=streamable-http
+# npm install -g supergateway
 
 # 3. Configure environment
 copy .env.sample .env
@@ -77,6 +81,8 @@ python workflow_social_media.py
 AZURE_AI_FOUNDRY_PROJECT_ENDPOINT=https://<resource>.services.ai.azure.com/api/projects/<project>
 AZURE_OPENAI_ENDPOINT=https://<resource>.services.ai.azure.com
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=<your-deployed-model>
+MCP_TRANSPORT=stdio                    # Optional — 'stdio' (default) or 'streamable-http'
+MCP_SERVER_PORT=8000                   # Optional — supergateway port (only for streamable-http)
 ```
 
 ---
@@ -116,10 +122,10 @@ The system produces three platform-ready posts:
 │   ├── speaker_selection.py        # Round-robin + fast-track logic
 │   └── termination.py              # 3 termination conditions
 ├── grounding/
-│   ├── file_search.py              # Azure File Search integration
+│   ├── file_search.py              # Brand guidelines grounding (embedded in instructions)
 │   └── brand-guidelines.md         # Zava Travel brand guidelines
 ├── tools/
-│   └── filesystem_mcp.py           # MCP filesystem integration
+│   └── filesystem_mcp.py           # MCP filesystem (stdio + optional HTTP Streamable)
 ├── utils/
 │   ├── formatting.py               # Platform validation
 │   ├── transcript_formatter.py     # Conversation display
@@ -187,8 +193,8 @@ Final:  [polished post ready for publication]
 |---|-----------|--------|
 | 1 | Environment setup (Foundry + model deployment) | ✅ |
 | 2 | Agent creation (Creator, Reviewer, Publisher) | ✅ |
-| 3 | Grounding knowledge (File Search + brand guidelines) | ✅ |
-| 4 | External tools (MCP filesystem integration) | ✅ |
+| 3 | Grounding knowledge (brand guidelines embedded in instructions) | ✅ |
+| 4 | External tools (MCP filesystem — stdio + optional HTTP Streamable) | ✅ |
 
 ### Bonus Features (Optional)
 
@@ -200,7 +206,39 @@ Final:  [polished post ready for publication]
 
 ---
 
-## 📚 Resources
+## � ## MCP Filesystem Integration
+
+The Publisher agent saves posts to `./output/` via the [Model Context Protocol](https://modelcontextprotocol.io) using `@modelcontextprotocol/server-filesystem`.
+
+### Transport Modes
+
+Set `MCP_TRANSPORT` in `.env` to choose (default: `stdio`):
+
+| Mode | Env Value | How It Works |
+|------|-----------|-------------|
+| **Stdio** (default) | `stdio` | Direct stdio pipe to the MCP server. Simplest setup. |
+| **HTTP Streamable** | `streamable-http` | Uses [supergateway](https://github.com/nichochar/supergateway) as a bridge. Requires `npm install -g supergateway`. |
+
+```
+# Stdio (default)
+Publisher Agent -> MCPStdioTool -> npx server-filesystem ./output
+
+# HTTP Streamable (opt-in)
+Publisher Agent -> MCPStreamableHTTPTool -> http://127.0.0.1:8000/mcp
+                                              | supergateway
+                                              v
+                                       npx server-filesystem ./output
+```
+
+| Setting | Default | Override |
+|---------|---------|----------|
+| Transport | `stdio` | `MCP_TRANSPORT` env var |
+| Port (HTTP only) | `8000` | `MCP_SERVER_PORT` env var |
+| Output dir | `./output` | Pass `output_dir` to `get_filesystem_tools()` |
+
+---
+
+## Resources
 
 - [Microsoft Foundry Documentation](https://learn.microsoft.com/azure/ai-foundry/)
 - [Microsoft Agent Framework](https://github.com/microsoft/agent-framework)

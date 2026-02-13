@@ -14,15 +14,15 @@ def speaker_selector(state):
     Fast-track: If Reviewer says "APPROVED", skip to Publisher immediately
     
     Args:
-        state: GroupChatState object containing messages and round information
+        state: GroupChatState with current_round, participants, and conversation
         
     Returns:
         str: Name of next speaker ("Creator", "Reviewer", or "Publisher")
     """
     # Check for fast-track condition
-    last_message = state.messages[-1] if state.messages else None
+    last_message = state.conversation[-1] if state.conversation else None
     
-    if last_message and "APPROVED" in last_message.content:
+    if last_message and "APPROVED" in (getattr(last_message, 'text', '') or ''):
         print("\n🚀 Fast-track: Reviewer approved! Moving to Publisher...\n")
         return "Publisher"
     

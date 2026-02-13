@@ -1,4 +1,4 @@
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import {
   Card,
   Title1,
@@ -23,7 +23,7 @@ import {
   DocumentCopyRegular,
   CheckmarkRegular,
 } from '@fluentui/react-icons'
-import { type CampaignBrief, getMockResult, type WorkflowResult, type AgentMessage } from '../services/api'
+import { type CampaignBrief, generateContent, getMockResult, type WorkflowResult, type AgentMessage } from '../services/api'
 
 const useStyles = makeStyles({
   page: { maxWidth: '1200px', margin: '0 auto' },
@@ -115,21 +115,25 @@ export default function CreateContentPage() {
   const styles = useStyles()
   const [brief, setBrief] = useState<CampaignBrief>(DEFAULT_BRIEF)
   const [result, setResult] = useState<WorkflowResult | null>(null)
-  const [, startTransition] = useTransition()
   const [isGenerating, setIsGenerating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<string>('posts')
   const [copied, setCopied] = useState<string | null>(null)
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setIsGenerating(true)
     setResult(null)
-    // Simulate async workflow — in production this calls the Python backend
-    startTransition(() => {
-      setTimeout(() => {
-        setResult(getMockResult())
-        setIsGenerating(false)
-      }, 3000)
-    })
+    setError(null)
+    try {
+      const data = await generateContent(brief)
+      setResult(data)
+    } catch (err: any) {
+      console.error('API error:', err)
+      setError(err.message || 'Backend unavailable')
+      setResult(getMockResult())
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   const copyToClipboard = (text: string, platform: string) => {
@@ -207,12 +211,20 @@ export default function CreateContentPage() {
 
           {result && (
             <>
-              {/* Success Bar */}
-              <MessageBar intent="success">
-                <MessageBarBody>
-                  ✅ Content generated in {result.duration_seconds}s — {result.termination_reason}
-                </MessageBarBody>
-              </MessageBar>
+              {/* Status Bar */}
+              {error ? (
+                <MessageBar intent="warning">
+                  <MessageBarBody>
+                    ⚠️ API server offline — showing demo data. Start with: python api_server.py
+                  </MessageBarBody>
+                </MessageBar>
+              ) : (
+                <MessageBar intent="success">
+                  <MessageBarBody>
+                    ✅ Content generated in {result.duration_seconds}s — {result.termination_reason}
+                  </MessageBarBody>
+                </MessageBar>
+              )}
 
               {/* Tabs */}
               <TabList selectedValue={activeTab} onTabSelect={(_, d) => setActiveTab(d.value as string)}>
