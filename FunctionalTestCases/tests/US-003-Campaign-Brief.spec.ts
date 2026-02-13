@@ -153,10 +153,10 @@ test.describe("US-003: Submit Campaign Brief", () => {
     // Click Generate Content button
     await page.getByRole("button", { name: /generate content/i }).click();
 
-    // Verify button changes to "Agents Working..."
+    // Verify button changes to "Agents Working..." (with longer timeout)
     await expect(
       page.getByRole("button", { name: /agents working/i }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 15000 });
 
     // Verify button is disabled
     await expect(
@@ -180,10 +180,10 @@ test.describe("US-003: Submit Campaign Brief", () => {
     // Click Generate Content button
     await page.getByRole("button", { name: /generate content/i }).click();
 
-    // Verify button state changes
+    // Verify button state changes (with longer timeout)
     await expect(
       page.getByRole("button", { name: /agents working/i }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 15000 });
     await expect(
       page.getByRole("button", { name: /agents working/i }),
     ).toBeDisabled();

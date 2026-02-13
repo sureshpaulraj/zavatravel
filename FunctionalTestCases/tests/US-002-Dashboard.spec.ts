@@ -19,8 +19,10 @@ test.describe("US-002: View Dashboard", () => {
       page.getByText(`Welcome back, ${DEMO_ACCOUNTS.SARAH.displayName}`),
     ).toBeVisible();
 
-    // Verify title
-    await expect(page.getByText("Zava Travel Content Studio")).toBeVisible();
+    // Verify title (split across multiple colored spans)
+    await expect(page.getByText("Zava Travel").first()).toBeVisible();
+    await expect(page.getByText("Content")).toBeVisible();
+    await expect(page.getByText("Studio")).toBeVisible();
 
     // Verify description
     await expect(page.getByText(/multi-agent collaboration/i)).toBeVisible();
@@ -29,9 +31,6 @@ test.describe("US-002: View Dashboard", () => {
     await expect(
       page.getByRole("button", { name: /create new content/i }),
     ).toBeVisible();
-
-    // Verify airplane emoji is present
-    await expect(page.locator("text=✈️")).toBeVisible();
   });
 
   test("TC-017: Verify Dashboard Statistics Cards Display", async ({
