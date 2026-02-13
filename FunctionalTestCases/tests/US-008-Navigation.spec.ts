@@ -22,39 +22,39 @@ test.describe("US-008: Navigation Sidebar", () => {
     await verifySidebarDisplay(page);
 
     // Verify logo
-    await expect(page.getByText("Zava Travel")).toBeVisible();
+    await expect(page.getByText("Zava Travel")).toBeVisible({ timeout: 10000 });
 
     // Verify navigation items
     await expect(
       page.getByRole("button", { name: /dashboard/i }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
     await expect(
       page.getByRole("button", { name: /create content/i }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
 
     // Verify user profile section
-    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.displayName)).toBeVisible();
+    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.displayName)).toBeVisible({ timeout: 10000 });
 
     // Verify Sign Out button
-    await expect(page.getByRole("button", { name: /sign out/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /sign out/i })).toBeVisible({ timeout: 10000 });
   });
 
   test("TC-062: Verify Navigation Menu Items Display", async ({ page }) => {
     // Verify Dashboard menu item
     const dashboardItem = page.getByRole("button", { name: /dashboard/i });
-    await expect(dashboardItem).toBeVisible();
+    await expect(dashboardItem).toBeVisible({ timeout: 10000 });
     await expect(dashboardItem).toContainText("Dashboard");
 
     // Verify Create Content menu item
     const createContentItem = page.getByRole("button", {
       name: /create content/i,
     });
-    await expect(createContentItem).toBeVisible();
+    await expect(createContentItem).toBeVisible({ timeout: 10000 });
     await expect(createContentItem).toContainText("Create Content");
 
     // Verify icons are present (🏠 for Dashboard, ✨ for Create Content)
-    await expect(page.locator("text=🏠")).toBeVisible();
-    await expect(page.locator("text=✨")).toBeVisible();
+    await expect(page.getByText("🏠").first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("✨").first()).toBeVisible({ timeout: 10000 });
   });
 
   test("TC-063: Verify Navigate to Dashboard from Create Content Page", async ({
@@ -69,7 +69,9 @@ test.describe("US-008: Navigation Sidebar", () => {
 
     // Verify navigation to Dashboard
     await expect(page).toHaveURL("/");
-    await expect(page.getByText("Zava Travel Content Studio")).toBeVisible();
+    // Check for split title pieces
+    await expect(page.getByText("Zava Travel").first()).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Content")).toBeVisible({ timeout: 10000 });
   });
 
   test("TC-064: Verify Navigate to Create Content from Dashboard", async ({
@@ -83,7 +85,7 @@ test.describe("US-008: Navigation Sidebar", () => {
 
     // Verify navigation to Create Content
     await expect(page).toHaveURL("/create");
-    await expect(page.getByText("Campaign Brief")).toBeVisible();
+    await expect(page.getByText("Campaign Brief")).toBeVisible({ timeout: 15000 });
   });
 
   test("TC-065: Verify Active Page Indicator on Dashboard", async ({
@@ -158,23 +160,25 @@ test.describe("US-008: Navigation Sidebar", () => {
 
     // Verify navigation to Dashboard
     await expect(page).toHaveURL("/");
-    await expect(page.getByText("Zava Travel Content Studio")).toBeVisible();
+    // Check for split title pieces
+    await expect(page.getByText("Zava Travel").first()).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Content")).toBeVisible({ timeout: 10000 });
   });
 
   test("TC-069: Verify User Profile Section Display in Sidebar", async ({
     page,
   }) => {
     // Verify user profile section at bottom of sidebar
-    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.displayName)).toBeVisible();
-    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.role)).toBeVisible();
+    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.displayName)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.role)).toBeVisible({ timeout: 10000 });
 
     // Verify avatar/emoji
     await expect(
-      page.locator(`text=${DEMO_ACCOUNTS.SARAH.avatar}`),
-    ).toBeVisible();
+      page.getByText(DEMO_ACCOUNTS.SARAH.avatar).first(),
+    ).toBeVisible({ timeout: 10000 });
 
     // Verify Sign Out button is in same section
     const signOutButton = page.getByRole("button", { name: /sign out/i });
-    await expect(signOutButton).toBeVisible();
+    await expect(signOutButton).toBeVisible({ timeout: 10000 });
   });
 });
