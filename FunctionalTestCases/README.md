@@ -21,11 +21,12 @@ Comprehensive Playwright test suite covering all 84 functional test cases across
 
 ### 📈 Test Execution Status
 
-All test suites have been executed across 5 browser configurations (Chromium, Firefox, Webkit, Mobile Chrome, Mobile Safari) for a total of 420 test runs. 
+All test suites have been executed across 5 browser configurations (Chromium, Firefox, Webkit, Mobile Chrome, Mobile Safari) for a total of 420 test runs.
 
 **View detailed results**: Run `npm run show:report` to view the interactive HTML test report with:
+
 - Individual test pass/fail status
-- Screenshots and videos of failures  
+- Screenshots and videos of failures
 - Execution traces for debugging
 - Performance metrics
 
