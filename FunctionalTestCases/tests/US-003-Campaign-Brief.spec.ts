@@ -22,7 +22,7 @@ test.describe("US-003: Submit Campaign Brief", () => {
 
   test("TC-022: Verify Campaign Brief Form Display", async ({ page }) => {
     // Verify form title
-    await expect(page.getByText("Campaign Brief")).toBeVisible();
+    await expect(page.getByText("Campaign Brief").first()).toBeVisible();
 
     // Verify all form fields are present
     await expect(page.getByText(/brand/i).first()).toBeVisible();
@@ -208,28 +208,30 @@ test.describe("US-003: Submit Campaign Brief", () => {
   test("TC-032: Verify Navigate to Create Content from Sidebar", async ({
     page,
   }) => {
-    // Navigate to Dashboard first
-    await page.goto("/");
+    // Navigate to Dashboard first using button
+    await page.getByRole("button", { name: /dashboard/i }).click();
+    await page.waitForURL("/", { timeout: 5000 });
 
     // Click Create Content in sidebar
     await page.getByRole("button", { name: /create content/i }).click();
 
     // Verify navigation
     await expect(page).toHaveURL("/create");
-    await expect(page.getByText("Campaign Brief")).toBeVisible();
+    await expect(page.getByText("Campaign Brief").first()).toBeVisible();
   });
 
   test("TC-033: Verify Navigate to Create Content from Dashboard Button", async ({
     page,
   }) => {
-    // Navigate to Dashboard
-    await page.goto("/");
+    // Navigate to Dashboard using button
+    await page.getByRole("button", { name: /dashboard/i }).click();
+    await page.waitForURL("/", { timeout: 5000 });
 
     // Click Create New Content button
     await page.getByRole("button", { name: /create new content/i }).click();
 
     // Verify navigation
     await expect(page).toHaveURL("/create");
-    await expect(page.getByText("Campaign Brief")).toBeVisible();
+    await expect(page.getByText("Campaign Brief").first()).toBeVisible();
   });
 });

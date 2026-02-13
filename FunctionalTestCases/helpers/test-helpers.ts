@@ -89,9 +89,20 @@ export async function loginWithDemoAccount(
  * @param page - Playwright Page object
  */
 export async function navigateToCreateContent(page: Page): Promise<void> {
-  // Click Create Content in sidebar or use direct navigation
-  await page.goto("/create");
+  // Wait for dashboard to be loaded first
+  await expect(
+    page.getByRole("button", { name: /create content/i }),
+  ).toBeVisible({ timeout: 10000 });
+
+  // Click Create Content in sidebar
+  await page.getByRole("button", { name: /create content/i }).click();
+  await page.waitForURL("/create", { timeout: 10000 });
   await page.waitForLoadState("networkidle");
+
+  // Verify we're actually on the Create Content page
+  await expect(page.getByText(/campaign brief/i).first()).toBeVisible({
+    timeout: 10000,
+  });
 }
 
 /**
