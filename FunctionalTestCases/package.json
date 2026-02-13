@@ -1,0 +1,41 @@
+{
+  "name": "zavatravel-functional-tests",
+  "version": "1.0.0",
+  "description": "Playwright automated functional tests for Zava Travel Content Studio",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:mobile": "playwright test --project='Mobile Chrome' --project='Mobile Safari'",
+    "test:us001": "playwright test tests/US-001-Login.spec.ts",
+    "test:us002": "playwright test tests/US-002-Dashboard.spec.ts",
+    "test:us003": "playwright test tests/US-003-Campaign-Brief.spec.ts",
+    "test:us004": "playwright test tests/US-004-Agent-Collaboration.spec.ts",
+    "test:us005": "playwright test tests/US-005-Generated-Posts.spec.ts",
+    "test:us006": "playwright test tests/US-006-Copy-Clipboard.spec.ts",
+    "test:us007": "playwright test tests/US-007-Agent-Transcript.spec.ts",
+    "test:us008": "playwright test tests/US-008-Navigation.spec.ts",
+    "test:us009": "playwright test tests/US-009-Logout.spec.ts",
+    "test:us010": "playwright test tests/US-010-Empty-State.spec.ts",
+    "report": "playwright show-report",
+    "codegen": "playwright codegen"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "automation",
+    "functional-tests"
+  ],
+  "author": "Zava Travel Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "dotenv": "^16.3.1",
+    "typescript": "^5.3.0"
+  }
+}

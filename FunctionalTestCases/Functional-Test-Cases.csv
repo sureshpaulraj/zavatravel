@@ -1,0 +1,247 @@
+User Story ID,Test Case ID,Test Case Title,Test Step,Expected Result,Priority
+US-001,TC-001,Verify Login Page Display,Navigate to http://localhost:5173/,"Login page is displayed with left panel (Zava Travel branding, destination badges: Bali, Patagonia, Iceland, Vietnam, Costa Rica) and right panel with login form",High
+US-001,TC-001,Verify Login Page Display,Verify form elements,"Username field, password field, 'Sign In' button, and demo accounts section with 3 demo users are visible",High
+US-001,TC-002,Verify Successful Login with Valid Credentials - Demo Account 1,Navigate to http://localhost:5173/,Login page is displayed,High
+US-001,TC-002,Verify Successful Login with Valid Credentials - Demo Account 1,Enter username: sarah.explorer,Username is entered in the username field,High
+US-001,TC-002,Verify Successful Login with Valid Credentials - Demo Account 1,Enter password: zava2026,Password is entered (masked) in the password field,High
+US-001,TC-002,Verify Successful Login with Valid Credentials - Demo Account 1,Click 'Sign In' button,User is redirected to Dashboard page,High
+US-001,TC-002,Verify Successful Login with Valid Credentials - Demo Account 1,Verify personalized greeting,Personalized greeting displays: 'Welcome back Sarah Chen',High
+US-001,TC-003,Verify Successful Login with Valid Credentials - Demo Account 2,Navigate to http://localhost:5173/,Login page is displayed,High
+US-001,TC-003,Verify Successful Login with Valid Credentials - Demo Account 2,Enter username: marco.adventures,Username is entered in the username field,High
+US-001,TC-003,Verify Successful Login with Valid Credentials - Demo Account 2,Enter password: wander2026,Password is entered (masked) in the password field,High
+US-001,TC-003,Verify Successful Login with Valid Credentials - Demo Account 2,Click 'Sign In' button,User is redirected to Dashboard page,High
+US-001,TC-003,Verify Successful Login with Valid Credentials - Demo Account 2,Verify personalized greeting,Personalized greeting displays: 'Welcome back Marco Rivera',High
+US-001,TC-004,Verify Successful Login with Valid Credentials - Admin Account,Navigate to http://localhost:5173/,Login page is displayed,High
+US-001,TC-004,Verify Successful Login with Valid Credentials - Admin Account,Enter username: admin,Username is entered in the username field,High
+US-001,TC-004,Verify Successful Login with Valid Credentials - Admin Account,Enter password: admin,Password is entered (masked) in the password field,High
+US-001,TC-004,Verify Successful Login with Valid Credentials - Admin Account,Click 'Sign In' button,User is redirected to Dashboard page,High
+US-001,TC-004,Verify Successful Login with Valid Credentials - Admin Account,Verify personalized greeting,Personalized greeting displays: 'Welcome back Zava Admin',High
+US-001,TC-005,Verify Failed Login with Invalid Username,Navigate to http://localhost:5173/,Login page is displayed,Low
+US-001,TC-005,Verify Failed Login with Invalid Username,Enter username: invaliduser,Username is entered in the username field,Low
+US-001,TC-005,Verify Failed Login with Invalid Username,Enter password: zava2026,Password is entered (masked) in the password field,Low
+US-001,TC-005,Verify Failed Login with Invalid Username,Click 'Sign In' button,Error message is displayed: 'Invalid username or password. Try a demo account below.',Low
+US-001,TC-005,Verify Failed Login with Invalid Username,Verify user remains on login page,User remains on the login page (not redirected),Low
+US-001,TC-006,Verify Failed Login with Invalid Password,Navigate to http://localhost:5173/,Login page is displayed,Low
+US-001,TC-006,Verify Failed Login with Invalid Password,Enter username: sarah.explorer,Username is entered in the username field,Low
+US-001,TC-006,Verify Failed Login with Invalid Password,Enter password: wrongpassword,Password is entered (masked) in the password field,Low
+US-001,TC-006,Verify Failed Login with Invalid Password,Click 'Sign In' button,Error message is displayed: 'Invalid username or password. Try a demo account below.',Low
+US-001,TC-006,Verify Failed Login with Invalid Password,Verify user remains on login page,User remains on the login page (not redirected),Low
+US-001,TC-007,Verify Failed Login with Empty Username,Navigate to http://localhost:5173/,Login page is displayed,Low
+US-001,TC-007,Verify Failed Login with Empty Username,Leave username field empty,Username field is empty,Low
+US-001,TC-007,Verify Failed Login with Empty Username,Enter password: zava2026,Password is entered (masked) in the password field,Low
+US-001,TC-007,Verify Failed Login with Empty Username,Click 'Sign In' button,Error message is displayed: 'Invalid username or password. Try a demo account below.',Low
+US-001,TC-007,Verify Failed Login with Empty Username,Verify user remains on login page,User remains on the login page (not redirected),Low
+US-001,TC-008,Verify Failed Login with Empty Password,Navigate to http://localhost:5173/,Login page is displayed,Low
+US-001,TC-008,Verify Failed Login with Empty Password,Enter username: sarah.explorer,Username is entered in the username field,Low
+US-001,TC-008,Verify Failed Login with Empty Password,Leave password field empty,Password field is empty,Low
+US-001,TC-008,Verify Failed Login with Empty Password,Click 'Sign In' button,Error message is displayed: 'Invalid username or password. Try a demo account below.',Low
+US-001,TC-008,Verify Failed Login with Empty Password,Verify user remains on login page,User remains on the login page (not redirected),Low
+US-001,TC-009,Verify Failed Login with Both Fields Empty,Navigate to http://localhost:5173/,Login page is displayed,Low
+US-001,TC-009,Verify Failed Login with Both Fields Empty,Leave username field empty,Username field is empty,Low
+US-001,TC-009,Verify Failed Login with Both Fields Empty,Leave password field empty,Password field is empty,Low
+US-001,TC-009,Verify Failed Login with Both Fields Empty,Click 'Sign In' button,Error message is displayed: 'Invalid username or password. Try a demo account below.',Low
+US-001,TC-009,Verify Failed Login with Both Fields Empty,Verify user remains on login page,User remains on the login page (not redirected),Low
+US-001,TC-010,Verify Demo Account Auto-Fill for Sarah Chen,Navigate to http://localhost:5173/,Login page is displayed,High
+US-001,TC-010,Verify Demo Account Auto-Fill for Sarah Chen,Click on demo account 'Sarah Chen - Content Lead',Username field is auto-filled with 'sarah.explorer' and password field is auto-filled with 'zava2026',High
+US-001,TC-010,Verify Demo Account Auto-Fill for Sarah Chen,Verify error message cleared,Any existing error message is cleared,High
+US-001,TC-011,Verify Demo Account Auto-Fill for Marco Rivera,Navigate to http://localhost:5173/,Login page is displayed,High
+US-001,TC-011,Verify Demo Account Auto-Fill for Marco Rivera,Click on demo account 'Marco Rivera - Social Media Manager',Username field is auto-filled with 'marco.adventures' and password field is auto-filled with 'wander2026',High
+US-001,TC-012,Verify Demo Account Auto-Fill for Admin,Navigate to http://localhost:5173/,Login page is displayed,High
+US-001,TC-012,Verify Demo Account Auto-Fill for Admin,Click on demo account 'Zava Admin - Administrator',Username field is auto-filled with 'admin' and password field is auto-filled with 'admin',High
+US-001,TC-013,Verify Demo Account Auto-Fill Clears Previous Error,Navigate to http://localhost:5173/,Login page is displayed,Medium
+US-001,TC-013,Verify Demo Account Auto-Fill Clears Previous Error,Enter invalid credentials and click 'Sign In',Error message is displayed,Medium
+US-001,TC-013,Verify Demo Account Auto-Fill Clears Previous Error,Click on any demo account,Username and password are auto-filled and error message is cleared,Medium
+US-001,TC-014,Verify Password Visibility Toggle - Show,Navigate to http://localhost:5173/,Login page is displayed,Medium
+US-001,TC-014,Verify Password Visibility Toggle - Show,Enter password: zava2026,Password is entered (masked with dots/asterisks),Medium
+US-001,TC-014,Verify Password Visibility Toggle - Show,Click the eye icon in password field,Password becomes visible as plain text: 'zava2026',Medium
+US-001,TC-015,Verify Password Visibility Toggle - Hide,Navigate to http://localhost:5173/,Login page is displayed,Medium
+US-001,TC-015,Verify Password Visibility Toggle - Hide,Enter password: zava2026,Password is entered (masked),Medium
+US-001,TC-015,Verify Password Visibility Toggle - Hide,Click the eye icon to show password,Password becomes visible as plain text,Medium
+US-001,TC-015,Verify Password Visibility Toggle - Hide,Click the eye icon again,Password becomes masked again,Medium
+US-002,TC-016,Verify Dashboard Hero Section Display,Login with valid credentials (sarah.explorer/zava2026),User is logged in and redirected to Dashboard,High
+US-002,TC-016,Verify Dashboard Hero Section Display,Verify hero section elements,"Hero section displays: personalized greeting 'Welcome back Sarah Chen', title 'Zava Travel Content Studio', description of multi-agent collaboration system, 'Create New Content' button, gradient background with airplane emoji overlay",High
+US-002,TC-017,Verify Dashboard Statistics Cards Display,Login with valid credentials,User is logged in and redirected to Dashboard,High
+US-002,TC-017,Verify Dashboard Statistics Cards Display,Verify statistics cards,"4 statistics cards are displayed: 1) Agents Active: 3 (with team icon), 2) Reasoning Patterns: 3 (with brain circuit icon), 3) Platforms: 3 (with globe icon), 4) Security Status: ✓ Secure (with shield checkmark icon)",High
+US-002,TC-018,Verify Dashboard Agent Team Information Display,Login with valid credentials,User is logged in and redirected to Dashboard,High
+US-002,TC-018,Verify Dashboard Agent Team Information Display,Scroll to 'Agent Team' section,Agent Team section is visible,High
+US-002,TC-018,Verify Dashboard Agent Team Information Display,Verify Creator agent card,"Creator card displays: ✍️ emoji, name 'Creator', engine 'Azure OpenAI', pattern 'Chain-of-Thought', description of drafting capabilities",High
+US-002,TC-018,Verify Dashboard Agent Team Information Display,Verify Reviewer agent card,"Reviewer card displays: 🔍 emoji, name 'Reviewer', engine 'GitHub Copilot', pattern 'ReAct', description of review capabilities",High
+US-002,TC-018,Verify Dashboard Agent Team Information Display,Verify Publisher agent card,"Publisher card displays: 📤 emoji, name 'Publisher', engine 'Azure OpenAI', pattern 'Self-Reflection', description of formatting capabilities",High
+US-002,TC-019,Verify Dashboard Featured Destinations Display,Login with valid credentials,User is logged in and redirected to Dashboard,High
+US-002,TC-019,Verify Dashboard Featured Destinations Display,Scroll to 'Featured Destinations' section,Featured Destinations section is visible,High
+US-002,TC-019,Verify Dashboard Featured Destinations Display,Verify destination badges,"5 destination badges are displayed: 1) 🇮🇩 Bali — from $899, 2) 🇦🇷 Patagonia — from $1,499, 3) 🇮🇸 Iceland — from $1,299, 4) 🇻🇳 Vietnam — from $699, 5) 🇨🇷 Costa Rica — from $799",High
+US-002,TC-020,Verify Navigate to Create Content from Dashboard Button,Login with valid credentials,User is logged in and redirected to Dashboard,High
+US-002,TC-020,Verify Navigate to Create Content from Dashboard Button,Click 'Create New Content' button in hero section,User is navigated to Create Content page (/create),High
+US-002,TC-021,Verify Navigate to Dashboard from Sidebar,Login with valid credentials,User is logged in and redirected to Dashboard,High
+US-002,TC-021,Verify Navigate to Dashboard from Sidebar,Click 'Create Content' in sidebar navigation,User is navigated to Create Content page,High
+US-002,TC-021,Verify Navigate to Dashboard from Sidebar,Click 'Dashboard' in sidebar navigation,User is navigated back to Dashboard page (/),High
+US-003,TC-022,Verify Campaign Brief Form Display,Login with valid credentials,User is logged in,High
+US-003,TC-022,Verify Campaign Brief Form Display,Navigate to Create Content page (/create),Create Content page is displayed,High
+US-003,TC-022,Verify Campaign Brief Form Display,Verify form fields,"Campaign brief form displays with fields: Brand (input), Industry (input), Target Audience (input), Key Message (textarea), Destinations (input), and 'Generate Content' button with sparkle icon",High
+US-003,TC-023,Verify Pre-filled Default Values in Campaign Brief,Login with valid credentials,User is logged in,High
+US-003,TC-023,Verify Pre-filled Default Values in Campaign Brief,Navigate to Create Content page (/create),Create Content page is displayed,High
+US-003,TC-023,Verify Pre-filled Default Values in Campaign Brief,Verify pre-filled values,"Form is pre-filled with: Brand: 'Zava Travel Inc.', Industry: 'Travel — Budget-Friendly Adventure', Target Audience: 'Millennials & Gen-Z adventure seekers', Key Message: 'Wander More, Spend Less — affordable curated itineraries...', Destinations: 'Bali, Patagonia, Iceland, Vietnam, Costa Rica'",High
+US-003,TC-024,Verify Form Field Editing - Brand Field,Login with valid credentials and navigate to Create Content page,Create Content page is displayed with form,High
+US-003,TC-024,Verify Form Field Editing - Brand Field,Click on Brand input field,Brand field is focused,High
+US-003,TC-024,Verify Form Field Editing - Brand Field,Clear existing text and type 'New Brand Name',Field value updates in real-time to 'New Brand Name',High
+US-003,TC-024,Verify Form Field Editing - Brand Field,Verify Generate Content button,Generate Content button remains enabled,High
+US-003,TC-025,Verify Form Field Editing - Industry Field,Login with valid credentials and navigate to Create Content page,Create Content page is displayed with form,High
+US-003,TC-025,Verify Form Field Editing - Industry Field,Click on Industry input field and modify text,Field value updates in real-time to modified value,High
+US-003,TC-025,Verify Form Field Editing - Industry Field,Verify Generate Content button,Generate Content button remains enabled,High
+US-003,TC-026,Verify Form Field Editing - Target Audience Field,Login with valid credentials and navigate to Create Content page,Create Content page is displayed with form,High
+US-003,TC-026,Verify Form Field Editing - Target Audience Field,Click on Target Audience input field and modify text,Field value updates in real-time to modified value,High
+US-003,TC-026,Verify Form Field Editing - Target Audience Field,Verify Generate Content button,Generate Content button remains enabled,High
+US-003,TC-027,Verify Form Field Editing - Key Message Field,Login with valid credentials and navigate to Create Content page,Create Content page is displayed with form,High
+US-003,TC-027,Verify Form Field Editing - Key Message Field,Click on Key Message textarea and modify text,Field value updates in real-time to modified value,High
+US-003,TC-027,Verify Form Field Editing - Key Message Field,Verify Generate Content button,Generate Content button remains enabled,High
+US-003,TC-028,Verify Form Field Editing - Destinations Field,Login with valid credentials and navigate to Create Content page,Create Content page is displayed with form,High
+US-003,TC-028,Verify Form Field Editing - Destinations Field,Click on Destinations input field and modify text,Field value updates in real-time to modified value,High
+US-003,TC-028,Verify Form Field Editing - Destinations Field,Verify Generate Content button,Generate Content button remains enabled,High
+US-003,TC-029,Verify Submit Campaign Brief with Default Values,Login with valid credentials and navigate to Create Content page,Create Content page is displayed with pre-filled form,High
+US-003,TC-029,Verify Submit Campaign Brief with Default Values,Click 'Generate Content' button,"Button text changes to 'Agents Working...', spinner icon appears, button becomes disabled",High
+US-003,TC-029,Verify Submit Campaign Brief with Default Values,Verify loading card appears,"Loading card is displayed showing agent collaboration progress with title 'Agents Collaborating...' and subtitle",High
+US-003,TC-030,Verify Submit Campaign Brief with Modified Values,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-003,TC-030,Verify Submit Campaign Brief with Modified Values,Modify Brand field to 'Custom Travel Co',Brand value is updated,High
+US-003,TC-030,Verify Submit Campaign Brief with Modified Values,Modify Industry field to 'Luxury Travel',Industry value is updated,High
+US-003,TC-030,Verify Submit Campaign Brief with Modified Values,Click 'Generate Content' button,"Button text changes to 'Agents Working...', spinner icon appears, button becomes disabled",High
+US-003,TC-030,Verify Submit Campaign Brief with Modified Values,Verify loading card appears,Loading card is displayed showing agent collaboration progress,High
+US-003,TC-031,Verify Empty Form Submission,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,Low
+US-003,TC-031,Verify Empty Form Submission,Clear all form fields (Brand, Industry, Target Audience, Key Message, Destinations),All fields are empty,Low
+US-003,TC-031,Verify Empty Form Submission,Click 'Generate Content' button,Button is clickable and submission is triggered (no validation error in demo mode),Low
+US-003,TC-031,Verify Empty Form Submission,Verify loading card appears,Loading card is displayed showing agent collaboration progress,Low
+US-003,TC-032,Verify Navigate to Create Content from Sidebar,Login with valid credentials,Dashboard is displayed,High
+US-003,TC-032,Verify Navigate to Create Content from Sidebar,Click 'Create Content' in sidebar navigation,User is navigated to Create Content page (/create) and form is displayed,High
+US-003,TC-033,Verify Navigate to Create Content from Dashboard Button,Login with valid credentials,Dashboard is displayed,High
+US-003,TC-033,Verify Navigate to Create Content from Dashboard Button,Click 'Create New Content' button on Dashboard,User is navigated to Create Content page (/create) and form is displayed,High
+US-004,TC-034,Verify Loading State Display After Submission,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-004,TC-034,Verify Loading State Display After Submission,Fill campaign brief form and click 'Generate Content',Content generation starts,High
+US-004,TC-034,Verify Loading State Display After Submission,Verify loading card elements,"Loading card displays: large spinner animation, title 'Agents Collaborating...', subtitle 'Creator → Reviewer → Publisher working on your Zava Travel content', three agent status badges",High
+US-004,TC-035,Verify Agent Status Badges During Generation,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-004,TC-035,Verify Agent Status Badges During Generation,Submit campaign brief,Content generation starts and loading card is displayed,High
+US-004,TC-035,Verify Agent Status Badges During Generation,Verify agent status badges,"3 status badges are displayed: 1) Creator (Blue, Filled): '✍️ Creator: Drafting...', 2) Reviewer (Orange, Outline): '🔍 Reviewer: Waiting', 3) Publisher (Green, Outline): '📤 Publisher: Waiting'",High
+US-004,TC-036,Verify Generation Duration,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-004,TC-036,Verify Generation Duration,Submit campaign brief,Content generation starts,High
+US-004,TC-036,Verify Generation Duration,Wait and observe loading state,Loading state displays for approximately 3 seconds,High
+US-004,TC-036,Verify Generation Duration,Verify transition to results,After approximately 3 seconds, loading card disappears and results view is displayed,High
+US-004,TC-037,Verify Generate Button State During Loading,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-004,TC-037,Verify Generate Button State During Loading,Submit campaign brief,Content generation starts,High
+US-004,TC-037,Verify Generate Button State During Loading,Verify button state,"Generate Content button displays text 'Agents Working...', shows spinner icon, and is disabled (cannot click again)",High
+US-004,TC-038,Verify Loading State Prevents Display of Other States,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-004,TC-038,Verify Loading State Prevents Display of Other States,Submit campaign brief,Content generation starts and loading card is displayed,High
+US-004,TC-038,Verify Loading State Prevents Display of Other States,Verify only loading state is visible,"Only loading card is visible in results area, empty state is not visible, previous results (if any) are not visible",High
+US-005,TC-039,Verify Success Message Display After Content Generation,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-005,TC-039,Verify Success Message Display After Content Generation,Submit campaign brief and wait for generation to complete,Content is generated successfully,High
+US-005,TC-039,Verify Success Message Display After Content Generation,Verify success message,"Success MessageBar is displayed with format: '✅ Content generated in {duration}s — {termination_reason}' (e.g., '✅ Content generated in 42.5s — Reviewer approved — fast-tracked to Publisher')",High
+US-005,TC-040,Verify Tab Navigation Display After Generation,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-005,TC-040,Verify Tab Navigation Display After Generation,Submit campaign brief and wait for generation to complete,Content is generated successfully,High
+US-005,TC-040,Verify Tab Navigation Display After Generation,Verify tabs display,"Two tabs are displayed: 1) '📝 Platform Posts' (default selected), 2) '🧠 Agent Transcript'",High
+US-005,TC-041,Verify Platform Posts Display,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-005,TC-041,Verify Platform Posts Display,Submit campaign brief and wait for generation to complete,Content is generated and Platform Posts tab is active,High
+US-005,TC-041,Verify Platform Posts Display,Verify LinkedIn post card,"LinkedIn post card displays: 💼 icon, 'LinkedIn' label, professional-adventurous tone content, 1-3 paragraphs, 3-5 hashtags including #ZavaTravel, Copy button",High
+US-005,TC-041,Verify Platform Posts Display,Verify Twitter post card,"Twitter post card displays: 𝕏 icon, 'X / Twitter' label, punchy message under 280 characters, character count indicator (e.g., '198/280 characters'), 2-3 hashtags, Copy button",High
+US-005,TC-041,Verify Platform Posts Display,Verify Instagram post card,"Instagram post card displays: 📸 icon, 'Instagram' label, visual-friendly content with emojis, storytelling tone, 5-10 hashtags, engagement prompt, Copy button",High
+US-005,TC-042,Verify Post Content Display Format,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab is displayed with 3 post cards,High
+US-005,TC-042,Verify Post Content Display Format,Examine any post card,"Post card displays: platform icon and name in header, Copy button in header, post content in formatted text box with gray background and rounded corners, preserved line breaks and formatting",High
+US-005,TC-043,Verify Twitter Character Count with Valid Length,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab is displayed,High
+US-005,TC-043,Verify Twitter Character Count with Valid Length,Examine Twitter post,Twitter post content is displayed,High
+US-005,TC-043,Verify Twitter Character Count with Valid Length,Verify character count indicator,"Character count is displayed in format '{count}/280 characters' with green color (count ≤ 280)",High
+US-005,TC-044,Verify Twitter Character Count Exceeds Limit (Boundary Value),Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab is displayed,Medium
+US-005,TC-044,Verify Twitter Character Count Exceeds Limit (Boundary Value),Examine Twitter post with >280 characters (if generated),"Character count is displayed in format '{count}/280 characters' with red color (count > 280)",Medium
+US-005,TC-045,Verify Workflow Summary Statistics Display,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts are displayed,High
+US-005,TC-045,Verify Workflow Summary Statistics Display,Scroll to bottom of results area,Workflow summary card is visible,High
+US-005,TC-045,Verify Workflow Summary Statistics Display,Verify summary badges,"4 badges are displayed: 1) ⏱️ {duration}s (teal badge), 2) 💬 {count} agent turns (green badge), 3) 📋 3 platform posts (orange badge), 4) 🔒 Security: Clean (purple badge)",High
+US-006,TC-046,Verify Copy Button Display on All Posts,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab displays 3 post cards,High
+US-006,TC-046,Verify Copy Button Display on All Posts,Examine each post card header (LinkedIn, Twitter, Instagram),"Each post card header displays a 'Copy' button with document copy icon (📋)",High
+US-006,TC-047,Verify Copy to Clipboard for LinkedIn Post,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab displays LinkedIn post,High
+US-006,TC-047,Verify Copy to Clipboard for LinkedIn Post,Click 'Copy' button on LinkedIn post,"Full LinkedIn post content is copied to system clipboard, button changes to show checkmark icon (✓) and text 'Copied!'",High
+US-006,TC-048,Verify Copy to Clipboard for Twitter Post,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab displays Twitter post,High
+US-006,TC-048,Verify Copy to Clipboard for Twitter Post,Click 'Copy' button on Twitter post,"Full Twitter post content is copied to system clipboard, button changes to show checkmark icon (✓) and text 'Copied!'",High
+US-006,TC-049,Verify Copy to Clipboard for Instagram Post,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab displays Instagram post,High
+US-006,TC-049,Verify Copy to Clipboard for Instagram Post,Click 'Copy' button on Instagram post,"Full Instagram post content is copied to system clipboard, button changes to show checkmark icon (✓) and text 'Copied!'",High
+US-006,TC-050,Verify Copy Confirmation Timeout,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab displays posts,Medium
+US-006,TC-050,Verify Copy Confirmation Timeout,Click 'Copy' button on any post,"Button shows 'Copied!' confirmation with checkmark icon",Medium
+US-006,TC-050,Verify Copy Confirmation Timeout,Wait for 2 seconds,"After 2 seconds, button reverts to original state with document copy icon and text 'Copy'",Medium
+US-006,TC-051,Verify Independent Copy States,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab displays all 3 posts,High
+US-006,TC-051,Verify Independent Copy States,Click 'Copy' button on LinkedIn post,LinkedIn button shows 'Copied!',High
+US-006,TC-051,Verify Independent Copy States,Immediately click 'Copy' button on Twitter post,"Twitter button shows 'Copied!', LinkedIn button reverts to 'Copy'",High
+US-006,TC-052,Verify Copy Content Preservation - Line Breaks,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab displays posts,High
+US-006,TC-052,Verify Copy Content Preservation - Line Breaks,Click 'Copy' button on LinkedIn post (which has multiple paragraphs),Content is copied to clipboard,High
+US-006,TC-052,Verify Copy Content Preservation - Line Breaks,Paste content into text editor (Notepad),"Pasted content matches displayed post exactly with all line breaks preserved",High
+US-006,TC-053,Verify Copy Content Preservation - Special Characters,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab displays posts,High
+US-006,TC-053,Verify Copy Content Preservation - Special Characters,Click 'Copy' button on Instagram post (with emojis and hashtags),Content is copied to clipboard,High
+US-006,TC-053,Verify Copy Content Preservation - Special Characters,Paste content into text editor,"Pasted content matches displayed post exactly with all emojis, hashtags, and special characters preserved without HTML/markdown formatting",High
+US-007,TC-054,Verify Access Agent Transcript Tab,Login with valid credentials, navigate to Create Content page, and generate content,Platform Posts tab is displayed with results,High
+US-007,TC-054,Verify Access Agent Transcript Tab,Click '🧠 Agent Transcript' tab,"Agent Transcript tab becomes active, platform posts are hidden, agent transcript is displayed",High
+US-007,TC-055,Verify Transcript Message Display Count and Order,Login with valid credentials, navigate to Create Content page, and generate content,Content is generated successfully,High
+US-007,TC-055,Verify Transcript Message Display Count and Order,Click '🧠 Agent Transcript' tab,Agent Transcript tab is displayed,High
+US-007,TC-055,Verify Transcript Message Display Count and Order,Verify transcript messages,"3 agent messages are displayed in order: 1) Creator message, 2) Reviewer message, 3) Publisher message",High
+US-007,TC-056,Verify Creator Message Display,Login with valid credentials, navigate to Create Content page, generate content, and view Agent Transcript tab,Agent Transcript tab displays 3 messages,High
+US-007,TC-056,Verify Creator Message Display,Examine Creator message,"Creator message displays: Agent name 'Creator' (in teal color #0891B2), reasoning badge 'Chain-of-Thought' (outline style, teal), message content showing 5-step reasoning (Step 1: Identify Objective, Step 2: Consider Audience, Step 3: Draft Hook, Step 4: Build Body, Step 5: Add CTA), left border in teal (4px solid), light teal background (#F0FDFF)",High
+US-007,TC-057,Verify Reviewer Message Display,Login with valid credentials, navigate to Create Content page, generate content, and view Agent Transcript tab,Agent Transcript tab displays 3 messages,High
+US-007,TC-057,Verify Reviewer Message Display,Examine Reviewer message,"Reviewer message displays: Agent name 'Reviewer' (in orange color #F97316), reasoning badge 'ReAct' (outline style, orange), message content showing ReAct pattern (Observation, Thought, Action, Result, Verdict: 'APPROVED ✅'), left border in orange (4px solid), light orange background (#FFF7ED)",High
+US-007,TC-058,Verify Publisher Message Display,Login with valid credentials, navigate to Create Content page, generate content, and view Agent Transcript tab,Agent Transcript tab displays 3 messages,High
+US-007,TC-058,Verify Publisher Message Display,Examine Publisher message,"Publisher message displays: Agent name 'Publisher' (in green color #059669), reasoning badge 'Self-Reflection' (outline style, green), message content showing validation checks (platform-specific constraints, character counts, CTA verification, brand compliance), left border in green (4px solid), light green background (#F0FDF4)",High
+US-007,TC-059,Verify Transcript Message Formatting,Login with valid credentials, navigate to Create Content page, generate content, and view Agent Transcript tab,Agent Transcript tab is displayed,High
+US-007,TC-059,Verify Transcript Message Formatting,Examine any agent message formatting,"Message content preserves line breaks, uses readable font size (14px), has appropriate line height (1.6), displays agent emoji/icon, shows timestamps if available",High
+US-007,TC-060,Verify Switch Back to Platform Posts Tab,Login with valid credentials, navigate to Create Content page, and generate content,Content is generated successfully,High
+US-007,TC-060,Verify Switch Back to Platform Posts Tab,Click '🧠 Agent Transcript' tab,Agent Transcript is displayed,High
+US-007,TC-060,Verify Switch Back to Platform Posts Tab,Click '📝 Platform Posts' tab,"Platform Posts tab becomes active, transcript is hidden, platform posts (LinkedIn, Twitter, Instagram) are displayed again",High
+US-008,TC-061,Verify Sidebar Display After Login,Login with valid credentials (sarah.explorer/zava2026),User is authenticated,High
+US-008,TC-061,Verify Sidebar Display After Login,Verify sidebar elements,"Sidebar is displayed on left side containing: Zava Travel logo (✈️ + 'Zava Travel' text), navigation menu with 2 items, user profile section at bottom, gradient background (Navy #1E3A5F to Teal #0891B2)",High
+US-008,TC-062,Verify Navigation Menu Items Display,Login with valid credentials,User is authenticated and viewing any page,High
+US-008,TC-062,Verify Navigation Menu Items Display,Examine sidebar navigation menu,"2 navigation items are displayed: 1) 🏠 Dashboard (HomeRegular icon), 2) ➕ Create Content (AddRegular icon)",High
+US-008,TC-063,Verify Navigate to Dashboard from Create Content Page,Login with valid credentials,User is authenticated,High
+US-008,TC-063,Verify Navigate to Dashboard from Create Content Page,Navigate to Create Content page (/create),Create Content page is displayed,High
+US-008,TC-063,Verify Navigate to Dashboard from Create Content Page,Click 'Dashboard' menu item in sidebar,"User is navigated to Dashboard page (/), Dashboard menu item is highlighted with white background overlay (20% opacity), bold font weight (600), full white color",High
+US-008,TC-064,Verify Navigate to Create Content from Dashboard,Login with valid credentials,User is authenticated on Dashboard page,High
+US-008,TC-064,Verify Navigate to Create Content from Dashboard,Click 'Create Content' menu item in sidebar,"User is navigated to Create Content page (/create), Create Content menu item is highlighted",High
+US-008,TC-065,Verify Active Page Indicator on Dashboard,Login with valid credentials,User is authenticated on Dashboard page,High
+US-008,TC-065,Verify Active Page Indicator on Dashboard,Verify Dashboard menu item active state,"Dashboard menu item shows: background rgba(255,255,255,0.2), text color white, font weight 600",High
+US-008,TC-065,Verify Active Page Indicator on Dashboard,Verify Create Content menu item default state,"Create Content menu item shows: no background, text color rgba(255,255,255,0.8), normal font weight",High
+US-008,TC-066,Verify Active Page Indicator on Create Content Page,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-008,TC-066,Verify Active Page Indicator on Create Content Page,Verify Create Content menu item active state,"Create Content menu item shows: background rgba(255,255,255,0.2), text color white, font weight 600",High
+US-008,TC-066,Verify Active Page Indicator on Create Content Page,Verify Dashboard menu item default state,"Dashboard menu item shows: no background, text color rgba(255,255,255,0.8), normal font weight",High
+US-008,TC-067,Verify Menu Item Hover State,Login with valid credentials on Dashboard,Dashboard is displayed with sidebar,Medium
+US-008,TC-067,Verify Menu Item Hover State,Hover mouse over 'Create Content' menu item (not active),"Menu item shows hover state: background rgba(255,255,255,0.15), text color white, smooth transition effect",Medium
+US-008,TC-068,Verify Logo Click Navigation,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-008,TC-068,Verify Logo Click Navigation,Click the Zava Travel logo at top of sidebar,User is navigated to Dashboard page (/),High
+US-008,TC-069,Verify User Profile Section Display in Sidebar,Login with valid credentials (sarah.explorer/zava2026),User is authenticated on Dashboard,High
+US-008,TC-069,Verify User Profile Section Display in Sidebar,Scroll to bottom of sidebar,User profile section is visible,High
+US-008,TC-069,Verify User Profile Section Display in Sidebar,Verify user profile elements,"User profile section displays: border separator line (white, 20% opacity), user avatar (🧭 emoji icon), display name 'Sarah Chen', role 'Content Lead', 'Sign Out' button",High
+US-009,TC-070,Verify Logout Button Display in Sidebar,Login with valid credentials (sarah.explorer/zava2026),User is authenticated,High
+US-009,TC-070,Verify Logout Button Display in Sidebar,View sidebar user profile section,"User profile section displays: avatar (🧭), display name 'Sarah Chen', role 'Content Lead', 'Sign Out' button with sign-out icon",High
+US-009,TC-071,Verify Logout Functionality,Login with valid credentials (sarah.explorer/zava2026),User is authenticated on Dashboard,High
+US-009,TC-071,Verify Logout Functionality,Click 'Sign Out' button in sidebar,Logout action is triggered,High
+US-009,TC-072,Verify Session Termination After Logout,Login with valid credentials,User is authenticated,High
+US-009,TC-072,Verify Session Termination After Logout,Click 'Sign Out' button,"User session is terminated, user data is cleared from AuthContext, isAuthenticated becomes false",High
+US-009,TC-073,Verify Redirect to Login After Logout,Login with valid credentials on any page,User is authenticated,High
+US-009,TC-073,Verify Redirect to Login After Logout,Click 'Sign Out' button,Logout completes,High
+US-009,TC-073,Verify Redirect to Login After Logout,Verify redirection,"User is immediately redirected to Login page, full login screen is displayed (left panel + right panel), username and password fields are empty",High
+US-009,TC-074,Verify Navigation Prevention After Logout,Login with valid credentials,User is authenticated,High
+US-009,TC-074,Verify Navigation Prevention After Logout,Click 'Sign Out' button,User is logged out and redirected to Login page,High
+US-009,TC-074,Verify Navigation Prevention After Logout,Manually navigate to http://localhost:5173/ (Dashboard),"User is redirected to Login page, authenticated content is not accessible",High
+US-009,TC-075,Verify Navigation Prevention to Create Content After Logout,Login with valid credentials,User is authenticated,High
+US-009,TC-075,Verify Navigation Prevention to Create Content After Logout,Click 'Sign Out' button,User is logged out and redirected to Login page,High
+US-009,TC-075,Verify Navigation Prevention to Create Content After Logout,Manually navigate to http://localhost:5173/create,"User is redirected to Login page, authenticated content is not accessible",High
+US-009,TC-076,Verify Re-login After Logout,Login with valid credentials (sarah.explorer/zava2026),User is authenticated,High
+US-009,TC-076,Verify Re-login After Logout,Click 'Sign Out' button,User is logged out and Login page is displayed,High
+US-009,TC-076,Verify Re-login After Logout,Enter valid credentials (sarah.explorer/zava2026) and click 'Sign In',User is able to log back in successfully and is redirected to Dashboard,High
+US-009,TC-077,Verify Logout Button Appearance,Login with valid credentials,User is authenticated,Medium
+US-009,TC-077,Verify Logout Button Appearance,Examine logout button in user profile section,"Button has subtle appearance (not prominent), displays 'Sign Out' text, shows SignOutRegular icon, has hover effect (slight color change)",Medium
+US-010,TC-078,Verify Empty State Display on Initial Page Load,Login with valid credentials,User is authenticated,High
+US-010,TC-078,Verify Empty State Display on Initial Page Load,Navigate to Create Content page (/create),Create Content page is displayed with no prior content generation,High
+US-010,TC-078,Verify Empty State Display on Initial Page Load,Verify empty state card in results area,"Empty state card displays: large airplane emoji ✈️ (48px), title 'Ready to Create' (gray color #94A3B8), description 'Fill in the campaign brief and click 'Generate Content' to start the multi-agent workflow', dashed border (2px, gray #CBD5E1), centered content",High
+US-010,TC-079,Verify Empty State Styling,Login with valid credentials and navigate to Create Content page,Empty state card is displayed,Medium
+US-010,TC-079,Verify Empty State Styling,Examine empty state card styling,"Card has: large padding (60px), center text alignment, border radius (12px), dashed border style (not solid), border color #CBD5E1, white background",Medium
+US-010,TC-080,Verify Empty State Visibility Conditions,Login with valid credentials and navigate to Create Content page,Create Content page is displayed,High
+US-010,TC-080,Verify Empty State Visibility Conditions,Verify initial state,"Empty state is visible (result === null, isGenerating === false), loading state is NOT visible, results tabs are NOT visible",High
+US-010,TC-081,Verify Empty State Disappears on Generation Start,Login with valid credentials and navigate to Create Content page,Empty state is displayed,High
+US-010,TC-081,Verify Empty State Disappears on Generation Start,Click 'Generate Content' button,"Empty state immediately disappears, loading state is displayed instead",High
+US-010,TC-082,Verify Empty State Returns After Page Refresh,Login with valid credentials, navigate to Create Content page, and generate content,Generated content (posts) is displayed,High
+US-010,TC-082,Verify Empty State Returns After Page Refresh,Refresh the page (F5 or Ctrl+R),Page reloads,High
+US-010,TC-082,Verify Empty State Returns After Page Refresh,Verify empty state is displayed,"Empty state is displayed again, previous results do NOT persist",High
+US-010,TC-083,Verify Empty State Returns After Navigation Away and Back,Login with valid credentials, navigate to Create Content page, and generate content,Generated content is displayed,High
+US-010,TC-083,Verify Empty State Returns After Navigation Away and Back,Navigate to Dashboard,Dashboard is displayed,High
+US-010,TC-083,Verify Empty State Returns After Navigation Away and Back,Navigate back to Create Content page,"Empty state is displayed, previous results do NOT persist",High
+US-010,TC-084,Verify Form Visible with Empty State,Login with valid credentials and navigate to Create Content page,Empty state is displayed in results area,High
+US-010,TC-084,Verify Form Visible with Empty State,Verify form presence and state,"Campaign brief form is visible on left side, form is pre-filled with default Zava Travel values, 'Generate Content' button is enabled",High

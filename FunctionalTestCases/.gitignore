@@ -1,0 +1,39 @@
+# Playwright Test Artifacts
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Screenshots and Videos
+screenshots/
+videos/
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env.test
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build outputs
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

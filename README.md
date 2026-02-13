@@ -33,10 +33,10 @@ Campaign Brief (User Input)
                   (LinkedIn, Twitter, Instagram)
 ```
 
-| Agent | Engine | Reasoning Pattern | Role |
-|-------|--------|-------------------|------|
-| **Creator** | Azure OpenAI (GPT-5.x) | Chain-of-Thought (5 steps) | Drafts content with visible reasoning |
-| **Reviewer** | GitHub Copilot SDK | ReAct (Observe → Think → Act → Result) | Reviews brand alignment & quality |
+| Agent         | Engine                 | Reasoning Pattern                      | Role                                     |
+| ------------- | ---------------------- | -------------------------------------- | ---------------------------------------- |
+| **Creator**   | Azure OpenAI (GPT-5.x) | Chain-of-Thought (5 steps)             | Drafts content with visible reasoning    |
+| **Reviewer**  | GitHub Copilot SDK     | ReAct (Observe → Think → Act → Result) | Reviews brand alignment & quality        |
 | **Publisher** | Azure OpenAI (GPT-5.x) | Self-Reflection (validate constraints) | Formats for LinkedIn, Twitter, Instagram |
 
 ---
@@ -81,18 +81,77 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=<your-deployed-model>
 
 ---
 
+## 🧪 Running Automated Tests
+
+The project includes comprehensive Playwright automated tests for the frontend application. All 84 functional test cases have been implemented covering login, dashboard, campaign creation, and content generation workflows.
+
+### Prerequisites
+
+- **Node.js 18+** installed
+- **Chrome browser** installed (required by Playwright)
+- Frontend application configured with `WEBSITE_ENTRY_POINT` in `.env`
+
+### Setup & Run Tests
+
+```powershell
+# Navigate to test directory
+cd FunctionalTestCases
+
+# Install dependencies (first time only)
+npm install
+
+# Install Playwright browsers (first time only)
+npx playwright install chromium
+
+# Run all tests
+npm test
+
+# Run specific test suite
+npm run test:us001  # Login tests (15 tests)
+npm run test:us002  # Dashboard tests
+# ... etc
+
+# Run tests with visible browser (headed mode)
+npm test -- --headed
+
+# Run tests in UI mode (interactive debugging)
+npm run test:ui
+
+# View HTML report
+npm run report
+```
+
+### Test Coverage
+
+- ✅ **15 Login tests** - Authentication, demo accounts, form validation
+- ✅ **6 Dashboard tests** - Hero section, statistics, agent team display
+- ✅ **12 Campaign Brief tests** - Form display, editing, submission
+- ✅ **5 Agent Collaboration tests** - Loading states, progress tracking
+- ✅ **7 Generated Posts tests** - Content display, character counts
+- ✅ **8 Copy to Clipboard tests** - All platforms, content preservation
+- ✅ **7 Agent Transcript tests** - Message display, formatting
+- ✅ **9 Navigation tests** - Sidebar, routing, active states
+- ✅ **8 Logout tests** - Session management, security
+- ✅ **7 Empty State tests** - Initial state, transitions
+
+**Total**: 84 automated functional tests
+
+For detailed test documentation, see [FunctionalTestCases/README.md](FunctionalTestCases/README.md)
+
+---
+
 ## 📋 Demo Campaign
 
 The default campaign showcases Zava Travel's **"Wander More, Spend Less"** summer adventure:
 
-| Attribute | Value |
-|-----------|-------|
-| **Company** | Zava Travel Inc. (zavatravel.com) |
-| **Industry** | Budget-friendly adventure travel |
-| **Audience** | Millennials & Gen-Z adventure seekers |
-| **Tone** | Adventurous & Inspiring |
-| **Destinations** | Bali, Patagonia, Iceland, Vietnam, Costa Rica |
-| **Hashtags** | #ZavaTravel #WanderMore #AdventureAwaits #TravelOnABudget |
+| Attribute        | Value                                                     |
+| ---------------- | --------------------------------------------------------- |
+| **Company**      | Zava Travel Inc. (zavatravel.com)                         |
+| **Industry**     | Budget-friendly adventure travel                          |
+| **Audience**     | Millennials & Gen-Z adventure seekers                     |
+| **Tone**         | Adventurous & Inspiring                                   |
+| **Destinations** | Bali, Patagonia, Iceland, Vietnam, Costa Rica             |
+| **Hashtags**     | #ZavaTravel #WanderMore #AdventureAwaits #TravelOnABudget |
 
 ### Example Output
 
@@ -144,6 +203,7 @@ The system produces three platform-ready posts:
 ## 🧠 Reasoning Patterns
 
 ### Creator — Chain-of-Thought
+
 ```
 Step 1: Identify the campaign objective
 Step 2: Consider audience interests and pain points
@@ -153,6 +213,7 @@ Step 5: Close with a clear call-to-action
 ```
 
 ### Reviewer — ReAct
+
 ```
 Observation: The draft uses "cheap travel" language
 Thought:    Zava's brand voice is "adventurous & inspiring" — should feel empowering
@@ -161,6 +222,7 @@ Result:     Revised draft maintains aspirational tone while communicating value
 ```
 
 ### Publisher — Self-Reflection
+
 ```
 Draft:  [formatted LinkedIn post]
 Check:  Professional-adventurous tone? ✓
@@ -183,20 +245,20 @@ Final:  [polished post ready for publication]
 
 ## 🎯 Hackathon Milestones
 
-| # | Milestone | Status |
-|---|-----------|--------|
-| 1 | Environment setup (Foundry + model deployment) | ✅ |
-| 2 | Agent creation (Creator, Reviewer, Publisher) | ✅ |
-| 3 | Grounding knowledge (File Search + brand guidelines) | ✅ |
-| 4 | External tools (MCP filesystem integration) | ✅ |
+| #   | Milestone                                            | Status |
+| --- | ---------------------------------------------------- | ------ |
+| 1   | Environment setup (Foundry + model deployment)       | ✅     |
+| 2   | Agent creation (Creator, Reviewer, Publisher)        | ✅     |
+| 3   | Grounding knowledge (File Search + brand guidelines) | ✅     |
+| 4   | External tools (MCP filesystem integration)          | ✅     |
 
 ### Bonus Features (Optional)
 
-| Feature | Package | Status |
-|---------|---------|--------|
-| Observability | `azure-monitor-opentelemetry` | 📋 Ready |
-| Content Safety | `azure-ai-contentsafety` | 📋 Ready |
-| Agentic Evaluation | `azure-ai-evaluation` | 📋 Ready |
+| Feature            | Package                       | Status   |
+| ------------------ | ----------------------------- | -------- |
+| Observability      | `azure-monitor-opentelemetry` | 📋 Ready |
+| Content Safety     | `azure-ai-contentsafety`      | 📋 Ready |
+| Agentic Evaluation | `azure-ai-evaluation`         | 📋 Ready |
 
 ---
 

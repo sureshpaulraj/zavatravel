@@ -1,0 +1,1917 @@
+{
+  "testSuite": "Zava Travel Content Studio - Functional Test Cases",
+  "applicationUrl": "http://localhost:5173/",
+  "testCases": [
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-001",
+      "testCaseTitle": "Verify Login Page Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed with left panel (Zava Travel branding, destination badges: Bali, Patagonia, Iceland, Vietnam, Costa Rica) and right panel with login form"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Verify form elements",
+          "expectedResult": "Username field, password field, 'Sign In' button, and demo accounts section with 3 demo users are visible"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-002",
+      "testCaseTitle": "Verify Successful Login with Valid Credentials - Demo Account 1",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Enter username: sarah.explorer",
+          "expectedResult": "Username is entered in the username field"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Enter password: zava2026",
+          "expectedResult": "Password is entered (masked) in the password field"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Click 'Sign In' button",
+          "expectedResult": "User is redirected to Dashboard page"
+        },
+        {
+          "stepNumber": 5,
+          "testStep": "Verify personalized greeting",
+          "expectedResult": "Personalized greeting displays: 'Welcome back Sarah Chen'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-003",
+      "testCaseTitle": "Verify Successful Login with Valid Credentials - Demo Account 2",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Enter username: marco.adventures",
+          "expectedResult": "Username is entered in the username field"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Enter password: wander2026",
+          "expectedResult": "Password is entered (masked) in the password field"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Click 'Sign In' button",
+          "expectedResult": "User is redirected to Dashboard page"
+        },
+        {
+          "stepNumber": 5,
+          "testStep": "Verify personalized greeting",
+          "expectedResult": "Personalized greeting displays: 'Welcome back Marco Rivera'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-004",
+      "testCaseTitle": "Verify Successful Login with Valid Credentials - Admin Account",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Enter username: admin",
+          "expectedResult": "Username is entered in the username field"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Enter password: admin",
+          "expectedResult": "Password is entered (masked) in the password field"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Click 'Sign In' button",
+          "expectedResult": "User is redirected to Dashboard page"
+        },
+        {
+          "stepNumber": 5,
+          "testStep": "Verify personalized greeting",
+          "expectedResult": "Personalized greeting displays: 'Welcome back Zava Admin'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-005",
+      "testCaseTitle": "Verify Failed Login with Invalid Username",
+      "priority": "Low",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Enter username: invaliduser",
+          "expectedResult": "Username is entered in the username field"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Enter password: zava2026",
+          "expectedResult": "Password is entered (masked) in the password field"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Click 'Sign In' button",
+          "expectedResult": "Error message is displayed: 'Invalid username or password. Try a demo account below.'"
+        },
+        {
+          "stepNumber": 5,
+          "testStep": "Verify user remains on login page",
+          "expectedResult": "User remains on the login page (not redirected)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-006",
+      "testCaseTitle": "Verify Failed Login with Invalid Password",
+      "priority": "Low",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Enter username: sarah.explorer",
+          "expectedResult": "Username is entered in the username field"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Enter password: wrongpassword",
+          "expectedResult": "Password is entered (masked) in the password field"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Click 'Sign In' button",
+          "expectedResult": "Error message is displayed: 'Invalid username or password. Try a demo account below.'"
+        },
+        {
+          "stepNumber": 5,
+          "testStep": "Verify user remains on login page",
+          "expectedResult": "User remains on the login page (not redirected)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-007",
+      "testCaseTitle": "Verify Failed Login with Empty Username",
+      "priority": "Low",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Leave username field empty",
+          "expectedResult": "Username field is empty"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Enter password: zava2026",
+          "expectedResult": "Password is entered (masked) in the password field"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Click 'Sign In' button",
+          "expectedResult": "Error message is displayed: 'Invalid username or password. Try a demo account below.'"
+        },
+        {
+          "stepNumber": 5,
+          "testStep": "Verify user remains on login page",
+          "expectedResult": "User remains on the login page (not redirected)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-008",
+      "testCaseTitle": "Verify Failed Login with Empty Password",
+      "priority": "Low",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Enter username: sarah.explorer",
+          "expectedResult": "Username is entered in the username field"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Leave password field empty",
+          "expectedResult": "Password field is empty"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Click 'Sign In' button",
+          "expectedResult": "Error message is displayed: 'Invalid username or password. Try a demo account below.'"
+        },
+        {
+          "stepNumber": 5,
+          "testStep": "Verify user remains on login page",
+          "expectedResult": "User remains on the login page (not redirected)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-009",
+      "testCaseTitle": "Verify Failed Login with Both Fields Empty",
+      "priority": "Low",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Leave username field empty",
+          "expectedResult": "Username field is empty"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Leave password field empty",
+          "expectedResult": "Password field is empty"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Click 'Sign In' button",
+          "expectedResult": "Error message is displayed: 'Invalid username or password. Try a demo account below.'"
+        },
+        {
+          "stepNumber": 5,
+          "testStep": "Verify user remains on login page",
+          "expectedResult": "User remains on the login page (not redirected)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-010",
+      "testCaseTitle": "Verify Demo Account Auto-Fill for Sarah Chen",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click on demo account 'Sarah Chen - Content Lead'",
+          "expectedResult": "Username field is auto-filled with 'sarah.explorer' and password field is auto-filled with 'zava2026'"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify error message cleared",
+          "expectedResult": "Any existing error message is cleared"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-011",
+      "testCaseTitle": "Verify Demo Account Auto-Fill for Marco Rivera",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click on demo account 'Marco Rivera - Social Media Manager'",
+          "expectedResult": "Username field is auto-filled with 'marco.adventures' and password field is auto-filled with 'wander2026'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-012",
+      "testCaseTitle": "Verify Demo Account Auto-Fill for Admin",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click on demo account 'Zava Admin - Administrator'",
+          "expectedResult": "Username field is auto-filled with 'admin' and password field is auto-filled with 'admin'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-013",
+      "testCaseTitle": "Verify Demo Account Auto-Fill Clears Previous Error",
+      "priority": "Medium",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Enter invalid credentials and click 'Sign In'",
+          "expectedResult": "Error message is displayed"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Click on any demo account",
+          "expectedResult": "Username and password are auto-filled and error message is cleared"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-014",
+      "testCaseTitle": "Verify Password Visibility Toggle - Show",
+      "priority": "Medium",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Enter password: zava2026",
+          "expectedResult": "Password is entered (masked with dots/asterisks)"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Click the eye icon in password field",
+          "expectedResult": "Password becomes visible as plain text: 'zava2026'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-001",
+      "testCaseId": "TC-015",
+      "testCaseTitle": "Verify Password Visibility Toggle - Hide",
+      "priority": "Medium",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Navigate to http://localhost:5173/",
+          "expectedResult": "Login page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Enter password: zava2026",
+          "expectedResult": "Password is entered (masked)"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Click the eye icon to show password",
+          "expectedResult": "Password becomes visible as plain text"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Click the eye icon again",
+          "expectedResult": "Password becomes masked again"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-002",
+      "testCaseId": "TC-016",
+      "testCaseTitle": "Verify Dashboard Hero Section Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials (sarah.explorer/zava2026)",
+          "expectedResult": "User is logged in and redirected to Dashboard"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Verify hero section elements",
+          "expectedResult": "Hero section displays: personalized greeting 'Welcome back Sarah Chen', title 'Zava Travel Content Studio', description of multi-agent collaboration system, 'Create New Content' button, gradient background with airplane emoji overlay"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-002",
+      "testCaseId": "TC-017",
+      "testCaseTitle": "Verify Dashboard Statistics Cards Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is logged in and redirected to Dashboard"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Verify statistics cards",
+          "expectedResult": "4 statistics cards are displayed: 1) Agents Active: 3 (with team icon), 2) Reasoning Patterns: 3 (with brain circuit icon), 3) Platforms: 3 (with globe icon), 4) Security Status: ✓ Secure (with shield checkmark icon)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-002",
+      "testCaseId": "TC-018",
+      "testCaseTitle": "Verify Dashboard Agent Team Information Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is logged in and redirected to Dashboard"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Scroll to 'Agent Team' section",
+          "expectedResult": "Agent Team section is visible"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify Creator agent card",
+          "expectedResult": "Creator card displays: ✍️ emoji, name 'Creator', engine 'Azure OpenAI', pattern 'Chain-of-Thought', description of drafting capabilities"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Verify Reviewer agent card",
+          "expectedResult": "Reviewer card displays: 🔍 emoji, name 'Reviewer', engine 'GitHub Copilot', pattern 'ReAct', description of review capabilities"
+        },
+        {
+          "stepNumber": 5,
+          "testStep": "Verify Publisher agent card",
+          "expectedResult": "Publisher card displays: 📤 emoji, name 'Publisher', engine 'Azure OpenAI', pattern 'Self-Reflection', description of formatting capabilities"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-002",
+      "testCaseId": "TC-019",
+      "testCaseTitle": "Verify Dashboard Featured Destinations Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is logged in and redirected to Dashboard"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Scroll to 'Featured Destinations' section",
+          "expectedResult": "Featured Destinations section is visible"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify destination badges",
+          "expectedResult": "5 destination badges are displayed: 1) 🇮🇩 Bali — from $899, 2) 🇦🇷 Patagonia — from $1,499, 3) 🇮🇸 Iceland — from $1,299, 4) 🇻🇳 Vietnam — from $699, 5) 🇨🇷 Costa Rica — from $799"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-002",
+      "testCaseId": "TC-020",
+      "testCaseTitle": "Verify Navigate to Create Content from Dashboard Button",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is logged in and redirected to Dashboard"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Create New Content' button in hero section",
+          "expectedResult": "User is navigated to Create Content page (/create)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-002",
+      "testCaseId": "TC-021",
+      "testCaseTitle": "Verify Navigate to Dashboard from Sidebar",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is logged in and redirected to Dashboard"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Create Content' in sidebar navigation",
+          "expectedResult": "User is navigated to Create Content page"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Click 'Dashboard' in sidebar navigation",
+          "expectedResult": "User is navigated back to Dashboard page (/)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-022",
+      "testCaseTitle": "Verify Campaign Brief Form Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is logged in"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Navigate to Create Content page (/create)",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify form fields",
+          "expectedResult": "Campaign brief form displays with fields: Brand (input), Industry (input), Target Audience (input), Key Message (textarea), Destinations (input), and 'Generate Content' button with sparkle icon"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-023",
+      "testCaseTitle": "Verify Pre-filled Default Values in Campaign Brief",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is logged in"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Navigate to Create Content page (/create)",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify pre-filled values",
+          "expectedResult": "Form is pre-filled with: Brand: 'Zava Travel Inc.', Industry: 'Travel — Budget-Friendly Adventure', Target Audience: 'Millennials & Gen-Z adventure seekers', Key Message: 'Wander More, Spend Less — affordable curated itineraries...', Destinations: 'Bali, Patagonia, Iceland, Vietnam, Costa Rica'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-024",
+      "testCaseTitle": "Verify Form Field Editing - Brand Field",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed with form"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click on Brand input field",
+          "expectedResult": "Brand field is focused"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Clear existing text and type 'New Brand Name'",
+          "expectedResult": "Field value updates in real-time to 'New Brand Name'"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Verify Generate Content button",
+          "expectedResult": "Generate Content button remains enabled"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-025",
+      "testCaseTitle": "Verify Form Field Editing - Industry Field",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed with form"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click on Industry input field and modify text",
+          "expectedResult": "Field value updates in real-time to modified value"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify Generate Content button",
+          "expectedResult": "Generate Content button remains enabled"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-026",
+      "testCaseTitle": "Verify Form Field Editing - Target Audience Field",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed with form"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click on Target Audience input field and modify text",
+          "expectedResult": "Field value updates in real-time to modified value"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify Generate Content button",
+          "expectedResult": "Generate Content button remains enabled"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-027",
+      "testCaseTitle": "Verify Form Field Editing - Key Message Field",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed with form"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click on Key Message textarea and modify text",
+          "expectedResult": "Field value updates in real-time to modified value"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify Generate Content button",
+          "expectedResult": "Generate Content button remains enabled"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-028",
+      "testCaseTitle": "Verify Form Field Editing - Destinations Field",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed with form"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click on Destinations input field and modify text",
+          "expectedResult": "Field value updates in real-time to modified value"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify Generate Content button",
+          "expectedResult": "Generate Content button remains enabled"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-029",
+      "testCaseTitle": "Verify Submit Campaign Brief with Default Values",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed with pre-filled form"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Generate Content' button",
+          "expectedResult": "Button text changes to 'Agents Working...', spinner icon appears, button becomes disabled"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify loading card appears",
+          "expectedResult": "Loading card is displayed showing agent collaboration progress with title 'Agents Collaborating...' and subtitle"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-030",
+      "testCaseTitle": "Verify Submit Campaign Brief with Modified Values",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Modify Brand field to 'Custom Travel Co'",
+          "expectedResult": "Brand value is updated"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Modify Industry field to 'Luxury Travel'",
+          "expectedResult": "Industry value is updated"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Click 'Generate Content' button",
+          "expectedResult": "Button text changes to 'Agents Working...', spinner icon appears, button becomes disabled"
+        },
+        {
+          "stepNumber": 5,
+          "testStep": "Verify loading card appears",
+          "expectedResult": "Loading card is displayed showing agent collaboration progress"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-031",
+      "testCaseTitle": "Verify Empty Form Submission",
+      "priority": "Low",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Clear all form fields (Brand, Industry, Target Audience, Key Message, Destinations)",
+          "expectedResult": "All fields are empty"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Click 'Generate Content' button",
+          "expectedResult": "Button is clickable and submission is triggered (no validation error in demo mode)"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Verify loading card appears",
+          "expectedResult": "Loading card is displayed showing agent collaboration progress"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-032",
+      "testCaseTitle": "Verify Navigate to Create Content from Sidebar",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "Dashboard is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Create Content' in sidebar navigation",
+          "expectedResult": "User is navigated to Create Content page (/create) and form is displayed"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-003",
+      "testCaseId": "TC-033",
+      "testCaseTitle": "Verify Navigate to Create Content from Dashboard Button",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "Dashboard is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Create New Content' button on Dashboard",
+          "expectedResult": "User is navigated to Create Content page (/create) and form is displayed"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-004",
+      "testCaseId": "TC-034",
+      "testCaseTitle": "Verify Loading State Display After Submission",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Fill campaign brief form and click 'Generate Content'",
+          "expectedResult": "Content generation starts"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify loading card elements",
+          "expectedResult": "Loading card displays: large spinner animation, title 'Agents Collaborating...', subtitle 'Creator → Reviewer → Publisher working on your Zava Travel content', three agent status badges"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-004",
+      "testCaseId": "TC-035",
+      "testCaseTitle": "Verify Agent Status Badges During Generation",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Submit campaign brief",
+          "expectedResult": "Content generation starts and loading card is displayed"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify agent status badges",
+          "expectedResult": "3 status badges are displayed: 1) Creator (Blue, Filled): '✍️ Creator: Drafting...', 2) Reviewer (Orange, Outline): '🔍 Reviewer: Waiting', 3) Publisher (Green, Outline): '📤 Publisher: Waiting'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-004",
+      "testCaseId": "TC-036",
+      "testCaseTitle": "Verify Generation Duration",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Submit campaign brief",
+          "expectedResult": "Content generation starts"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Wait and observe loading state",
+          "expectedResult": "Loading state displays for approximately 3 seconds"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Verify transition to results",
+          "expectedResult": "After approximately 3 seconds, loading card disappears and results view is displayed"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-004",
+      "testCaseId": "TC-037",
+      "testCaseTitle": "Verify Generate Button State During Loading",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Submit campaign brief",
+          "expectedResult": "Content generation starts"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify button state",
+          "expectedResult": "Generate Content button displays text 'Agents Working...', shows spinner icon, and is disabled (cannot click again)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-004",
+      "testCaseId": "TC-038",
+      "testCaseTitle": "Verify Loading State Prevents Display of Other States",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Submit campaign brief",
+          "expectedResult": "Content generation starts and loading card is displayed"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify only loading state is visible",
+          "expectedResult": "Only loading card is visible in results area, empty state is not visible, previous results (if any) are not visible"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-005",
+      "testCaseId": "TC-039",
+      "testCaseTitle": "Verify Success Message Display After Content Generation",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Submit campaign brief and wait for generation to complete",
+          "expectedResult": "Content is generated successfully"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify success message",
+          "expectedResult": "Success MessageBar is displayed with format: '✅ Content generated in {duration}s — {termination_reason}' (e.g., '✅ Content generated in 42.5s — Reviewer approved — fast-tracked to Publisher')"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-005",
+      "testCaseId": "TC-040",
+      "testCaseTitle": "Verify Tab Navigation Display After Generation",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Submit campaign brief and wait for generation to complete",
+          "expectedResult": "Content is generated successfully"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify tabs display",
+          "expectedResult": "Two tabs are displayed: 1) '📝 Platform Posts' (default selected), 2) '🧠 Agent Transcript'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-005",
+      "testCaseId": "TC-041",
+      "testCaseTitle": "Verify Platform Posts Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Submit campaign brief and wait for generation to complete",
+          "expectedResult": "Content is generated and Platform Posts tab is active"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify LinkedIn post card",
+          "expectedResult": "LinkedIn post card displays: 💼 icon, 'LinkedIn' label, professional-adventurous tone content, 1-3 paragraphs, 3-5 hashtags including #ZavaTravel, Copy button"
+        },
+        {
+          "stepNumber": 4,
+          "testStep": "Verify Twitter post card",
+          "expectedResult": "Twitter post card displays: 𝕏 icon, 'X / Twitter' label, punchy message under 280 characters, character count indicator (e.g., '198/280 characters'), 2-3 hashtags, Copy button"
+        },
+        {
+          "stepNumber": 5,
+          "testStep": "Verify Instagram post card",
+          "expectedResult": "Instagram post card displays: 📸 icon, 'Instagram' label, visual-friendly content with emojis, storytelling tone, 5-10 hashtags, engagement prompt, Copy button"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-005",
+      "testCaseId": "TC-042",
+      "testCaseTitle": "Verify Post Content Display Format",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab is displayed with 3 post cards"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Examine any post card",
+          "expectedResult": "Post card displays: platform icon and name in header, Copy button in header, post content in formatted text box with gray background and rounded corners, preserved line breaks and formatting"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-005",
+      "testCaseId": "TC-043",
+      "testCaseTitle": "Verify Twitter Character Count with Valid Length",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Examine Twitter post",
+          "expectedResult": "Twitter post content is displayed"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify character count indicator",
+          "expectedResult": "Character count is displayed in format '{count}/280 characters' with green color (count ≤ 280)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-005",
+      "testCaseId": "TC-044",
+      "testCaseTitle": "Verify Twitter Character Count Exceeds Limit (Boundary Value)",
+      "priority": "Medium",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Examine Twitter post with >280 characters (if generated)",
+          "expectedResult": "Character count is displayed in format '{count}/280 characters' with red color (count > 280)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-005",
+      "testCaseId": "TC-045",
+      "testCaseTitle": "Verify Workflow Summary Statistics Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts are displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Scroll to bottom of results area",
+          "expectedResult": "Workflow summary card is visible"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify summary badges",
+          "expectedResult": "4 badges are displayed: 1) ⏱️ {duration}s (teal badge), 2) 💬 {count} agent turns (green badge), 3) 📋 3 platform posts (orange badge), 4) 🔒 Security: Clean (purple badge)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-006",
+      "testCaseId": "TC-046",
+      "testCaseTitle": "Verify Copy Button Display on All Posts",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab displays 3 post cards"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Examine each post card header (LinkedIn, Twitter, Instagram)",
+          "expectedResult": "Each post card header displays a 'Copy' button with document copy icon (📋)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-006",
+      "testCaseId": "TC-047",
+      "testCaseTitle": "Verify Copy to Clipboard for LinkedIn Post",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab displays LinkedIn post"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Copy' button on LinkedIn post",
+          "expectedResult": "Full LinkedIn post content is copied to system clipboard, button changes to show checkmark icon (✓) and text 'Copied!'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-006",
+      "testCaseId": "TC-048",
+      "testCaseTitle": "Verify Copy to Clipboard for Twitter Post",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab displays Twitter post"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Copy' button on Twitter post",
+          "expectedResult": "Full Twitter post content is copied to system clipboard, button changes to show checkmark icon (✓) and text 'Copied!'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-006",
+      "testCaseId": "TC-049",
+      "testCaseTitle": "Verify Copy to Clipboard for Instagram Post",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab displays Instagram post"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Copy' button on Instagram post",
+          "expectedResult": "Full Instagram post content is copied to system clipboard, button changes to show checkmark icon (✓) and text 'Copied!'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-006",
+      "testCaseId": "TC-050",
+      "testCaseTitle": "Verify Copy Confirmation Timeout",
+      "priority": "Medium",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab displays posts"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Copy' button on any post",
+          "expectedResult": "Button shows 'Copied!' confirmation with checkmark icon"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Wait for 2 seconds",
+          "expectedResult": "After 2 seconds, button reverts to original state with document copy icon and text 'Copy'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-006",
+      "testCaseId": "TC-051",
+      "testCaseTitle": "Verify Independent Copy States",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab displays all 3 posts"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Copy' button on LinkedIn post",
+          "expectedResult": "LinkedIn button shows 'Copied!'"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Immediately click 'Copy' button on Twitter post",
+          "expectedResult": "Twitter button shows 'Copied!', LinkedIn button reverts to 'Copy'"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-006",
+      "testCaseId": "TC-052",
+      "testCaseTitle": "Verify Copy Content Preservation - Line Breaks",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab displays posts"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Copy' button on LinkedIn post (which has multiple paragraphs)",
+          "expectedResult": "Content is copied to clipboard"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Paste content into text editor (Notepad)",
+          "expectedResult": "Pasted content matches displayed post exactly with all line breaks preserved"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-006",
+      "testCaseId": "TC-053",
+      "testCaseTitle": "Verify Copy Content Preservation - Special Characters",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab displays posts"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Copy' button on Instagram post (with emojis and hashtags)",
+          "expectedResult": "Content is copied to clipboard"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Paste content into text editor",
+          "expectedResult": "Pasted content matches displayed post exactly with all emojis, hashtags, and special characters preserved without HTML/markdown formatting"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-007",
+      "testCaseId": "TC-054",
+      "testCaseTitle": "Verify Access Agent Transcript Tab",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Platform Posts tab is displayed with results"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click '🧠 Agent Transcript' tab",
+          "expectedResult": "Agent Transcript tab becomes active, platform posts are hidden, agent transcript is displayed"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-007",
+      "testCaseId": "TC-055",
+      "testCaseTitle": "Verify Transcript Message Display Count and Order",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Content is generated successfully"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click '🧠 Agent Transcript' tab",
+          "expectedResult": "Agent Transcript tab is displayed"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify transcript messages",
+          "expectedResult": "3 agent messages are displayed in order: 1) Creator message, 2) Reviewer message, 3) Publisher message"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-007",
+      "testCaseId": "TC-056",
+      "testCaseTitle": "Verify Creator Message Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, generate content, and view Agent Transcript tab",
+          "expectedResult": "Agent Transcript tab displays 3 messages"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Examine Creator message",
+          "expectedResult": "Creator message displays: Agent name 'Creator' (in teal color #0891B2), reasoning badge 'Chain-of-Thought' (outline style, teal), message content showing 5-step reasoning (Step 1: Identify Objective, Step 2: Consider Audience, Step 3: Draft Hook, Step 4: Build Body, Step 5: Add CTA), left border in teal (4px solid), light teal background (#F0FDFF)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-007",
+      "testCaseId": "TC-057",
+      "testCaseTitle": "Verify Reviewer Message Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, generate content, and view Agent Transcript tab",
+          "expectedResult": "Agent Transcript tab displays 3 messages"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Examine Reviewer message",
+          "expectedResult": "Reviewer message displays: Agent name 'Reviewer' (in orange color #F97316), reasoning badge 'ReAct' (outline style, orange), message content showing ReAct pattern (Observation, Thought, Action, Result, Verdict: 'APPROVED ✅'), left border in orange (4px solid), light orange background (#FFF7ED)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-007",
+      "testCaseId": "TC-058",
+      "testCaseTitle": "Verify Publisher Message Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, generate content, and view Agent Transcript tab",
+          "expectedResult": "Agent Transcript tab displays 3 messages"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Examine Publisher message",
+          "expectedResult": "Publisher message displays: Agent name 'Publisher' (in green color #059669), reasoning badge 'Self-Reflection' (outline style, green), message content showing validation checks (platform-specific constraints, character counts, CTA verification, brand compliance), left border in green (4px solid), light green background (#F0FDF4)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-007",
+      "testCaseId": "TC-059",
+      "testCaseTitle": "Verify Transcript Message Formatting",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, generate content, and view Agent Transcript tab",
+          "expectedResult": "Agent Transcript tab is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Examine any agent message formatting",
+          "expectedResult": "Message content preserves line breaks, uses readable font size (14px), has appropriate line height (1.6), displays agent emoji/icon, shows timestamps if available"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-007",
+      "testCaseId": "TC-060",
+      "testCaseTitle": "Verify Switch Back to Platform Posts Tab",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Content is generated successfully"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click '🧠 Agent Transcript' tab",
+          "expectedResult": "Agent Transcript is displayed"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Click '📝 Platform Posts' tab",
+          "expectedResult": "Platform Posts tab becomes active, transcript is hidden, platform posts (LinkedIn, Twitter, Instagram) are displayed again"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-008",
+      "testCaseId": "TC-061",
+      "testCaseTitle": "Verify Sidebar Display After Login",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials (sarah.explorer/zava2026)",
+          "expectedResult": "User is authenticated"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Verify sidebar elements",
+          "expectedResult": "Sidebar is displayed on left side containing: Zava Travel logo (✈️ + 'Zava Travel' text), navigation menu with 2 items, user profile section at bottom, gradient background (Navy #1E3A5F to Teal #0891B2)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-008",
+      "testCaseId": "TC-062",
+      "testCaseTitle": "Verify Navigation Menu Items Display",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is authenticated and viewing any page"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Examine sidebar navigation menu",
+          "expectedResult": "2 navigation items are displayed: 1) 🏠 Dashboard (HomeRegular icon), 2) ➕ Create Content (AddRegular icon)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-008",
+      "testCaseId": "TC-063",
+      "testCaseTitle": "Verify Navigate to Dashboard from Create Content Page",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is authenticated"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Navigate to Create Content page (/create)",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Click 'Dashboard' menu item in sidebar",
+          "expectedResult": "User is navigated to Dashboard page (/), Dashboard menu item is highlighted with white background overlay (20% opacity), bold font weight (600), full white color"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-008",
+      "testCaseId": "TC-064",
+      "testCaseTitle": "Verify Navigate to Create Content from Dashboard",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is authenticated on Dashboard page"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Create Content' menu item in sidebar",
+          "expectedResult": "User is navigated to Create Content page (/create), Create Content menu item is highlighted"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-008",
+      "testCaseId": "TC-065",
+      "testCaseTitle": "Verify Active Page Indicator on Dashboard",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is authenticated on Dashboard page"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Verify Dashboard menu item active state",
+          "expectedResult": "Dashboard menu item shows: background rgba(255,255,255,0.2), text color white, font weight 600"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify Create Content menu item default state",
+          "expectedResult": "Create Content menu item shows: no background, text color rgba(255,255,255,0.8), normal font weight"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-008",
+      "testCaseId": "TC-066",
+      "testCaseTitle": "Verify Active Page Indicator on Create Content Page",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Verify Create Content menu item active state",
+          "expectedResult": "Create Content menu item shows: background rgba(255,255,255,0.2), text color white, font weight 600"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify Dashboard menu item default state",
+          "expectedResult": "Dashboard menu item shows: no background, text color rgba(255,255,255,0.8), normal font weight"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-008",
+      "testCaseId": "TC-067",
+      "testCaseTitle": "Verify Menu Item Hover State",
+      "priority": "Medium",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials on Dashboard",
+          "expectedResult": "Dashboard is displayed with sidebar"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Hover mouse over 'Create Content' menu item (not active)",
+          "expectedResult": "Menu item shows hover state: background rgba(255,255,255,0.15), text color white, smooth transition effect"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-008",
+      "testCaseId": "TC-068",
+      "testCaseTitle": "Verify Logo Click Navigation",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click the Zava Travel logo at top of sidebar",
+          "expectedResult": "User is navigated to Dashboard page (/)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-008",
+      "testCaseId": "TC-069",
+      "testCaseTitle": "Verify User Profile Section Display in Sidebar",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials (sarah.explorer/zava2026)",
+          "expectedResult": "User is authenticated on Dashboard"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Scroll to bottom of sidebar",
+          "expectedResult": "User profile section is visible"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify user profile elements",
+          "expectedResult": "User profile section displays: border separator line (white, 20% opacity), user avatar (🧭 emoji icon), display name 'Sarah Chen', role 'Content Lead', 'Sign Out' button"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-009",
+      "testCaseId": "TC-070",
+      "testCaseTitle": "Verify Logout Button Display in Sidebar",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials (sarah.explorer/zava2026)",
+          "expectedResult": "User is authenticated"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "View sidebar user profile section",
+          "expectedResult": "User profile section displays: avatar (🧭), display name 'Sarah Chen', role 'Content Lead', 'Sign Out' button with sign-out icon"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-009",
+      "testCaseId": "TC-071",
+      "testCaseTitle": "Verify Logout Functionality",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials (sarah.explorer/zava2026)",
+          "expectedResult": "User is authenticated on Dashboard"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Sign Out' button in sidebar",
+          "expectedResult": "Logout action is triggered"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-009",
+      "testCaseId": "TC-072",
+      "testCaseTitle": "Verify Session Termination After Logout",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is authenticated"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Sign Out' button",
+          "expectedResult": "User session is terminated, user data is cleared from AuthContext, isAuthenticated becomes false"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-009",
+      "testCaseId": "TC-073",
+      "testCaseTitle": "Verify Redirect to Login After Logout",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials on any page",
+          "expectedResult": "User is authenticated"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Sign Out' button",
+          "expectedResult": "Logout completes"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify redirection",
+          "expectedResult": "User is immediately redirected to Login page, full login screen is displayed (left panel + right panel), username and password fields are empty"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-009",
+      "testCaseId": "TC-074",
+      "testCaseTitle": "Verify Navigation Prevention After Logout",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is authenticated"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Sign Out' button",
+          "expectedResult": "User is logged out and redirected to Login page"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Manually navigate to http://localhost:5173/ (Dashboard)",
+          "expectedResult": "User is redirected to Login page, authenticated content is not accessible"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-009",
+      "testCaseId": "TC-075",
+      "testCaseTitle": "Verify Navigation Prevention to Create Content After Logout",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is authenticated"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Sign Out' button",
+          "expectedResult": "User is logged out and redirected to Login page"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Manually navigate to http://localhost:5173/create",
+          "expectedResult": "User is redirected to Login page, authenticated content is not accessible"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-009",
+      "testCaseId": "TC-076",
+      "testCaseTitle": "Verify Re-login After Logout",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials (sarah.explorer/zava2026)",
+          "expectedResult": "User is authenticated"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Sign Out' button",
+          "expectedResult": "User is logged out and Login page is displayed"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Enter valid credentials (sarah.explorer/zava2026) and click 'Sign In'",
+          "expectedResult": "User is able to log back in successfully and is redirected to Dashboard"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-009",
+      "testCaseId": "TC-077",
+      "testCaseTitle": "Verify Logout Button Appearance",
+      "priority": "Medium",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is authenticated"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Examine logout button in user profile section",
+          "expectedResult": "Button has subtle appearance (not prominent), displays 'Sign Out' text, shows SignOutRegular icon, has hover effect (slight color change)"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-010",
+      "testCaseId": "TC-078",
+      "testCaseTitle": "Verify Empty State Display on Initial Page Load",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials",
+          "expectedResult": "User is authenticated"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Navigate to Create Content page (/create)",
+          "expectedResult": "Create Content page is displayed with no prior content generation"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify empty state card in results area",
+          "expectedResult": "Empty state card displays: large airplane emoji ✈️ (48px), title 'Ready to Create' (gray color #94A3B8), description 'Fill in the campaign brief and click 'Generate Content' to start the multi-agent workflow', dashed border (2px, gray #CBD5E1), centered content"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-010",
+      "testCaseId": "TC-079",
+      "testCaseTitle": "Verify Empty State Styling",
+      "priority": "Medium",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Empty state card is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Examine empty state card styling",
+          "expectedResult": "Card has: large padding (60px), center text alignment, border radius (12px), dashed border style (not solid), border color #CBD5E1, white background"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-010",
+      "testCaseId": "TC-080",
+      "testCaseTitle": "Verify Empty State Visibility Conditions",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Create Content page is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Verify initial state",
+          "expectedResult": "Empty state is visible (result === null, isGenerating === false), loading state is NOT visible, results tabs are NOT visible"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-010",
+      "testCaseId": "TC-081",
+      "testCaseTitle": "Verify Empty State Disappears on Generation Start",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Empty state is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Click 'Generate Content' button",
+          "expectedResult": "Empty state immediately disappears, loading state is displayed instead"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-010",
+      "testCaseId": "TC-082",
+      "testCaseTitle": "Verify Empty State Returns After Page Refresh",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Generated content (posts) is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Refresh the page (F5 or Ctrl+R)",
+          "expectedResult": "Page reloads"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Verify empty state is displayed",
+          "expectedResult": "Empty state is displayed again, previous results do NOT persist"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-010",
+      "testCaseId": "TC-083",
+      "testCaseTitle": "Verify Empty State Returns After Navigation Away and Back",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials, navigate to Create Content page, and generate content",
+          "expectedResult": "Generated content is displayed"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Navigate to Dashboard",
+          "expectedResult": "Dashboard is displayed"
+        },
+        {
+          "stepNumber": 3,
+          "testStep": "Navigate back to Create Content page",
+          "expectedResult": "Empty state is displayed, previous results do NOT persist"
+        }
+      ]
+    },
+    {
+      "userStoryId": "US-010",
+      "testCaseId": "TC-084",
+      "testCaseTitle": "Verify Form Visible with Empty State",
+      "priority": "High",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "testStep": "Login with valid credentials and navigate to Create Content page",
+          "expectedResult": "Empty state is displayed in results area"
+        },
+        {
+          "stepNumber": 2,
+          "testStep": "Verify form presence and state",
+          "expectedResult": "Campaign brief form is visible on left side, form is pre-filled with default Zava Travel values, 'Generate Content' button is enabled"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalTestCases": 84,
+    "totalUserStories": 10,
+    "priorityBreakdown": {
+      "High": 62,
+      "Medium": 10,
+      "Low": 12
+    }
+  }
+}
