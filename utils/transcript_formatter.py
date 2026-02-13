@@ -8,12 +8,38 @@ from datetime import datetime
 from typing import List, Dict, Any
 
 
+def _consolidate_messages(messages: List[Any]) -> List[Dict[str, str]]:
+    """
+    Consolidate consecutive messages from the same author into single entries.
+    Handles both token-level streaming fragments and full messages.
+    """
+    consolidated = []
+    for msg in messages:
+        if hasattr(msg, 'author_name'):
+            name = msg.author_name or 'Unknown'
+            text = getattr(msg, 'text', '') or ''
+        else:
+            name = msg.get('author_name', msg.get('agent_name', 'Unknown'))
+            text = msg.get('text', msg.get('content', ''))
+        
+        if not text:
+            continue
+        
+        if consolidated and consolidated[-1]['name'] == name:
+            consolidated[-1]['text'] += text
+        else:
+            consolidated.append({'name': name, 'text': text})
+    
+    return consolidated
+
+
 def format_conversation_transcript(messages: List[Any]) -> str:
     """
     Format agent conversation transcript with clear structure.
+    Consolidates consecutive messages from the same agent into single rounds.
     
     Args:
-        messages: List of agent messages (AgentMessage objects or dicts)
+        messages: List of agent messages (Message objects or dicts)
         
     Returns:
         str: Formatted conversation transcript
@@ -22,20 +48,12 @@ def format_conversation_transcript(messages: List[Any]) -> str:
     transcript += "CONVERSATION TRANSCRIPT\n"
     transcript += "="*70 + "\n\n"
     
-    for idx, msg in enumerate(messages, 1):
-        # Handle both object and dict formats
-        if hasattr(msg, 'agent_name'):
-            agent_name = msg.agent_name
-            content = msg.content
-            round_num = getattr(msg, 'round_number', idx)
-        else:
-            agent_name = msg.get('agent_name', 'Unknown')
-            content = msg.get('content', '')
-            round_num = msg.get('round_number', idx)
-        
-        transcript += f"Round {round_num}: {agent_name}\n"
+    turns = _consolidate_messages(messages)
+    
+    for idx, turn in enumerate(turns, 1):
+        transcript += f"Round {idx}: {turn['name']}\n"
         transcript += "-" * 70 + "\n"
-        transcript += content + "\n\n"
+        transcript += turn['text'] + "\n\n"
     
     transcript += "="*70 + "\n"
     transcript += "END OF TRANSCRIPT\n"
@@ -101,16 +119,10 @@ def export_to_markdown(
         md += "\n"
     
     md += "## Conversation Transcript\n\n"
-    for idx, msg in enumerate(messages, 1):
-        if hasattr(msg, 'agent_name'):
-            agent_name = msg.agent_name
-            content = msg.content
-        else:
-            agent_name = msg.get('agent_name', 'Unknown')
-            content = msg.get('content', '')
-        
-        md += f"### Round {idx}: {agent_name}\n\n"
-        md += content + "\n\n"
+    turns = _consolidate_messages(messages)
+    for idx, turn in enumerate(turns, 1):
+        md += f"### Round {idx}: {turn['name']}\n\n"
+        md += turn['text'] + "\n\n"
     
     if linkedin_post or twitter_post or instagram_post:
         md += "## Platform-Ready Posts\n\n"

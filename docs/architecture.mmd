@@ -1,0 +1,71 @@
+graph TB
+    subgraph Frontend["Frontend (React + Vite)"]
+        UI["CreateContentPage.tsx"]
+        API_SVC["api.ts Service"]
+        AUTH["AuthContext"]
+        DASH["DashboardPage"]
+    end
+
+    subgraph Backend["Backend (FastAPI)"]
+        API["api_server.py<br/>POST /api/generate<br/>GET /api/health"]
+    end
+
+    subgraph AgentFramework["Microsoft Agent Framework"]
+        subgraph GroupChat["GroupChat Orchestration"]
+            CREATOR["Creator Agent<br/>Chain-of-Thought"]
+            REVIEWER["Reviewer Agent<br/>ReAct"]
+            PUBLISHER["Publisher Agent<br/>Self-Reflection"]
+        end
+        SELECTION["speaker_selection.py<br/>Round-Robin + APPROVED<br/>Fast-Track"]
+        TERMINATION["termination.py<br/>Publisher speaks or<br/>max 10 messages"]
+    end
+
+    subgraph Grounding["Grounding"]
+        BRAND["brand-guidelines.md<br/>Embedded in Creator<br/>instructions"]
+    end
+
+    subgraph Tools["MCP Tools"]
+        MCP_STDIO["MCPStdioTool<br/>stdio transport<br/>(default)"]
+        MCP_HTTP["MCPStreamableHTTPTool<br/>HTTP transport<br/>(opt-in)"]
+        FS_SERVER["@modelcontextprotocol/<br/>server-filesystem"]
+    end
+
+    subgraph Azure["Azure Services"]
+        AOAI["Azure OpenAI<br/>GPT-4.1<br/>Chat Completions API"]
+        GH_COPILOT["GitHub Copilot<br/>SDK"]
+        AAD["DefaultAzureCredential"]
+    end
+
+    subgraph Output["Output"]
+        MD_FILE["output/*.md<br/>Social Posts + Transcript"]
+    end
+
+    UI -->|Campaign Brief| API_SVC
+    API_SVC -->|POST /api/generate| API
+    API -->|JSON Response| API_SVC
+    API_SVC -->|WorkflowResult| UI
+
+    API --> GroupChat
+    BRAND -.->|Embedded in instructions| CREATOR
+    CREATOR --> SELECTION
+    REVIEWER --> SELECTION
+    PUBLISHER --> SELECTION
+    SELECTION --> TERMINATION
+
+    CREATOR -->|AzureOpenAIChatClient| AOAI
+    PUBLISHER -->|AzureOpenAIChatClient| AOAI
+    REVIEWER -->|GitHubCopilotAgent| GH_COPILOT
+    API -->|Auth| AAD
+
+    PUBLISHER --> MCP_STDIO
+    MCP_STDIO --> FS_SERVER
+    MCP_HTTP -.->|Optional| FS_SERVER
+    FS_SERVER --> MD_FILE
+
+    style Frontend fill:#E0F7FA,stroke:#0891B2
+    style Backend fill:#FFF3E0,stroke:#F97316
+    style AgentFramework fill:#F0FDF4,stroke:#059669
+    style Azure fill:#EDE7F6,stroke:#7C3AED
+    style Tools fill:#FFF8E1,stroke:#F59E0B
+    style Grounding fill:#FCE4EC,stroke:#E91E63
+    style Output fill:#E8EAF6,stroke:#3F51B5

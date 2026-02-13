@@ -21,13 +21,13 @@ validate_environment()
 
 # Now safe to import Azure dependencies
 from azure.identity import DefaultAzureCredential
-from azure.ai.projects import AIProjectClient
 
-# Agent Framework imports (will need to be installed)
+# Agent Framework imports
 try:
-    from agent_framework import GroupChatBuilder, AgentRunUpdateEvent, WorkflowOutputEvent
+    from agent_framework import Agent, WorkflowEvent, WorkflowRunResult
     from agent_framework.azure import AzureOpenAIChatClient
     from agent_framework.github import GitHubCopilotAgent
+    from agent_framework_orchestrations import GroupChatBuilder
 except ImportError as e:
     print(f"❌ Agent Framework not installed: {e}")
     print("\nPlease install dependencies:")
@@ -41,7 +41,7 @@ from agents.publisher import PUBLISHER_INSTRUCTIONS
 from orchestration.speaker_selection import speaker_selector
 from orchestration.termination import should_terminate
 from grounding.file_search import create_grounded_agent
-from tools.filesystem_mcp import get_filesystem_tools, save_posts_manually
+from tools.filesystem_mcp import get_filesystem_tools, save_posts_manually, _cleanup_gateway
 from utils.transcript_formatter import format_conversation_transcript, format_workflow_summary
 from utils.markdown_formatter import format_posts_to_markdown
 
@@ -82,7 +82,7 @@ def build_group_chat():
     # Azure credentials
     credential = DefaultAzureCredential()
     
-    # Azure OpenAI client (for Creator and Publisher)
+    # Azure OpenAI Chat client (for Creator and Publisher)
     try:
         azure_client = AzureOpenAIChatClient(
             endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
@@ -94,34 +94,14 @@ def build_group_chat():
         print(f"❌ Failed to initialize Azure OpenAI client: {e}")
         sys.exit(1)
     
-    # Azure AI Foundry project client (for File Search)
-    try:
-        project_client = AIProjectClient(
-            endpoint=os.getenv("AZURE_AI_FOUNDRY_PROJECT_ENDPOINT"),
-            credential=credential
-        )
-        print("✅ Azure AI Foundry project client initialized")
-    except Exception as e:
-        print(f"⚠️ Failed to initialize Foundry client: {e}")
-        print("   Continuing without File Search grounding...")
-        project_client = None
-    
-    # Create Creator agent with File Search grounding
+    # Create Creator agent with brand guidelines grounding
     print("\n📝 Creating Creator agent...")
-    if project_client:
-        creator = create_grounded_agent(
-            client=azure_client,
-            name="Creator",
-            instructions=CREATOR_INSTRUCTIONS,
-            project_client=project_client,
-            brand_guidelines_path="grounding/brand-guidelines.md"
-        )
-    else:
-        creator = azure_client.create_agent(
-            name="Creator",
-            instructions=CREATOR_INSTRUCTIONS
-        )
-        print("⚠️ Creator agent created without grounding")
+    creator = create_grounded_agent(
+        client=azure_client,
+        name="Creator",
+        instructions=CREATOR_INSTRUCTIONS,
+        brand_guidelines_path="grounding/brand-guidelines.md"
+    )
     
     # Create Reviewer agent (GitHub Copilot)
     print("\n🔍 Creating Reviewer agent...")
@@ -134,35 +114,33 @@ def build_group_chat():
     except Exception as e:
         print(f"⚠️ Failed to create GitHub Copilot agent: {e}")
         print("   Falling back to Azure OpenAI for Reviewer...")
-        reviewer = azure_client.create_agent(
+        reviewer = Agent(
+            client=azure_client,
             name="Reviewer",
             instructions=REVIEWER_INSTRUCTIONS
         )
     
     # Create Publisher agent with MCP filesystem tools
     print("\n📤 Creating Publisher agent...")
-    publisher = azure_client.create_agent(
-        name="Publisher",
-        instructions=PUBLISHER_INSTRUCTIONS
-    )
-    
-    # Attach MCP filesystem tools to Publisher
-    print("\n🔧 Attaching external tools to Publisher...")
     filesystem_tools = get_filesystem_tools()
-    if filesystem_tools:
-        publisher.tools.extend(filesystem_tools)
-    else:
+    publisher = Agent(
+        client=azure_client,
+        name="Publisher",
+        instructions=PUBLISHER_INSTRUCTIONS,
+        tools=filesystem_tools if filesystem_tools else None
+    )
+    if not filesystem_tools:
         print("   ℹ️ Publisher will output to console only (no file save)")
     
     # Build group chat
     print("\n🏗️ Building group chat orchestration...")
-    workflow = (
-        GroupChatBuilder()
-        .with_orchestrator(selection_func=speaker_selector)
-        .participants([creator, reviewer, publisher])
-        .with_termination_condition(should_terminate)
-        .build()
-    )
+    workflow = GroupChatBuilder(
+        participants=[creator, reviewer, publisher],
+        selection_func=speaker_selector,
+        termination_condition=should_terminate,
+        max_rounds=5,
+        intermediate_outputs=True
+    ).build()
     
     print("✅ Group chat workflow built successfully\n")
     return workflow
@@ -201,27 +179,51 @@ async def run_workflow():
     print()
     
     messages = []
-    termination_reason = "unknown"
+    termination_reason = "completed"
+    current_agent = None
     
     try:
-        async for event in workflow.run_stream(CAMPAIGN_BRIEF):
-            
-            if isinstance(event, AgentRunUpdateEvent):
-                # Real-time agent message streaming
-                print(f"[{event.agent_name}]: {event.message_delta}", end="", flush=True)
-            
-            elif isinstance(event, WorkflowOutputEvent):
-                # Workflow completed
-                print("\n\n" + "="*70)
-                print("WORKFLOW COMPLETE")
-                print("="*70)
-                print()
+        stream = workflow.run(CAMPAIGN_BRIEF, stream=True)
+        async for event in stream:
+            # Print agent response updates as they stream
+            if event.type == "group_chat" and event.data is not None:
+                data = event.data
+                # Check for GroupChatResponseReceivedEvent (marks end of agent turn)
+                participant = getattr(data, 'participant_name', None)
+                if participant:
+                    # End of an agent's turn
+                    print(f"\n\n--- [{participant} finished] ---\n")
+                    current_agent = None
+                    continue
                 
-                # Extract transcript
-                if hasattr(event, 'messages'):
-                    messages = event.messages
-                if hasattr(event, 'termination_reason'):
-                    termination_reason = event.termination_reason
+                # Check for GroupChatRequestSentEvent (marks start of agent turn)
+                if hasattr(data, 'participant_name') and not participant:
+                    continue
+                    
+                # Streaming text delta from agent
+                author = getattr(data, 'author_name', None) or ""
+                text = getattr(data, 'text', None) or ""
+                if author and text:
+                    if author != current_agent:
+                        current_agent = author
+                        print(f"\n\n[{author}]:\n", end="", flush=True)
+                    print(text, end="", flush=True)
+        
+        # Get final result
+        result = await stream.get_final_response()
+        
+        # Extract consolidated messages from the output
+        outputs = result.get_outputs() if hasattr(result, 'get_outputs') else []
+        for output in outputs:
+            if isinstance(output, list):
+                messages.extend(output)
+            else:
+                messages.append(output)
+        
+        print("\n\n" + "="*70)
+        print("WORKFLOW COMPLETE")
+        print("="*70)
+        print()
     
     except Exception as e:
         print(f"\n\n❌ Workflow error: {e}")
@@ -250,9 +252,9 @@ async def run_workflow():
     # Extract platform posts from Publisher's message (if available)
     publisher_content = None
     for msg in reversed(messages):
-        agent_name = getattr(msg, 'agent_name', msg.get('agent_name', ''))
-        if agent_name == "Publisher":
-            publisher_content = getattr(msg, 'content', msg.get('content', ''))
+        author = getattr(msg, 'author_name', None) or ''
+        if author == "Publisher":
+            publisher_content = getattr(msg, 'text', None) or str(msg)
             break
     
     if publisher_content:
@@ -296,6 +298,12 @@ def main():
         import traceback
         traceback.print_exc()
         sys.exit(1)
+    finally:
+        # Ensure supergateway subprocess is cleaned up
+        _cleanup_gateway()
+        # Suppress cosmetic MCP SDK async-generator cleanup errors that
+        # the asyncio event-loop finaliser prints to stderr on exit.
+        sys.stderr = open(os.devnull, "w")
 
 
 if __name__ == "__main__":

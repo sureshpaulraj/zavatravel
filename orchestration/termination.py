@@ -8,41 +8,40 @@ Defines conditions under which the workflow should terminate:
 """
 
 
-def should_terminate(state) -> bool:
+def should_terminate(messages) -> bool:
     """
     Determine if the workflow should terminate.
     
     Termination conditions:
     1. Publisher has spoken (content finalized)
-    2. Max rounds (5) completed (prevents infinite loops)
-    3. Reviewer approved (fast-track scenario)
+    2. Maximum message count reached (safety termination)
+    3. Reviewer approved (fast-track scenario — continue for Publisher)
     
     Args:
-        state: GroupChatState object containing messages and round information
+        messages: list[Message] — the conversation history
         
     Returns:
         bool: True if workflow should terminate, False otherwise
     """
-    if not state.messages:
+    if not messages:
         return False
     
-    last_speaker = state.messages[-1].agent_name if state.messages else None
-    last_content = state.messages[-1].content if state.messages else ""
+    last_msg = messages[-1]
+    last_speaker = getattr(last_msg, 'author_name', None) or ''
+    last_content = getattr(last_msg, 'text', '') or ''
     
     # Condition 1: Publisher has completed formatting
     if last_speaker == "Publisher":
         print("\n✅ Termination: Publisher has completed all platform posts\n")
         return True
     
-    # Condition 2: Max rounds reached (safety termination)
-    if state.current_round >= 5:
-        print("\n⚠️ Termination: Maximum rounds (5) reached\n")
+    # Condition 2: Max messages reached (safety termination)
+    if len(messages) >= 10:
+        print("\n⚠️ Termination: Maximum messages reached\n")
         return True
     
-    # Condition 3: Reviewer approved (redundant with fast-track, but explicit)
+    # Condition 3: Reviewer approved (continue so Publisher can speak next)
     if "APPROVED" in last_content and last_speaker == "Reviewer":
-        # Publisher will be next speaker via fast-track
-        # This check ensures we continue one more round for Publisher
         return False
     
     return False

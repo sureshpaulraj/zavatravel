@@ -3,7 +3,6 @@ import {
   Card,
   Input,
   Button,
-  Title1,
   Body1,
   Caption1,
   Divider,
@@ -16,7 +15,6 @@ import {
 import {
   PersonRegular,
   LockClosedRegular,
-  AirplaneRegular,
   EyeOffRegular,
   EyeRegular,
 } from '@fluentui/react-icons'
@@ -26,7 +24,7 @@ const useStyles = makeStyles({
   page: {
     minHeight: '100vh',
     display: 'flex',
-    background: 'linear-gradient(135deg, #0891B2 0%, #1E3A5F 50%, #F97316 100%)',
+    background: 'linear-gradient(135deg, #102840 0%, #1E3A5F 40%, #0891B2 70%, #F97316 100%)',
   },
   leftPanel: {
     flex: 1,
@@ -40,16 +38,18 @@ const useStyles = makeStyles({
   },
   heroTitle: {
     fontSize: '48px',
-    fontWeight: 700,
-    marginBottom: '16px',
-    textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+    fontWeight: 800,
+    marginBottom: '8px',
+    textShadow: '0 2px 12px rgba(0,0,0,0.3)',
+    fontFamily: "'Poppins', sans-serif",
   },
   heroSubtitle: {
-    fontSize: '20px',
+    fontSize: '18px',
     opacity: 0.9,
-    maxWidth: '400px',
+    maxWidth: '420px',
     textAlign: 'center' as const,
-    lineHeight: '1.6',
+    lineHeight: '1.7',
+    fontFamily: "'Poppins', sans-serif",
   },
   destinations: {
     display: 'flex',
@@ -69,19 +69,21 @@ const useStyles = makeStyles({
     width: '100%',
     maxWidth: '420px',
     padding: '40px',
-    borderRadius: '16px',
+    borderRadius: '20px',
     boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
   },
   logo: {
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
-    gap: '12px',
+    gap: '8px',
     marginBottom: '8px',
-    justifyContent: 'center',
   },
-  logoIcon: {
-    fontSize: '36px',
-    color: '#0891B2',
+  logoImg: {
+    width: '90px',
+    height: '90px',
+    objectFit: 'contain' as const,
+    filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.15))',
   },
   form: {
     display: 'flex',
@@ -100,8 +102,9 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '8px 0',
+    padding: '10px 0',
     cursor: 'pointer',
+    gap: '16px',
     '&:hover': { opacity: 0.7 },
   },
   footer: {
@@ -136,8 +139,11 @@ export default function LoginPage() {
   return (
     <div className={styles.page}>
       <div className={styles.leftPanel}>
-        <div style={{ fontSize: '64px', marginBottom: '16px' }}>✈️</div>
+        <img src="/zava-logo.png" alt="Zava Travel" style={{ width: '180px', height: '180px', objectFit: 'contain', marginBottom: '16px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3))' }} />
         <div className={styles.heroTitle}>Zava Travel</div>
+        <div style={{ color: '#D63B2F', fontSize: '14px', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase' as const, marginBottom: '16px', fontFamily: "'Poppins', sans-serif", textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>
+          Budget Friendly Adventures
+        </div>
         <div className={styles.heroSubtitle}>
           Wander More, Spend Less — AI-powered social media content creation for adventure travel
         </div>
@@ -154,11 +160,13 @@ export default function LoginPage() {
       <div className={styles.rightPanel}>
         <Card className={styles.loginCard}>
           <div className={styles.logo}>
-            <AirplaneRegular className={styles.logoIcon} />
-            <Title1 style={{ color: '#1E3A5F' }}>Zava Travel</Title1>
+            <img src="/zava-logo.png" alt="Zava Travel" className={styles.logoImg} />
+            <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: '24px', color: '#1E3A5F' }}>
+              Zava Travel
+            </span>
           </div>
-          <Body1 style={{ textAlign: 'center', color: '#64748B' }}>
-            Social Media Content Studio
+          <Body1 style={{ textAlign: 'center', color: '#64748B', fontFamily: "'Poppins', sans-serif", marginBottom: '4px' }}>
+            Social Media <span style={{ color: '#D63B2F', fontWeight: 700, fontSize: '15px' }}>Content Studio</span>
           </Body1>
 
           <form onSubmit={handleSubmit} className={styles.form}>
@@ -199,7 +207,7 @@ export default function LoginPage() {
               appearance="primary"
               type="submit"
               size="large"
-              style={{ background: '#0891B2', marginTop: '8px' }}
+              style={{ background: 'linear-gradient(135deg, #0891B2 0%, #1E3A5F 100%)', marginTop: '8px', fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}
             >
               Sign In
             </Button>
@@ -214,14 +222,14 @@ export default function LoginPage() {
                 className={styles.demoAccount}
                 onClick={() => fillDemo(acc.username, acc.password)}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '20px' }}>{acc.avatar}</span>
-                  <div>
-                    <Body1 style={{ fontWeight: 600 }}>{acc.displayName}</Body1>
-                    <Caption1 style={{ color: '#64748B' }}>{acc.role}</Caption1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: 0 }}>
+                  <span style={{ fontSize: '20px', flexShrink: 0 }}>{acc.avatar}</span>
+                  <div style={{ minWidth: 0 }}>
+                    <Body1 style={{ fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{acc.displayName}</Body1>
+                    <Caption1 style={{ color: '#64748B', display: 'block' }}>{acc.role}</Caption1>
                   </div>
                 </div>
-                <Caption1 style={{ fontFamily: 'monospace', color: '#0891B2' }}>
+                <Caption1 style={{ fontFamily: 'monospace', color: '#0891B2', flexShrink: 0, marginLeft: '8px' }}>
                   {acc.username}
                 </Caption1>
               </div>

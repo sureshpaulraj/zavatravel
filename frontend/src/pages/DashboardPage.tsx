@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import {
   Card,
-  Title1,
   Title2,
   Title3,
   Body1,
@@ -24,22 +23,27 @@ import { useAuth } from '../context/AuthContext'
 const useStyles = makeStyles({
   page: { maxWidth: '1200px', margin: '0 auto' },
   hero: {
-    background: 'linear-gradient(135deg, #0891B2 0%, #1E3A5F 100%)',
-    borderRadius: '16px',
-    padding: '40px',
+    background: 'linear-gradient(135deg, #1E3A5F 0%, #0891B2 60%, #F97316 100%)',
+    borderRadius: '20px',
+    padding: '44px 48px',
     color: 'white',
     marginBottom: '32px',
     position: 'relative' as const,
     overflow: 'hidden',
+    boxShadow: '0 8px 32px rgba(30, 58, 95, 0.25)',
   },
-  heroOverlay: {
+  heroBg: {
     position: 'absolute' as const,
-    right: '-40px',
-    top: '-40px',
-    fontSize: '200px',
-    opacity: 0.1,
+    right: '-10px',
+    top: '-10px',
+    width: '220px',
+    height: '220px',
+    objectFit: 'contain' as const,
+    opacity: 0.15,
+    filter: 'brightness(2) contrast(0.8)',
+    pointerEvents: 'none' as const,
   },
-  greeting: { fontSize: '14px', opacity: 0.8, marginBottom: '8px' },
+  greeting: { fontSize: '14px', opacity: 0.85, marginBottom: '8px', fontFamily: "'Poppins', sans-serif", fontWeight: 500 },
   statsGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -47,26 +51,26 @@ const useStyles = makeStyles({
     marginBottom: '32px',
   },
   statCard: {
-    padding: '24px',
-    borderRadius: '12px',
+    padding: '14px 20px',
+    borderRadius: '14px',
     display: 'flex',
     alignItems: 'center',
-    gap: '16px',
+    gap: '14px',
     border: '1px solid #E2E8F0',
     transition: 'transform 0.2s, box-shadow 0.2s',
     ':hover': {
-      transform: 'translateY(-2px)',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+      transform: 'translateY(-3px)',
+      boxShadow: '0 10px 28px rgba(0,0,0,0.1)',
     },
   },
   statIcon: {
-    width: '48px',
-    height: '48px',
-    borderRadius: '12px',
+    width: '40px',
+    height: '40px',
+    borderRadius: '10px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '24px',
+    fontSize: '20px',
   },
   agentSection: {
     display: 'grid',
@@ -75,13 +79,13 @@ const useStyles = makeStyles({
     marginTop: '16px',
   },
   agentCard: {
-    padding: '24px',
-    borderRadius: '12px',
-    borderBottomWidth: '2px',
-    borderBottomStyle: 'solid',
-    borderBottomColor: 'transparent',
-    transition: 'border-color 0.2s',
-    ':hover': { borderBottomColor: '#0891B2' },
+    padding: '28px',
+    borderRadius: '14px',
+    borderLeftWidth: '4px',
+    borderLeftStyle: 'solid',
+    borderLeftColor: 'transparent',
+    transition: 'all 0.2s ease',
+    ':hover': { borderLeftColor: '#D63B2F', boxShadow: '0 8px 24px rgba(0,0,0,0.08)' },
   },
   agentBadge: {
     display: 'inline-flex',
@@ -153,24 +157,39 @@ export default function DashboardPage() {
     <div className={styles.page}>
       {/* Hero */}
       <div className={styles.hero}>
-        <div className={styles.heroOverlay}>✈️</div>
+        <img src="/zava-logo.png" alt="" className={styles.heroBg} />
         <div className={styles.greeting}>Welcome back, {user?.displayName}</div>
-        <Title1 style={{ color: 'white', marginBottom: '8px' }}>
-          Zava Travel Content Studio
-        </Title1>
-        <Body1 style={{ color: 'rgba(255,255,255,0.85)', maxWidth: '600px', marginBottom: '24px' }}>
+        <div style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: '36px', color: 'white', marginBottom: '4px', lineHeight: 1.2 }}>
+          Zava Travel{' '}
+          <span style={{ color: '#D63B2F', fontSize: '40px' }}>Content</span>{' '}
+          <span style={{ color: '#F5A623', fontSize: '32px' }}>Studio</span>
+        </div>
+        <div style={{ color: '#D63B2F', fontSize: '13px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const, fontFamily: "'Poppins', sans-serif", marginBottom: '16px' }}>
+          Budget Friendly Adventures
+        </div>
+        <Body1 style={{ color: 'rgba(255,255,255,0.9)', maxWidth: '600px', marginBottom: '28px' }}>
           Create platform-ready social media content with AI-powered multi-agent collaboration.
           Three specialized agents work together to draft, review, and publish your travel content.
         </Body1>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
         <Button
           appearance="primary"
           icon={<AddRegular />}
           size="large"
           onClick={() => navigate('/create')}
-          style={{ background: '#F97316', border: 'none' }}
+          style={{
+            background: 'linear-gradient(135deg, #F97316 0%, #D63B2F 100%)',
+            border: 'none',
+            fontWeight: 700,
+            fontSize: '15px',
+            padding: '12px 28px',
+            borderRadius: '12px',
+            boxShadow: '0 4px 14px rgba(249,115,22,0.4)',
+          }}
         >
           Create New Content
         </Button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -181,15 +200,20 @@ export default function DashboardPage() {
               {s.icon}
             </div>
             <div>
-              <Title3 style={{ color: '#1E3A5F' }}>{s.value}</Title3>
-              <Caption1 style={{ color: '#64748B' }}>{s.label}</Caption1>
+              <Title3 style={{ color: '#1E3A5F', display: 'block', marginBottom: '4px' }}>{s.value}</Title3>
+              <Caption1 style={{ color: '#64748B', display: 'block' }}>{s.label}</Caption1>
             </div>
           </Card>
         ))}
       </div>
 
       {/* Agents */}
-      <Title2 style={{ marginBottom: '4px' }}>🤖 Agent Team</Title2>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '4px' }}>
+        <Title2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}>🤖 Agent Team</Title2>
+        <span style={{ color: '#D63B2F', fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' as const }}>
+          AI-Powered
+        </span>
+      </div>
       <Body2 style={{ color: '#64748B', marginBottom: '16px' }}>
         Three specialized AI agents collaborate in a group chat to create your content
       </Body2>
@@ -200,8 +224,8 @@ export default function DashboardPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
               <span style={{ fontSize: '28px' }}>{a.emoji}</span>
               <div>
-                <Title3>{a.name}</Title3>
-                <Caption1 style={{ color: '#64748B' }}>{a.engine}</Caption1>
+                <Title3 style={{ display: 'block', marginBottom: '2px' }}>{a.name}</Title3>
+                <Caption1 style={{ color: '#64748B', display: 'block' }}>{a.engine}</Caption1>
               </div>
             </div>
             <div className={styles.agentBadge} style={{ background: a.bg, color: a.color }}>
@@ -215,7 +239,12 @@ export default function DashboardPage() {
       <Divider style={{ margin: '32px 0' }} />
 
       {/* Destinations */}
-      <Title2 style={{ marginBottom: '16px' }}>🌍 Featured Destinations</Title2>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px' }}>
+        <Title2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}>🌍 Featured Destinations</Title2>
+        <span style={{ color: '#D63B2F', fontSize: '18px', fontWeight: 800, fontFamily: "'Poppins', sans-serif" }}>
+          Explore
+        </span>
+      </div>
       <div className={styles.destinationGrid}>
         {DESTINATIONS.map(d => (
           <Badge
@@ -223,14 +252,17 @@ export default function DashboardPage() {
             appearance="outline"
             size="extra-large"
             style={{
-              padding: '12px 20px',
+              padding: '14px 22px',
               fontSize: '15px',
               borderColor: '#0891B2',
               color: '#1E3A5F',
               borderRadius: '12px',
+              fontFamily: "'Poppins', sans-serif",
+              fontWeight: 500,
+              transition: 'all 0.2s ease',
             }}
           >
-            {d.flag} {d.name} — from {d.price}
+            {d.flag} {d.name} — <span style={{ color: '#D63B2F', fontWeight: 700 }}>from {d.price}</span>
           </Badge>
         ))}
       </div>
