@@ -25,18 +25,22 @@ test.describe("US-008: Navigation Sidebar", () => {
     await expect(page.getByText("Zava Travel")).toBeVisible({ timeout: 10000 });
 
     // Verify navigation items
-    await expect(
-      page.getByRole("button", { name: /dashboard/i }),
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("button", { name: /dashboard/i })).toBeVisible({
+      timeout: 10000,
+    });
     await expect(
       page.getByRole("button", { name: /create content/i }),
     ).toBeVisible({ timeout: 10000 });
 
     // Verify user profile section
-    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.displayName)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.displayName)).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify Sign Out button
-    await expect(page.getByRole("button", { name: /sign out/i })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("button", { name: /sign out/i })).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("TC-062: Verify Navigation Menu Items Display", async ({ page }) => {
@@ -70,7 +74,9 @@ test.describe("US-008: Navigation Sidebar", () => {
     // Verify navigation to Dashboard
     await expect(page).toHaveURL("/");
     // Check for split title pieces
-    await expect(page.getByText("Zava Travel").first()).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Zava Travel").first()).toBeVisible({
+      timeout: 15000,
+    });
     await expect(page.getByText("Content")).toBeVisible({ timeout: 10000 });
   });
 
@@ -85,7 +91,9 @@ test.describe("US-008: Navigation Sidebar", () => {
 
     // Verify navigation to Create Content
     await expect(page).toHaveURL("/create");
-    await expect(page.getByText("Campaign Brief")).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Campaign Brief")).toBeVisible({
+      timeout: 15000,
+    });
   });
 
   test("TC-065: Verify Active Page Indicator on Dashboard", async ({
@@ -161,7 +169,9 @@ test.describe("US-008: Navigation Sidebar", () => {
     // Verify navigation to Dashboard
     await expect(page).toHaveURL("/");
     // Check for split title pieces
-    await expect(page.getByText("Zava Travel").first()).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Zava Travel").first()).toBeVisible({
+      timeout: 15000,
+    });
     await expect(page.getByText("Content")).toBeVisible({ timeout: 10000 });
   });
 
@@ -169,8 +179,12 @@ test.describe("US-008: Navigation Sidebar", () => {
     page,
   }) => {
     // Verify user profile section at bottom of sidebar
-    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.displayName)).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.role)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.displayName)).toBeVisible({
+      timeout: 10000,
+    });
+    await expect(page.getByText(DEMO_ACCOUNTS.SARAH.role)).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify avatar/emoji
     await expect(

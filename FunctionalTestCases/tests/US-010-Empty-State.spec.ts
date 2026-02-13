@@ -21,7 +21,9 @@ test.describe("US-010: View Empty State", () => {
     page,
   }) => {
     // Verify empty state card is visible
-    await expect(page.getByText("Ready to Create")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Ready to Create")).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify empty state message
     await expect(
@@ -57,13 +59,19 @@ test.describe("US-010: View Empty State", () => {
 
   test("TC-080: Verify Empty State Visibility Conditions", async ({ page }) => {
     // On initial load, only empty state should be visible
-    await expect(page.getByText("Ready to Create")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Ready to Create")).toBeVisible({
+      timeout: 10000,
+    });
 
     // Campaign Brief form should be visible
-    await expect(page.getByText("Campaign Brief")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Campaign Brief")).toBeVisible({
+      timeout: 10000,
+    });
 
     // Loading card should not be visible
-    await expect(page.getByText(/agents collaborating/i)).not.toBeVisible({ timeout: 5000 });
+    await expect(page.getByText(/agents collaborating/i)).not.toBeVisible({
+      timeout: 5000,
+    });
 
     // Results tabs should not be visible
     await expect(
@@ -75,14 +83,20 @@ test.describe("US-010: View Empty State", () => {
     page,
   }) => {
     // Verify empty state is initially visible
-    await expect(page.getByText("Ready to Create")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Ready to Create")).toBeVisible({
+      timeout: 10000,
+    });
 
     // Click Generate Content
     await page.getByRole("button", { name: /generate content/i }).click();
 
     // Verify empty state is replaced with loading card
-    await expect(page.getByText("Ready to Create")).not.toBeVisible({ timeout: 5000 });
-    await expect(page.getByText(/agents collaborating/i)).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Ready to Create")).not.toBeVisible({
+      timeout: 5000,
+    });
+    await expect(page.getByText(/agents collaborating/i)).toBeVisible({
+      timeout: 15000,
+    });
   });
 
   test("TC-082: Verify Empty State Returns After Page Refresh", async ({
@@ -105,7 +119,9 @@ test.describe("US-010: View Empty State", () => {
     await page.reload();
 
     // Verify empty state returns
-    await expect(page.getByText("Ready to Create")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Ready to Create")).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify results are gone
     await expect(
@@ -131,7 +147,9 @@ test.describe("US-010: View Empty State", () => {
     await expect(page).toHaveURL("/create");
 
     // Verify empty state returns
-    await expect(page.getByText("Ready to Create")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Ready to Create")).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify previous results are not displayed
     await expect(
@@ -141,14 +159,20 @@ test.describe("US-010: View Empty State", () => {
 
   test("TC-084: Verify Form Visible with Empty State", async ({ page }) => {
     // Verify empty state is visible
-    await expect(page.getByText("Ready to Create")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Ready to Create")).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify Campaign Brief form is also visible
-    await expect(page.getByText("Campaign Brief")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Campaign Brief")).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify all form fields are accessible
     await expect(page.locator("input").first()).toBeVisible({ timeout: 10000 });
-    await expect(page.locator("textarea").first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("textarea").first()).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify Generate Content button is visible and enabled
     await expect(

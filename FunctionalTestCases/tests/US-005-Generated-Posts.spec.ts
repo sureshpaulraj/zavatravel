@@ -69,13 +69,17 @@ test.describe("US-005: View Generated Social Media Posts", () => {
 
   test("TC-042: Verify Post Content Display Format", async ({ page }) => {
     // Verify at least one post has platform name and emoji
-    await expect(page.getByText("LinkedIn").or(page.getByText("Instagram")).first()).toBeVisible({ timeout: 10000 });
+    await expect(
+      page.getByText("LinkedIn").or(page.getByText("Instagram")).first(),
+    ).toBeVisible({ timeout: 10000 });
 
     // Verify post content exists (look for hashtags or typical content)
     await expect(page.getByText(/#/i).first()).toBeVisible();
 
     // Verify copy buttons are present
-    await expect(page.getByRole("button", { name: /copy/i }).first()).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /copy/i }).first(),
+    ).toBeVisible();
   });
 
   test("TC-043: Verify Twitter Character Count with Valid Length", async ({

@@ -96,6 +96,7 @@ You can run the workflow in two ways:
 Open **two terminals**:
 
 **Terminal 1 — Backend API server** (port 8000):
+
 ```powershell
 .\venv\Scripts\Activate.ps1
 python api_server.py
@@ -104,6 +105,7 @@ python api_server.py
 ```
 
 **Terminal 2 — Frontend dev server** (port 5173):
+
 ```powershell
 cd frontend
 npm run dev
@@ -122,20 +124,21 @@ Output is printed to the console and saved to `./output/social-posts-*.md`.
 
 #### Demo Accounts
 
-| Username | Password | Role |
-|----------|----------|------|
-| `sarah.explorer` | `zava2026` | Content Lead |
+| Username           | Password     | Role                 |
+| ------------------ | ------------ | -------------------- |
+| `sarah.explorer`   | `zava2026`   | Content Lead         |
 | `marco.adventures` | `wander2026` | Social Media Manager |
-| `admin` | `admin` | Administrator |
+| `admin`            | `admin`      | Administrator        |
 
 ### API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/health` | Health check — returns `{"status": "ok"}` |
+| Method | Path            | Description                                  |
+| ------ | --------------- | -------------------------------------------- |
+| `GET`  | `/api/health`   | Health check — returns `{"status": "ok"}`    |
 | `POST` | `/api/generate` | Run multi-agent workflow with campaign brief |
 
 **POST `/api/generate`** request body:
+
 ```json
 {
   "brand_name": "Zava Travel Inc.",
@@ -148,11 +151,19 @@ Output is printed to the console and saved to `./output/social-posts-*.md`.
 ```
 
 **Response** (JSON):
+
 ```json
 {
   "status": "success",
   "posts": { "linkedin": "...", "twitter": "...", "instagram": "..." },
-  "transcript": [ { "agent_name": "Creator", "content": "...", "reasoning_pattern": "Chain-of-Thought", "timestamp": "..." } ],
+  "transcript": [
+    {
+      "agent_name": "Creator",
+      "content": "...",
+      "reasoning_pattern": "Chain-of-Thought",
+      "timestamp": "..."
+    }
+  ],
   "duration_seconds": 42.5,
   "termination_reason": "Reviewer approved — fast-tracked to Publisher"
 }
@@ -342,12 +353,12 @@ Final:  [polished post ready for publication]
 
 ## 🎯 Hackathon Milestones
 
-| # | Milestone | Status |
-|---|-----------|--------|
-| 1 | Environment setup (Foundry + model deployment) | ✅ |
-| 2 | Agent creation (Creator, Reviewer, Publisher) | ✅ |
-| 3 | Grounding knowledge (File Search + brand guidelines) | ✅ |
-| 4 | External tools (MCP filesystem integration) | ✅ |
+| #   | Milestone                                            | Status |
+| --- | ---------------------------------------------------- | ------ |
+| 1   | Environment setup (Foundry + model deployment)       | ✅     |
+| 2   | Agent creation (Creator, Reviewer, Publisher)        | ✅     |
+| 3   | Grounding knowledge (File Search + brand guidelines) | ✅     |
+| 4   | External tools (MCP filesystem integration)          | ✅     |
 
 ### Bonus Features (Optional)
 
@@ -367,9 +378,9 @@ The Publisher agent saves posts to `./output/` via the [Model Context Protocol](
 
 Set `MCP_TRANSPORT` in `.env` to choose (default: `stdio`):
 
-| Mode | Env Value | How It Works |
-|------|-----------|-------------|
-| **Stdio** (default) | `stdio` | Direct stdio pipe to the MCP server. Simplest setup. |
+| Mode                | Env Value         | How It Works                                                                                                        |
+| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Stdio** (default) | `stdio`           | Direct stdio pipe to the MCP server. Simplest setup.                                                                |
 | **HTTP Streamable** | `streamable-http` | Uses [supergateway](https://github.com/nichochar/supergateway) as a bridge. Requires `npm install -g supergateway`. |
 
 ```
@@ -383,11 +394,11 @@ Publisher Agent -> MCPStreamableHTTPTool -> http://127.0.0.1:8000/mcp
                                        npx server-filesystem ./output
 ```
 
-| Setting | Default | Override |
-|---------|---------|----------|
-| Transport | `stdio` | `MCP_TRANSPORT` env var |
-| Port (HTTP only) | `8000` | `MCP_SERVER_PORT` env var |
-| Output dir | `./output` | Pass `output_dir` to `get_filesystem_tools()` |
+| Setting          | Default    | Override                                      |
+| ---------------- | ---------- | --------------------------------------------- |
+| Transport        | `stdio`    | `MCP_TRANSPORT` env var                       |
+| Port (HTTP only) | `8000`     | `MCP_SERVER_PORT` env var                     |
+| Output dir       | `./output` | Pass `output_dir` to `get_filesystem_tools()` |
 
 ---
 

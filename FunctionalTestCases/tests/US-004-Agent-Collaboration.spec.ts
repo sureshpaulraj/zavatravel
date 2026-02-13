@@ -25,7 +25,9 @@ test.describe("US-004: View Agent Collaboration Progress", () => {
     await page.getByRole("button", { name: /generate content/i }).click();
 
     // Verify loading card elements (with longer timeout)
-    await expect(page.locator("text=Agents Collaborating...")).toBeVisible({ timeout: 15000 });
+    await expect(page.locator("text=Agents Collaborating...")).toBeVisible({
+      timeout: 15000,
+    });
     await expect(page.getByText(/creator.*reviewer.*publisher/i)).toBeVisible();
 
     // Verify agent status badges exist
@@ -63,7 +65,9 @@ test.describe("US-004: View Agent Collaboration Progress", () => {
     await page.getByRole("button", { name: /generate content/i }).click();
 
     // Wait for loading state (with longer timeout)
-    await expect(page.getByText(/agents collaborating/i)).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/agents collaborating/i)).toBeVisible({
+      timeout: 15000,
+    });
 
     // Wait for results to appear
     await expect(page.getByText(/content generated/i)).toBeVisible({

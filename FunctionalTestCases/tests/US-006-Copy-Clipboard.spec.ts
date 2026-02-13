@@ -205,10 +205,11 @@ test.describe("US-006: Copy Social Media Posts to Clipboard", () => {
     await expect(page.getByText("LinkedIn")).toBeVisible({ timeout: 15000 });
 
     // Get LinkedIn post content (typically multi-line)
-    const linkedInSection = page.getByText("LinkedIn").locator("..").locator("..");
-    const postContent = linkedInSection
-      .locator('[class*="content"]')
-      .first();
+    const linkedInSection = page
+      .getByText("LinkedIn")
+      .locator("..")
+      .locator("..");
+    const postContent = linkedInSection.locator('[class*="content"]').first();
     const originalText = await postContent.textContent();
 
     // Click copy button

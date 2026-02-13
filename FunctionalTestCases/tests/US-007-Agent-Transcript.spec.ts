@@ -28,7 +28,9 @@ test.describe("US-007: View Agent Transcript", () => {
     await transcriptTab.click();
 
     // Verify tab is now selected
-    await expect(transcriptTab).toHaveAttribute("aria-selected", "true", { timeout: 5000 });
+    await expect(transcriptTab).toHaveAttribute("aria-selected", "true", {
+      timeout: 5000,
+    });
 
     // Verify transcript content area is visible
     await expect(
@@ -64,17 +66,23 @@ test.describe("US-007: View Agent Transcript", () => {
   test("TC-056: Verify Creator Message Display", async ({ page }) => {
     // Click Agent Transcript tab and wait for content
     await page.getByRole("tab", { name: /agent transcript/i }).click();
-    await expect(
-      page.getByText(/creator/i).first(),
-    ).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/creator/i).first()).toBeVisible({
+      timeout: 15000,
+    });
 
     // Verify Creator messages with emoji (flexible emoji check)
-    await expect(page.locator("text=/✍.*Creator/i").or(page.locator("text=/Creator/i")).first()).toBeVisible({ timeout: 10000 });
+    await expect(
+      page
+        .locator("text=/✍.*Creator/i")
+        .or(page.locator("text=/Creator/i"))
+        .first(),
+    ).toBeVisible({ timeout: 10000 });
 
     // Verify Creator message content about drafting
     const creatorMessage = page
       .getByText(/Creator/i)
-      .locator("..")      .first();
+      .locator("..")
+      .first();
     const messageText = await creatorMessage.textContent();
     expect(messageText?.toLowerCase()).toMatch(/draft|creat|generat|writ/);
   });
@@ -82,12 +90,17 @@ test.describe("US-007: View Agent Transcript", () => {
   test("TC-057: Verify Reviewer Message Display", async ({ page }) => {
     // Click Agent Transcript tab and wait for content
     await page.getByRole("tab", { name: /agent transcript/i }).click();
-    await expect(
-      page.getByText(/reviewer/i).first(),
-    ).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/reviewer/i).first()).toBeVisible({
+      timeout: 15000,
+    });
 
     // Verify Reviewer messages with emoji (flexible emoji check)
-    await expect(page.locator("text=/🔍.*Reviewer/i").or(page.locator("text=/Reviewer/i")).first()).toBeVisible({ timeout: 10000 });
+    await expect(
+      page
+        .locator("text=/🔍.*Reviewer/i")
+        .or(page.locator("text=/Reviewer/i"))
+        .first(),
+    ).toBeVisible({ timeout: 10000 });
 
     // Verify Reviewer message content about reviewing
     const reviewerMessage = page
@@ -101,12 +114,17 @@ test.describe("US-007: View Agent Transcript", () => {
   test("TC-058: Verify Publisher Message Display", async ({ page }) => {
     // Click Agent Transcript tab and wait for content
     await page.getByRole("tab", { name: /agent transcript/i }).click();
-    await expect(
-      page.getByText(/publisher/i).first(),
-    ).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/publisher/i).first()).toBeVisible({
+      timeout: 15000,
+    });
 
     // Verify Publisher messages with emoji (flexible emoji check)
-    await expect(page.locator("text=/📤.*Publisher/i").or(page.locator("text=/Publisher/i")).first()).toBeVisible({ timeout: 10000 });
+    await expect(
+      page
+        .locator("text=/📤.*Publisher/i")
+        .or(page.locator("text=/Publisher/i"))
+        .first(),
+    ).toBeVisible({ timeout: 10000 });
 
     // Verify Publisher message content about publishing
     const publisherMessage = page
@@ -157,7 +175,9 @@ test.describe("US-007: View Agent Transcript", () => {
 
     // Verify posts are displayed with timeouts
     await expect(page.getByText("LinkedIn")).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText(/twitter|𝕏|x/i).first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/twitter|𝕏|x/i).first()).toBeVisible({
+      timeout: 10000,
+    });
     await expect(page.getByText("Instagram")).toBeVisible({ timeout: 10000 });
   });
 });

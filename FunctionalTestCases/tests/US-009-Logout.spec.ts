@@ -84,7 +84,9 @@ test.describe("US-009: User Logout", () => {
     await page.goto("/");
 
     // Verify redirected to/remains on login page
-    await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify dashboard content is not accessible (check for split title)
     await expect(
@@ -102,10 +104,14 @@ test.describe("US-009: User Logout", () => {
     await page.goto("/create");
 
     // Verify redirected to login page
-    await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify Create Content page is not accessible
-    await expect(page.getByText("Campaign Brief")).not.toBeVisible({ timeout: 5000 });
+    await expect(page.getByText("Campaign Brief")).not.toBeVisible({
+      timeout: 5000,
+    });
   });
 
   test("TC-076: Verify Re-login After Logout", async ({ page }) => {
@@ -113,7 +119,9 @@ test.describe("US-009: User Logout", () => {
     await logout(page);
 
     // Verify on login page
-    await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible({
+      timeout: 10000,
+    });
 
     // Login again
     await page.locator('input[type="text"]').first().fill("sarah.explorer");
@@ -122,7 +130,9 @@ test.describe("US-009: User Logout", () => {
 
     // Verify successful re-login
     await expect(page).toHaveURL("/");
-    await expect(page.getByText(/welcome back/i)).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/welcome back/i)).toBeVisible({
+      timeout: 15000,
+    });
   });
 
   test("TC-077: Verify Logout Button Appearance", async ({ page }) => {
