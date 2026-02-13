@@ -33,6 +33,14 @@ Campaign Brief (User Input)
                   (LinkedIn, Twitter, Instagram)
 ```
 
+### System Architecture
+
+![System Architecture](docs/images/architecture.svg)
+
+### Data Flow (Content Generation)
+
+![Data Flow](docs/images/dataflow.svg)
+
 | Agent | Engine | Reasoning Pattern | Role |
 |-------|--------|-------------------|------|
 | **Creator** | Azure OpenAI (GPT-5.x) | Chain-of-Thought (5 steps) | Drafts content with visible reasoning |
@@ -46,7 +54,7 @@ Campaign Brief (User Input)
 ### Prerequisites
 
 - Python 3.10+
-- Node.js 18+ and npm (for MCP filesystem server)
+- Node.js 18+ and npm (for MCP filesystem server + frontend)
 - Azure Subscription with AI Foundry project & deployed reasoning model
 - Azure CLI (`az login`)
 - GitHub Copilot CLI (authenticated with `/login`)
@@ -58,21 +66,96 @@ Campaign Brief (User Input)
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 
-# 2. Install dependencies
+# 2. Install Python dependencies
 pip install --pre -r requirements.txt
+
+# 3. Install MCP filesystem server
 npm install -g @modelcontextprotocol/server-filesystem
 # Optional: only needed if using MCP_TRANSPORT=streamable-http
 # npm install -g supergateway
 
-# 3. Configure environment
+# 4. Install frontend dependencies
+cd frontend
+npm install
+cd ..
+
+# 5. Configure environment
 copy .env.sample .env
 # Edit .env with your Azure endpoints
 
-# 4. Authenticate
+# 6. Authenticate
 az login
+```
 
-# 5. Run the workflow
+### Running the Application
+
+You can run the workflow in two ways:
+
+#### Option A: CLI Only (no frontend)
+
+```powershell
 python workflow_social_media.py
+```
+
+Output is printed to the console and saved to `./output/social-posts-*.md`.
+
+#### Option B: Full Stack (frontend + API server)
+
+Open **two terminals**:
+
+**Terminal 1 — Backend API server** (port 8000):
+```powershell
+.\venv\Scripts\Activate.ps1
+python api_server.py
+# API available at http://localhost:8000
+# Health check: GET http://localhost:8000/api/health
+```
+
+**Terminal 2 — Frontend dev server** (port 5173):
+```powershell
+cd frontend
+npm run dev
+# Open http://localhost:5173 in your browser
+```
+
+Then open http://localhost:5173, log in with a demo account, and click **Generate Content**.
+
+#### Demo Accounts
+
+| Username | Password | Role |
+|----------|----------|------|
+| `sarah.explorer` | `zava2026` | Content Lead |
+| `marco.adventures` | `wander2026` | Social Media Manager |
+| `admin` | `admin` | Administrator |
+
+### API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/health` | Health check — returns `{"status": "ok"}` |
+| `POST` | `/api/generate` | Run multi-agent workflow with campaign brief |
+
+**POST `/api/generate`** request body:
+```json
+{
+  "brand_name": "Zava Travel Inc.",
+  "industry": "Travel — Budget-Friendly Adventure",
+  "target_audience": "Millennials & Gen-Z adventure seekers",
+  "key_message": "Wander More, Spend Less — affordable curated itineraries starting at $699",
+  "destinations": "Bali, Patagonia, Iceland, Vietnam, Costa Rica",
+  "platforms": ["LinkedIn", "Twitter", "Instagram"]
+}
+```
+
+**Response** (JSON):
+```json
+{
+  "status": "success",
+  "posts": { "linkedin": "...", "twitter": "...", "instagram": "..." },
+  "transcript": [ { "agent_name": "Creator", "content": "...", "reasoning_pattern": "Chain-of-Thought", "timestamp": "..." } ],
+  "duration_seconds": 42.5,
+  "termination_reason": "Reviewer approved — fast-tracked to Publisher"
+}
 ```
 
 ### Environment Variables (`.env`)
@@ -82,7 +165,7 @@ AZURE_AI_FOUNDRY_PROJECT_ENDPOINT=https://<resource>.services.ai.azure.com/api/p
 AZURE_OPENAI_ENDPOINT=https://<resource>.services.ai.azure.com
 AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=<your-deployed-model>
 MCP_TRANSPORT=stdio                    # Optional — 'stdio' (default) or 'streamable-http'
-MCP_SERVER_PORT=8000                   # Optional — supergateway port (only for streamable-http)
+MCP_SERVER_PORT=8001                   # Optional — supergateway port (only for streamable-http)
 ```
 
 ---
@@ -113,7 +196,15 @@ The system produces three platform-ready posts:
 ## 📁 Project Structure
 
 ```
-├── workflow_social_media.py        # Main entry point
+├── api_server.py                   # FastAPI backend (POST /api/generate)
+├── workflow_social_media.py        # CLI entry point
+├── frontend/                       # React + Vite + Fluent UI frontend
+│   ├── src/
+│   │   ├── pages/CreateContentPage.tsx   # Campaign brief form + results display
+│   │   ├── pages/DashboardPage.tsx       # Dashboard with agent info
+│   │   ├── services/api.ts              # API client (calls /api/generate)
+│   │   └── context/AuthContext.tsx       # Demo authentication
+│   └── package.json
 ├── agents/
 │   ├── creator.py                  # Chain-of-Thought agent instructions
 │   ├── reviewer.py                 # ReAct agent instructions

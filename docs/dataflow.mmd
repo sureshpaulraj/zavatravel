@@ -1,0 +1,56 @@
+sequenceDiagram
+    actor User
+    participant FE as Frontend (React)
+    participant API as FastAPI Server
+    participant GC as GroupChat Orchestrator
+    participant CR as Creator (CoT)
+    participant RV as Reviewer (ReAct)
+    participant PB as Publisher (Self-Reflection)
+    participant AOAI as Azure OpenAI (GPT-4.1)
+    participant MCP as MCP Filesystem
+
+    User->>FE: Fill campaign brief & click Generate
+    FE->>API: POST /api/generate
+    API->>API: Load brand guidelines into Creator instructions
+
+    API->>GC: workflow.run(brief, stream=True)
+
+    Note over GC: Round 1 - Creator
+
+    GC->>CR: Generate draft
+    CR->>AOAI: Chat Completions
+    AOAI-->>CR: 5-step reasoning + draft
+    CR-->>GC: Draft content
+
+    Note over GC: Round 2 - Reviewer
+
+    GC->>RV: Review draft
+    RV->>AOAI: Evaluate with ReAct
+    AOAI-->>RV: Observation/Thought/Action/Result
+
+    alt REVISE
+        RV-->>GC: REVISE + feedback
+        GC->>CR: Revise draft
+        CR->>AOAI: Apply feedback
+        AOAI-->>CR: Revised draft
+        CR-->>GC: Updated content
+        GC->>RV: Re-review
+        RV-->>GC: APPROVED
+    else APPROVED
+        RV-->>GC: APPROVED
+    end
+
+    Note over GC: Publisher formats
+
+    GC->>PB: Format for platforms
+    PB->>AOAI: Generate LinkedIn + Twitter + Instagram
+    AOAI-->>PB: 3 platform posts + reflection checks
+    PB->>MCP: Save to output/*.md
+    PB-->>GC: All posts validated
+
+    Note over GC: Termination - Publisher spoke
+
+    GC-->>API: WorkflowRunResult
+    API->>API: Parse platform posts
+    API-->>FE: JSON response
+    FE-->>User: Display posts + transcript
