@@ -2,13 +2,14 @@
 
 **Feature**: 001-social-media-agents  
 **Date**: 2025-01-23  
-**Status**: Phase 1 Design
+**Updated**: 2025-07-14  
+**Status**: Implemented
 
 ---
 
 ## Overview
 
-This data model defines the core entities and their relationships for the multi-agent social media content creation workflow. The model is intentionally lightweight to support the 100-minute hackathon constraint, focusing on essential data structures needed for group chat orchestration, reasoning transparency, and platform-specific output generation.
+This data model defines the core entities and their relationships for the multi-agent social media content creation workflow. Originally designed as lightweight dataclasses for the 100-minute hackathon, the models have been upgraded to Pydantic `BaseModel` classes in the FastAPI API server (`api_server.py`) and `@dataclass` classes in the safety module (`safety/brand_filters.py`). The model supports group chat orchestration with Router pattern, reasoning transparency, platform-specific output generation, AI image generation, content safety screening, and automated quality evaluation.
 
 ---
 
@@ -61,12 +62,28 @@ class CampaignBrief:
 
 **Example**:
 ```python
-brief = CampaignBrief(
-    brand_name="TechCorp",
-    industry="Technology",
-    target_audience="Enterprise CIOs and IT decision-makers in Fortune 500 companies",
-    key_message="AI-powered automation transforms enterprise operations, reducing costs by 40% while improving accuracy"
+brief = CampaignBriefRequest(
+    brand_name="Zava Travel Inc.",
+    industry="Budget-friendly adventure travel",
+    target_audience="Millennials & Gen-Z adventure seekers looking for affordable, authentic travel experiences",
+    key_message="Wander More, Spend Less — affordable adventure to dream destinations",
+    destinations="Bali, Patagonia, Iceland, Vietnam, Costa Rica",
+    platforms=["LinkedIn", "Twitter", "Instagram"],
+    content_type="both"
 )
+```
+
+**API Usage** (POST `/api/generate`):
+```json
+{
+  "brand_name": "Zava Travel Inc.",
+  "industry": "Budget-friendly adventure travel",
+  "target_audience": "Millennials & Gen-Z adventure seekers",
+  "key_message": "Wander More, Spend Less",
+  "destinations": "Bali, Patagonia, Iceland, Vietnam, Costa Rica",
+  "platforms": ["LinkedIn", "Twitter", "Instagram"],
+  "content_type": "both"
+}
 ```
 
 **Usage in Workflow**:
@@ -78,382 +95,308 @@ brief = CampaignBrief(
 
 ### 2. AgentMessage (Conversation Entity)
 
-**Purpose**: Represents a single agent's contribution (draft, feedback, or final output) within the group chat conversation.
+**Purpose**: Represents a single agent's contribution (draft, feedback, or final output) within the group chat conversation. Implemented as a Pydantic `BaseModel` in `api_server.py`.
 
 **Attributes**:
 
 | Attribute | Type | Required | Description | Example |
 |-----------|------|----------|-------------|---------|
-| `agent_name` | str | Yes | "Creator", "Reviewer", or "Publisher" | "Creator" |
+| `agent_name` | str | Yes | "Creator", "Reviewer", "Publisher", or "Orchestrator" | "Creator" |
 | `content` | str | Yes | Message body (draft text or feedback) | "Step 1: The campaign objective is awareness..." |
-| `reasoning_steps` | List[str] | Yes | Visible reasoning (Chain-of-Thought, ReAct, etc.) | ["Step 1: Identify objective...", "Step 2: Consider audience..."] |
-| `round_number` | int | Yes | Conversation round (1-5) | 1 |
-| `timestamp` | datetime | Yes | Message generation time | 2025-01-23 14:32:15 |
-| `role` | str | Yes | "assistant" (all agents are assistants in framework) | "assistant" |
+| `reasoning_pattern` | str | Yes | Reasoning pattern label for this agent | "Chain-of-Thought" |
+| `timestamp` | str | Yes | ISO format timestamp | "2025-01-23T14:32:15" |
+
+**Reasoning Pattern Mapping** (defined in `REASONING_PATTERNS` constant):
+| Agent | Reasoning Pattern |
+|-------|-------------------|
+| Orchestrator | Router |
+| Creator | Chain-of-Thought |
+| Reviewer | ReAct |
+| Publisher | Self-Reflection |
 
 **Constraints**:
-- `agent_name` must be one of the three valid agents
-- `reasoning_steps` must not be empty (constitutional requirement for visible reasoning)
-- `round_number` increments with each new speaker
+- `agent_name` must be one of the four valid components (Orchestrator, Creator, Reviewer, Publisher)
+- `reasoning_pattern` is automatically assigned based on `REASONING_PATTERNS` lookup
 - `content` length varies by agent role (Creator: ~150 words, Reviewer: ~120 words, Publisher: ~300 words)
 
-**Python Dataclass**:
+**Pydantic Model** (actual implementation in `api_server.py`):
 ```python
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import List
-
-@dataclass
-class AgentMessage:
-    agent_name: str  # "Creator", "Reviewer", "Publisher"
+class AgentMessage(BaseModel):
+    agent_name: str
     content: str
-    reasoning_steps: List[str]
-    round_number: int
-    timestamp: datetime = field(default_factory=datetime.now)
-    role: str = "assistant"
-    
-    def __post_init__(self):
-        assert self.agent_name in ["Creator", "Reviewer", "Publisher"], f"Invalid agent: {self.agent_name}"
-        assert len(self.reasoning_steps) > 0, "Reasoning steps cannot be empty"
-        assert self.round_number >= 1, "Round number must be positive"
+    reasoning_pattern: str
+    timestamp: str
 ```
 
 **Example**:
 ```python
 message = AgentMessage(
     agent_name="Creator",
-    content="Step 1: The campaign objective is to drive awareness...\n\nDRAFT: Transform your enterprise operations with AI...",
-    reasoning_steps=[
-        "Step 1: Identify objective - awareness campaign for product launch",
-        "Step 2: Consider audience - Enterprise CIOs value ROI and efficiency",
-        "Step 3: Draft hook - Lead with transformation promise",
-        "Step 4: Build body - Highlight 40% cost reduction metric",
-        "Step 5: Add CTA - Encourage demo request"
-    ],
-    round_number=1
+    content="Step 1: The campaign objective is to drive awareness...\n\nDRAFT: Discover the adventure of a lifetime with Zava Travel...",
+    reasoning_pattern="Chain-of-Thought",
+    timestamp="2025-01-23T14:32:15"
 )
 ```
 
 **Usage in Workflow**:
-- Collected in chronological order to form `ConversationTranscript`
-- `reasoning_steps` extracted for judging review (reasoning transparency criterion)
-- `agent_name` used by speaker selector to determine next agent
+- Collected in chronological order to form the `transcript` list in `WorkflowResult`
+- `reasoning_pattern` displayed in UI and telemetry spans for judging review
+- `agent_name` used by Router speaker selector to determine next agent
 - `content` used by subsequent agents as input for their reasoning
 
 ---
 
-### 3. SocialMediaPost (Output Entity)
+### 3. GeneratedPosts & GeneratedImages (Output Entities)
 
-**Purpose**: Platform-specific formatted social media post ready for publishing.
+**Purpose**: Platform-specific formatted social media posts and AI-generated images ready for publishing. In the actual implementation, the Publisher agent generates all three platform posts in a single turn, and the API server parses them into structured `GeneratedPosts`. When `content_type` includes "images", the API server also generates AI images via gpt-image-1.5.
 
-**Attributes**:
+**GeneratedPosts Pydantic Model** (actual implementation in `api_server.py`):
+```python
+class GeneratedPosts(BaseModel):
+    linkedin: str
+    twitter: str
+    instagram: str
+```
 
-| Attribute | Type | Required | Description | Example |
-|-----------|------|----------|-------------|---------|
-| `platform` | str | Yes | "LinkedIn", "Twitter", or "Instagram" | "LinkedIn" |
-| `body` | str | Yes | Post text content | "🚀 Transform your enterprise operations..." |
-| `hashtags` | List[str] | Yes | Platform-appropriate hashtags | ["#EnterpriseAI", "#DigitalTransformation"] |
-| `call_to_action` | str | Yes | CTA statement | "Request a demo today: [link]" |
-| `character_count` | int | Yes | Text length (platform validation) | 245 |
-| `validation_status` | bool | Yes | Passed platform constraints | True |
-| `visual_suggestion` | str | Optional | Image/graphic idea (Instagram only) | "[Image: Modern office with AI dashboard on screens]" |
-| `emojis` | List[str] | Optional | Emojis used (Instagram/Twitter) | ["🚀", "💡"] |
+**GeneratedImages Pydantic Model** (actual implementation in `api_server.py`):
+```python
+class GeneratedImages(BaseModel):
+    linkedin: str | None = None   # Base64-encoded image data
+    twitter: str | None = None    # Base64-encoded image data
+    instagram: str | None = None  # Base64-encoded image data
+```
 
-**Platform-Specific Constraints**:
+**Platform-Specific Constraints** (validated by Publisher Self-Reflection):
 
 #### LinkedIn
 - **Length**: 1-3 paragraphs (approx. 150-300 words)
-- **Tone**: Professional-conversational
-- **Hashtags**: 3-5 relevant industry tags
-- **CTA**: Professional (e.g., "Learn more in comments", "Download whitepaper")
-- **Emojis**: Optional, minimal (0-2)
+- **Tone**: Professional yet exciting (adventure travel)
+- **Hashtags**: 3-5 relevant tags (#ZavaTravel, #WanderMore)
+- **CTA**: Professional (e.g., "Book your adventure at zavatravel.com")
+- **Image**: Landscape format when generated
 
 #### Twitter/X
 - **Length**: ≤280 characters (STRICT, enforced by Publisher Self-Reflection)
-- **Tone**: Punchy, immediate impact
+- **Tone**: Punchy, energetic, wanderlust-driven
 - **Hashtags**: 2-3 max (included in character count)
-- **CTA**: Action-oriented (e.g., "Try now", "Join us")
-- **Emojis**: Optional (1-3)
+- **CTA**: Action-oriented (e.g., "Explore now")
+- **Image**: Landscape format when generated
 
 #### Instagram
 - **Length**: 125-150 words (caption style)
-- **Tone**: Casual, storytelling
+- **Tone**: Storytelling, aspirational
 - **Hashtags**: 5-10 (mix popular + niche)
-- **CTA**: Community-driven (e.g., "Tag a friend", "Share your story")
+- **CTA**: Community-driven (e.g., "Tag a travel buddy")
 - **Emojis**: Required (2-5 relevant emojis)
-- **Visual**: Suggestion in [brackets] for image content
-
-**Python Dataclass**:
-```python
-from dataclasses import dataclass
-from typing import List, Optional
-
-@dataclass
-class SocialMediaPost:
-    platform: str  # "LinkedIn", "Twitter", "Instagram"
-    body: str
-    hashtags: List[str]
-    call_to_action: str
-    character_count: int
-    validation_status: bool
-    visual_suggestion: Optional[str] = None
-    emojis: Optional[List[str]] = None
-    
-    def __post_init__(self):
-        assert self.platform in ["LinkedIn", "Twitter", "Instagram"], f"Invalid platform: {self.platform}"
-        self.character_count = len(self.body)
-        self.validation_status = self._validate_constraints()
-    
-    def _validate_constraints(self) -> bool:
-        """Validate platform-specific constraints."""
-        if self.platform == "Twitter":
-            return self.character_count <= 280 and 2 <= len(self.hashtags) <= 3
-        elif self.platform == "LinkedIn":
-            return 3 <= len(self.hashtags) <= 5
-        elif self.platform == "Instagram":
-            return 5 <= len(self.hashtags) <= 10 and self.emojis and len(self.emojis) >= 2
-        return False
-```
-
-**Example (LinkedIn)**:
-```python
-linkedin_post = SocialMediaPost(
-    platform="LinkedIn",
-    body="""Transform your enterprise operations with AI-powered automation.
-
-At TechCorp, we've helped Fortune 500 companies reduce operational costs by 40% while improving accuracy and efficiency. Our latest AI platform integrates seamlessly with your existing systems, delivering measurable results in weeks, not months.
-
-Ready to lead the transformation? Let's talk.""",
-    hashtags=["#EnterpriseAI", "#DigitalTransformation", "#AIInnovation", "#TechLeadership"],
-    call_to_action="Request a demo: techcorp.com/demo",
-    character_count=389,
-    validation_status=True,
-    emojis=["🚀"]
-)
-```
-
-**Example (Twitter)**:
-```python
-twitter_post = SocialMediaPost(
-    platform="Twitter",
-    body="🚀 Cut enterprise costs by 40% with AI automation. TechCorp delivers results in weeks. Try our platform today. #EnterpriseAI #AIInnovation 💡",
-    hashtags=["#EnterpriseAI", "#AIInnovation"],
-    call_to_action="Try now: techcorp.com",
-    character_count=138,
-    validation_status=True,
-    emojis=["🚀", "💡"]
-)
-```
-
-**Example (Instagram)**:
-```python
-instagram_post = SocialMediaPost(
-    platform="Instagram",
-    body="""✨ What if your team could do more in less time? 
-
-At TechCorp, we're transforming how enterprises work with AI that actually delivers. 🚀 40% cost savings. 💡 100% accuracy. 🎯 Results in weeks.
-
-Your competitors are already automating. Are you? Tag a colleague who needs to see this! 👇""",
-    hashtags=["#EnterpriseAI", "#AIInnovation", "#DigitalTransformation", "#TechLeadership", "#FutureOfWork", "#AIAutomation", "#EnterpriseEfficiency"],
-    call_to_action="Tag a colleague who needs to see this! 👇",
-    character_count=325,
-    validation_status=True,
-    visual_suggestion="[Image: Modern office with diverse team collaborating around AI dashboard on large screen]",
-    emojis=["✨", "🚀", "💡", "🎯", "👇"]
-)
-```
+- **Image**: Square format when generated
 
 **Usage in Workflow**:
-- Generated by Publisher agent during final workflow round
-- Three instances created (one per platform) in single Publisher turn
-- Returned as final output alongside `ConversationTranscript`
+- Publisher agent raw output is parsed by `parse_platform_posts()` in `api_server.py`
+- `GeneratedPosts` contains the text content per platform
+- `GeneratedImages` contains base64-encoded AI images (optional, depends on `content_type`)
+- Both are included in the `WorkflowResult` response
 
 ---
 
-### 4. ConversationTranscript (Metadata Entity)
+### 4. WorkflowResult (Response Entity — replaces ConversationTranscript)
 
-**Purpose**: Complete record of the multi-agent workflow execution, including all messages, reasoning steps, and metadata for judging review and debugging.
+**Purpose**: Complete API response containing generated content, agent transcript, safety results, and metadata. This is the primary output entity returned by the `/api/generate` endpoint. Implemented as a Pydantic `BaseModel` in `api_server.py`.
 
 **Attributes**:
 
 | Attribute | Type | Required | Description | Example |
 |-----------|------|----------|-------------|---------|
-| `messages` | List[AgentMessage] | Yes | All agent communications in order | [msg1, msg2, msg3, ...] |
-| `termination_reason` | str | Yes | Why workflow ended | "publisher_completion" |
-| `total_rounds` | int | Yes | Conversation length | 4 |
+| `status` | str | Yes | Workflow completion status | "success" |
+| `posts` | GeneratedPosts | Yes | Platform-specific text content | {linkedin: "...", twitter: "...", instagram: "..."} |
+| `images` | GeneratedImages | No | Base64-encoded AI images (when content_type includes "images") | {linkedin: "base64...", ...} |
+| `transcript` | List[AgentMessage] | Yes | All agent communications in order | [msg1, msg2, msg3, ...] |
 | `duration_seconds` | float | Yes | Workflow execution time | 87.5 |
-| `grounding_sources_used` | List[str] | Yes | Data sources referenced | ["brand-guidelines.docx"] |
-| `tools_invoked` | List[str] | Yes | External tools called | ["file_search", "filesystem_write"] |
-| `final_posts` | List[SocialMediaPost] | Yes | Platform-ready outputs | [linkedin, twitter, instagram] |
-| `evaluation_metrics` | List[EvaluationMetrics] | Optional | Quality scores (bonus feature) | [metrics_linkedin, metrics_twitter, metrics_instagram] |
-| `content_safety_passed` | bool | Optional | Content safety check result (bonus) | True |
+| `termination_reason` | str | Yes | Why workflow ended | "publisher_completion" |
+| `safety` | SafetyCheckResult | No | Content safety screening results | {status: "passed", flags: []} |
 
-**Termination Reason Enum**:
+**Termination Reason Values**:
 - `"publisher_completion"`: Publisher agent finished formatting all platforms
 - `"max_rounds_reached"`: 5-round limit hit (safety termination)
 - `"reviewer_approval"`: Reviewer fast-tracked with "APPROVED" verdict
 
-**Python Dataclass**:
+**Pydantic Model** (actual implementation in `api_server.py`):
 ```python
-from dataclasses import dataclass, field
-from typing import List
-from datetime import datetime
-
-@dataclass
-class ConversationTranscript:
-    messages: List[AgentMessage]
-    termination_reason: str
-    total_rounds: int
+class WorkflowResult(BaseModel):
+    status: str
+    posts: GeneratedPosts
+    images: GeneratedImages | None = None
+    transcript: List[AgentMessage]
     duration_seconds: float
-    grounding_sources_used: List[str]
-    tools_invoked: List[str]
-    final_posts: List[SocialMediaPost]
-    evaluation_metrics: Optional[List[EvaluationMetrics]] = None  # Bonus feature
-    content_safety_passed: Optional[bool] = None  # Bonus feature
-    created_at: datetime = field(default_factory=datetime.now)
-    
-    def __post_init__(self):
-        valid_terminations = ["publisher_completion", "max_rounds_reached", "reviewer_approval"]
-        assert self.termination_reason in valid_terminations, f"Invalid termination: {self.termination_reason}"
-        assert len(self.final_posts) == 3, "Must have exactly 3 platform posts"
-    
-    def to_markdown(self) -> str:
-        """
-        Export transcript as formatted markdown for demo output.
-        """
-        md = f"# Social Media Content Creation — Workflow Transcript\n\n"
-        md += f"**Termination**: {self.termination_reason}\n"
-        md += f"**Rounds**: {self.total_rounds}\n"
-        md += f"**Duration**: {self.duration_seconds:.1f}s\n"
-        md += f"**Grounding**: {', '.join(self.grounding_sources_used)}\n"
-        md += f"**Tools**: {', '.join(self.tools_invoked)}\n\n"
-        
-        md += "## Conversation\n\n"
-        for msg in self.messages:
-            md += f"### {msg.agent_name} (Round {msg.round_number})\n\n"
-            md += f"**Reasoning**:\n"
-            for step in msg.reasoning_steps:
-                md += f"- {step}\n"
-            md += f"\n**Message**:\n{msg.content}\n\n"
-        
-        md += "## Final Platform Posts\n\n"
-        for post in self.final_posts:
-            md += f"### {post.platform}\n\n"
-            md += f"{post.body}\n\n"
-            md += f"**Hashtags**: {', '.join(post.hashtags)}\n"
-            md += f"**CTA**: {post.call_to_action}\n"
-            md += f"**Validation**: {'✅ PASS' if post.validation_status else '❌ FAIL'}\n\n"
-        
-        return md
+    termination_reason: str
+    safety: SafetyCheckResult | None = None
+```
+
+**Example API Response**:
+```json
+{
+  "status": "success",
+  "posts": {
+    "linkedin": "🌍 Discover the adventure of a lifetime with Zava Travel...",
+    "twitter": "🏔️ Wander More, Spend Less! Adventure awaits in Bali, Patagonia & beyond 🌊 #ZavaTravel #WanderMore",
+    "instagram": "✨ Picture this: You're standing on a black sand beach in Iceland..."
+  },
+  "images": {
+    "linkedin": "data:image/png;base64,iVBOR...",
+    "twitter": "data:image/png;base64,iVBOR...",
+    "instagram": "data:image/png;base64,iVBOR..."
+  },
+  "transcript": [
+    {
+      "agent_name": "Creator",
+      "content": "Step 1: The campaign objective is awareness...",
+      "reasoning_pattern": "Chain-of-Thought",
+      "timestamp": "2025-01-23T14:32:15"
+    }
+  ],
+  "duration_seconds": 87.5,
+  "termination_reason": "publisher_completion",
+  "safety": {
+    "status": "passed",
+    "flags": []
+  }
+}
 ```
 
 **Usage in Workflow**:
-- Assembled incrementally as agents contribute messages
-- Final posts appended when Publisher completes
-- Exported as markdown for demo documentation
-- Used for judging review (reasoning transparency)
+- Assembled by `run_workflow_api()` in `api_server.py` after workflow completes
+- Returned as JSON response from `/api/generate` endpoint
+- Consumed by React frontend for display
+- Safety screening applied to both input and output before response
 
 ---
 
-### 5. EvaluationMetrics (Bonus Entity — Optional)
+### 5. SafetyCheckResult (Safety Entity — IMPLEMENTED)
 
-**Purpose**: Automated quality assessment scores for generated content (FR-031).
+**Purpose**: Results from Azure AI Content Safety screening and brand filter checks. Two-layer safety: (1) Azure AI Content Safety API for harmful content, (2) brand-specific filters for competitor mentions and off-brand content.
 
-**Attributes**:
-
-| Attribute | Type | Required | Description | Example |
-|-----------|------|----------|-------------|---------|
-| `platform` | str | Yes | Platform being evaluated | "LinkedIn" |
-| `relevance_score` | float | Yes | Content relevance (0-5) | 4.2 |
-| `coherence_score` | float | Yes | Logical flow and structure (0-5) | 4.5 |
-| `groundedness_score` | float | Yes | Factual accuracy from sources (0-5) | 4.0 |
-| `fluency_score` | float | Yes | Language quality and readability (0-5) | 4.8 |
-| `aggregate_score` | float | Yes | Average of all metrics | 4.375 |
-| `safety_violations` | List[str] | Optional | Content safety issues detected | ["none"] |
-| `evaluated_at` | datetime | Yes | Evaluation timestamp | 2025-01-23 14:45:30 |
-
-**Python Dataclass**:
+**Pydantic Model** (in `api_server.py`):
 ```python
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import List, Optional
+class SafetyCheckResult(BaseModel):
+    status: str  # "passed" | "warnings" | "blocked"
+    flags: List[str] = []
+```
+
+**Supporting Dataclasses** (in `safety/brand_filters.py`):
+```python
+@dataclass
+class SafetyFlag:
+    category: str        # e.g. "competitor_mention", "banned_word"
+    severity: str        # "warning" | "blocked"
+    detail: str          # Human-readable description
+    matched_text: str    # The text that triggered the flag
+    suggestion: str = "" # Optional suggested fix
 
 @dataclass
-class EvaluationMetrics:
-    platform: str
-    relevance_score: float
-    coherence_score: float
-    groundedness_score: float
-    fluency_score: float
-    aggregate_score: float
-    safety_violations: Optional[List[str]] = None
-    evaluated_at: datetime = field(default_factory=datetime.now)
-    
-    def __post_init__(self):
-        # Auto-calculate aggregate if not provided
-        if not self.aggregate_score:
-            self.aggregate_score = (
-                self.relevance_score + 
-                self.coherence_score + 
-                self.groundedness_score + 
-                self.fluency_score
-            ) / 4.0
-        
-        # Validate scores are in range
-        for score in [self.relevance_score, self.coherence_score, 
-                     self.groundedness_score, self.fluency_score]:
-            assert 0 <= score <= 5, f"Score {score} out of range (0-5)"
+class ShieldResult:
+    allowed: bool
+    flags: List[SafetyFlag] = field(default_factory=list)
+
+    @property
+    def has_warnings(self) -> bool:
+        return any(f.severity == "warning" for f in self.flags)
+
+    @property
+    def has_blocks(self) -> bool:
+        return any(f.severity == "blocked" for f in self.flags)
 ```
 
-**Example**:
-```python
-metrics = EvaluationMetrics(
-    platform="LinkedIn",
-    relevance_score=4.2,
-    coherence_score=4.5,
-    groundedness_score=4.0,
-    fluency_score=4.8,
-    aggregate_score=4.375,
-    safety_violations=[]  # No violations detected
-)
+**Safety Categories Checked**:
+- Hate speech, violence, self-harm, sexual content (Azure AI Content Safety)
+- Competitor brand mentions: VoyageNow, CookTravel, WanderPath (brand filters)
+- Off-brand tone and messaging (brand filters)
+
+**Authentication**: Three-tier — API Key → ManagedIdentityCredential (client_id) → DefaultAzureCredential
+
+---
+
+### 6. EvaluationMetrics (Evaluation Entity — IMPLEMENTED)
+
+**Purpose**: Automated quality assessment of generated content using 5 evaluators — 4 built-in from `azure-ai-evaluation` SDK and 1 custom code-based evaluator. Invoked via `evaluation/evaluate.py`.
+
+**Evaluators**:
+
+| # | Evaluator | Type | What It Measures | Score Range |
+|---|-----------|------|------------------|-------------|
+| 1 | `TaskAdherenceEvaluator` | Built-in | Did agents follow their system instructions? | 1-5 |
+| 2 | `CoherenceEvaluator` | Built-in | Is output natural and well-structured? | 1-5 |
+| 3 | `RelevanceEvaluator` | Built-in | Does output address the campaign brief? | 1-5 |
+| 4 | `GroundednessEvaluator` | Built-in | Is content grounded in brand guidelines? | 1-5 |
+| 5 | `PlatformComplianceEvaluator` | Custom | Platform-specific constraint checks | 0.0-1.0 |
+
+**PlatformComplianceEvaluator Checks** (custom class in `evaluation/evaluate.py`):
+- Twitter: ≤280 characters
+- Instagram: has hashtags and emojis
+- LinkedIn: professional tone (no excessive emojis)
+- All platforms: contains `#ZavaTravel` hashtag
+- All platforms: no competitor mentions (VoyageNow, CookTravel, WanderPath)
+- All platforms: no banned words (cheap, tourist, package deal, discount, basic)
+
+**Evaluation Output** (JSON per query):
+```json
+{
+  "task_adherence": 4.0,
+  "coherence": 5.0,
+  "relevance": 5.0,
+  "groundedness": 4.0,
+  "platform_compliance": 0.83,
+  "platform_compliance_issues": "Twitter post is 295 chars (limit: 280)"
+}
 ```
 
-**Usage** (Bonus Feature):
-- Generated asynchronously after Publisher completes
-- Attached to ConversationTranscript for quality tracking
-- Provides quantitative metrics for continuous improvement
+**Usage**:
+- Run separately via `python evaluation/evaluate.py` after `agent_runner.py` generates responses
+- Results saved to `evaluation/eval_results_{timestamp}.json`
+- Built-in evaluators use Azure OpenAI as judge model
+- Custom evaluator runs pure Python regex checks (no LLM call)
 
 ---
 
 ## Entity Relationships
 
 ```
-CampaignBrief (1)
+CampaignBriefRequest (1)          ← POST /api/generate
     ↓ initiates
 GroupChatWorkflow (1)
+    ↓ orchestrated by
+Orchestrator (Router pattern)     ← speaker_selection.py
     ↓ produces
-ConversationTranscript (1)
-    ├── contains (1..N)
-    │   ↓
-    │   AgentMessage (N)
-    │       ├── Creator messages (1..2)
-    │       ├── Reviewer messages (1..2)
-    │       └── Publisher message (1)
+WorkflowResult (1)                ← API response
+    ├── posts: GeneratedPosts (1)
+    │       ├── linkedin (str)
+    │       ├── twitter (str)
+    │       └── instagram (str)
     │
-    └── includes (1..3)
-        ↓
-        SocialMediaPost (3)
-            ├── LinkedIn (1)
-            ├── Twitter (1)
-            └── Instagram (1)
+    ├── images: GeneratedImages (0..1)   ← when content_type includes "images"
+    │       ├── linkedin (str | None)    ← base64 PNG from gpt-image-1.5
+    │       ├── twitter (str | None)
+    │       └── instagram (str | None)
+    │
+    ├── transcript: List[AgentMessage] (3..10)
+    │       ├── Creator messages (1..2)    — Chain-of-Thought
+    │       ├── Reviewer messages (1..2)   — ReAct
+    │       └── Publisher message (1)      — Self-Reflection
+    │
+    ├── safety: SafetyCheckResult (0..1)
+    │       └── flags: List[str]
+    │
+    └── metadata
+            ├── duration_seconds (float)
+            └── termination_reason (str)
 ```
 
 **Relationship Rules**:
-1. Each `CampaignBrief` triggers exactly one workflow execution
-2. Each workflow produces exactly one `ConversationTranscript`
-3. Each `ConversationTranscript` contains 3-10 `AgentMessage` instances (depending on rounds)
-4. Each `ConversationTranscript` includes exactly 3 `SocialMediaPost` instances (one per platform)
-5. `AgentMessage` instances are ordered chronologically by `round_number` and `timestamp`
+1. Each `CampaignBriefRequest` triggers exactly one workflow execution
+2. Each workflow produces exactly one `WorkflowResult`
+3. Each `WorkflowResult` contains 3-10 `AgentMessage` instances (depending on rounds)
+4. Each `WorkflowResult` includes exactly one `GeneratedPosts` (one text per platform)
+5. `GeneratedImages` is present only when `content_type` is "images" or "both"
+6. `SafetyCheckResult` is present when content safety service is configured
+7. `AgentMessage` instances are ordered chronologically by `timestamp`
 
 ---
 
@@ -462,11 +405,15 @@ ConversationTranscript (1)
 ### Workflow State Machine
 
 ```
-[INITIAL STATE: CampaignBrief received]
+[API REQUEST: CampaignBriefRequest received at /api/generate]
     ↓
-Round 1: Creator → generates Draft 1
+Safety Layer 1: Input screening (Azure AI Content Safety)
+    ↓ (blocked → return error)
+Orchestrator (Router pattern) → selects first speaker
     ↓
-Round 2: Reviewer → evaluates Draft 1 → Verdict: REVISE
+Round 1: Creator → generates Draft 1 (Chain-of-Thought)
+    ↓
+Round 2: Reviewer → evaluates Draft 1 → Verdict: REVISE (ReAct)
     ↓
 Round 3: Creator → generates Draft 2 (incorporates feedback)
     ↓
@@ -476,7 +423,11 @@ Round 4: Reviewer → evaluates Draft 2 → Verdict: APPROVED
     ↓
 Round 5: Publisher → formats 3 platform posts → Self-Reflection validation
     ↓
-[TERMINAL STATE: ConversationTranscript with 3 SocialMediaPost entities]
+Safety Layer 2: Output screening (brand filters + content safety)
+    ↓
+[Optional] Image generation: gpt-image-1.5 (when content_type includes "images")
+    ↓
+[TERMINAL STATE: WorkflowResult returned as JSON response]
 ```
 
 **Alternative Termination Paths**:
@@ -506,40 +457,59 @@ Termination Reason: "reviewer_approval"
 ## Data Flow Diagram
 
 ```
-┌─────────────────────┐
-│   CampaignBrief     │ (User Input)
-│  - brand_name       │
-│  - industry         │
-│  - target_audience  │
-│  - key_message      │
-└──────────┬──────────┘
+┌─────────────────────────┐
+│   React Frontend        │ (User Interface — Fluent UI v9)
+│  - Campaign brief form  │
+│  - Content type selector│
+│  - Platform toggles     │
+└──────────┬──────────────┘
+           │ POST /api/generate
+           ▼
+┌─────────────────────────┐
+│   FastAPI Backend       │ (api_server.py)
+│  - CampaignBriefRequest │ (Pydantic validation)
+│  - Input safety screen  │ (Azure AI Content Safety)
+└──────────┬──────────────┘
            │
            ▼
-┌─────────────────────┐
-│  GroupChat Workflow │
-│  - Speaker selector │
-│  - Termination logic│
-└──────┬──────────────┘
+┌─────────────────────────┐
+│  GroupChat Workflow      │
+│  - Orchestrator (Router)│ ← speaker_selection.py
+│  - Termination logic    │ ← termination.py
+└──────┬──────────────────┘
        │
-       ├─► Creator Agent
-       │   └─► AgentMessage (Draft + Chain-of-Thought)
+       ├─► Creator Agent (Chain-of-Thought)
+       │   ├─► MCP file_search tool → brand-guidelines.md
+       │   └─► AgentMessage (Draft content)
        │
-       ├─► Reviewer Agent
-       │   └─► AgentMessage (Feedback + ReAct)
+       ├─► Reviewer Agent (ReAct)
+       │   ├─► MCP file_search tool → brand-guidelines.md
+       │   └─► AgentMessage (Feedback / APPROVED / REVISE)
        │
-       └─► Publisher Agent
-           └─► AgentMessage (3x SocialMediaPost + Self-Reflection)
-           
+       └─► Publisher Agent (Self-Reflection)
+           └─► AgentMessage (3x platform-formatted posts)
+
            ▼
-┌─────────────────────┐
-│ ConversationTranscript│
-│  - messages[]       │
-│  - final_posts[]    │
-│  - metadata         │
-└─────────────────────┘
+┌─────────────────────────┐
+│  Post-Processing        │
+│  - parse_platform_posts │ → GeneratedPosts
+│  - gpt-image-1.5       │ → GeneratedImages (optional)
+│  - Output safety screen │ → SafetyCheckResult
+└──────────┬──────────────┘
            │
            ▼
-      (Output to User)
+┌─────────────────────────┐
+│  WorkflowResult         │ (JSON API response)
+│  - posts                │ (GeneratedPosts)
+│  - images               │ (GeneratedImages | null)
+│  - transcript           │ (List[AgentMessage])
+│  - safety               │ (SafetyCheckResult | null)
+│  - duration_seconds     │
+│  - termination_reason   │
+└─────────────────────────┘
+           │
+           ▼
+      React Frontend (renders results)
 ```
 
 ---
@@ -548,28 +518,33 @@ Termination Reason: "reviewer_approval"
 
 | Entity | Validation Rule | Enforcement Point |
 |--------|----------------|------------------|
-| CampaignBrief | All fields non-empty, platforms fixed | Input validation (startup) |
-| AgentMessage | Reasoning steps not empty | Agent message creation |
-| SocialMediaPost (Twitter) | ≤280 chars, 2-3 hashtags | Publisher Self-Reflection |
-| SocialMediaPost (LinkedIn) | 3-5 hashtags | Publisher Self-Reflection |
-| SocialMediaPost (Instagram) | 5-10 hashtags, 2+ emojis | Publisher Self-Reflection |
-| ConversationTranscript | Exactly 3 final posts | Workflow termination |
-| All Entities | No null/None for required fields | Dataclass `__post_init__` |
+| CampaignBriefRequest | All fields non-empty; platforms ⊂ {LinkedIn, Twitter, Instagram}; content_type ∈ {text, images, both} | Pydantic model validation |
+| AgentMessage | content non-empty; reasoning_pattern must match REASONING_PATTERNS | Agent message creation |
+| GeneratedPosts (Twitter) | ≤280 chars, 2-3 hashtags | Publisher Self-Reflection |
+| GeneratedPosts (LinkedIn) | 3-5 hashtags, professional tone | Publisher Self-Reflection |
+| GeneratedPosts (Instagram) | 5-10 hashtags, 2+ emojis | Publisher Self-Reflection |
+| GeneratedImages | Base64 PNG format; present only when content_type includes "images" | Image generation pipeline |
+| SafetyCheckResult | Input + output both screened; blocked content returns error | Two-layer safety shield |
+| WorkflowResult | Must include posts and transcript; images/safety nullable | API response assembly |
+| All Entities | No null/None for required fields | Pydantic BaseModel validation |
 
 ---
 
 ## Storage Strategy
 
 **Ephemeral (In-Memory Only)**:
-- `CampaignBrief`: Exists only during workflow execution
-- `AgentMessage`: Collected in list, discarded after workflow
-- `ConversationTranscript`: Exists only during execution
+- `CampaignBriefRequest`: Exists only during API request lifecycle
+- `AgentMessage`: Collected in list during workflow, returned in `WorkflowResult`
+- `WorkflowResult`: Returned as JSON API response, not persisted server-side
 
 **Optional Persistence (via MCP Filesystem Tool)**:
-- `ConversationTranscript.to_markdown()` → saved to `output/social-posts-YYYY-MM-DD.md`
-- `SocialMediaPost` entities → saved individually as JSON (optional)
+- Markdown transcript → saved to `output/social-posts-YYYY-MM-DD.md`
+- `GeneratedImages` base64 data → rendered in-browser, not saved server-side
 
-**No Database**: The hackathon scope does not require persistence. All state is ephemeral, suitable for single-session execution.
+**Evaluation Results** (separate pipeline):
+- `evaluation/eval_results_{timestamp}.json` → evaluation score snapshots
+
+**No Database**: The hackathon scope does not require persistence. All state is ephemeral. The React frontend displays results in real-time; the API is stateless.
 
 ---
 
@@ -577,22 +552,36 @@ Termination Reason: "reviewer_approval"
 
 | Requirement | Data Model Support |
 |-------------|-------------------|
-| FR-001: Accept campaign brief | ✅ `CampaignBrief` entity with all required fields |
-| FR-004: Output conversation transcript | ✅ `ConversationTranscript` with all messages |
-| FR-005: Produce 3 platform posts | ✅ `SocialMediaPost` (3 instances in transcript) |
-| FR-006: Chain-of-Thought reasoning | ✅ `AgentMessage.reasoning_steps` for Creator |
-| FR-011: Platform-specific formatting | ✅ `SocialMediaPost` constraints per platform |
-| SC-003: Reasoning transparency | ✅ `reasoning_steps` preserved in `AgentMessage` |
-| SC-007: Platform constraints satisfied | ✅ `validation_status` in `SocialMediaPost` |
+| FR-001: Accept campaign brief | ✅ `CampaignBriefRequest` Pydantic model with all required fields |
+| FR-004: Output conversation transcript | ✅ `WorkflowResult.transcript` — ordered list of `AgentMessage` |
+| FR-005: Produce 3 platform posts | ✅ `GeneratedPosts` — linkedin, twitter, instagram fields |
+| FR-006: Chain-of-Thought reasoning | ✅ `AgentMessage.reasoning_pattern` = "Chain-of-Thought" for Creator |
+| FR-011: Platform-specific formatting | ✅ `GeneratedPosts` constraints enforced by Publisher Self-Reflection |
+| FR-032: AI image generation | ✅ `GeneratedImages` — base64 PNG via gpt-image-1.5 |
+| FR-033: Content type selection | ✅ `CampaignBriefRequest.content_type` — "text" / "images" / "both" |
+| FR-034: Content safety screening | ✅ `SafetyCheckResult` + `SafetyFlag` + `ShieldResult` |
+| FR-035: Evaluation framework | ✅ 5 evaluators — TaskAdherence, Coherence, Relevance, Groundedness, PlatformCompliance |
+| FR-036: Monitoring & observability | ✅ OpenTelemetry spans + Azure Monitor tracing |
+| FR-037: Managed identity auth | ✅ Three-tier: API Key → ManagedIdentity → DefaultAzureCredential |
+| FR-038: React + FastAPI frontend | ✅ `WorkflowResult` JSON response consumed by React UI |
+| SC-003: Reasoning transparency | ✅ `reasoning_pattern` preserved in every `AgentMessage` |
+| SC-007: Platform constraints satisfied | ✅ Platform constraints encoded in `GeneratedPosts` validation |
 
 ---
 
-## Next Steps
+## Implementation Status
 
-1. ✅ Data model complete — entities and relationships defined
-2. ⏭️ Generate contracts (agent system instructions)
-3. ⏭️ Generate quickstart guide (hackathon execution timeline)
-4. ⏭️ Update agent context with data model terminology
-5. ⏭️ Proceed to Phase 2: Generate `tasks.md` with implementation tasks
+All data model entities are **fully implemented** as Pydantic `BaseModel` classes (in `api_server.py`) and Python `@dataclass` classes (in `safety/brand_filters.py`). The data model is stable and matches the production codebase.
 
-**Data Model Status**: COMPLETE — Ready for contract generation
+| Entity | Implementation File | Model Type |
+|--------|-------------------|------------|
+| CampaignBriefRequest | `api_server.py` | Pydantic BaseModel |
+| AgentMessage | `api_server.py` | Pydantic BaseModel |
+| GeneratedPosts | `api_server.py` | Pydantic BaseModel |
+| GeneratedImages | `api_server.py` | Pydantic BaseModel |
+| SafetyCheckResult | `api_server.py` | Pydantic BaseModel |
+| WorkflowResult | `api_server.py` | Pydantic BaseModel |
+| SafetyFlag | `safety/brand_filters.py` | @dataclass |
+| ShieldResult | `safety/brand_filters.py` | @dataclass |
+
+**Data Model Status**: IMPLEMENTED — All entities match production code
