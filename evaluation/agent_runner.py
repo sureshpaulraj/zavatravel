@@ -141,7 +141,7 @@ async def run_single_workflow(brief_text: str) -> dict:
     # Extract publisher's final output
     consolidated = []
     for msg in messages:
-        name = getattr(msg, "author_name", None) or "Unknown"
+        name = getattr(msg, "author_name", None) or "Orchestrator"
         text = getattr(msg, "text", "") or ""
         if text:
             consolidated.append({"name": name, "text": text})

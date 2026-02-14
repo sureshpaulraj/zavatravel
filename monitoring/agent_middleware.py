@@ -36,7 +36,7 @@ _REASONING_PATTERNS = {
     "Creator": "Chain-of-Thought",
     "Reviewer": "ReAct",
     "Publisher": "Self-Reflection",
-    "Orchestrator": "GroupChat",
+    "Orchestrator": "Router",
 }
 
 

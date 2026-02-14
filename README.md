@@ -41,11 +41,12 @@ Campaign Brief (User Input)
 
 ![Data Flow](docs/images/dataflow.svg)
 
-| Agent         | Engine                 | Reasoning Pattern                      | Role                                     |
-| ------------- | ---------------------- | -------------------------------------- | ---------------------------------------- |
-| **Creator**   | Azure OpenAI (GPT-5.x) | Chain-of-Thought (5 steps)             | Drafts content with visible reasoning    |
-| **Reviewer**  | GitHub Copilot SDK     | ReAct (Observe → Think → Act → Result) | Reviews brand alignment & quality        |
-| **Publisher** | Azure OpenAI (GPT-5.x) | Self-Reflection (validate constraints) | Formats for LinkedIn, Twitter, Instagram |
+| Component       | Engine                  | Reasoning Pattern                       | Role                                                     |
+| --------------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
+| **Orchestrator** | Agent Framework GroupChat | Router (inspect state → decide → dispatch) | Routes conversation flow with intelligent fast-tracking |
+| **Creator**     | Azure OpenAI (GPT-5.x) | Chain-of-Thought (5 steps)              | Drafts content with visible reasoning                    |
+| **Reviewer**    | GitHub Copilot SDK      | ReAct (Observe → Think → Act → Result)  | Reviews brand alignment & quality                        |
+| **Publisher**   | Azure OpenAI (GPT-5.x) | Self-Reflection (validate constraints)  | Formats for LinkedIn, Twitter, Instagram                 |
 
 ---
 
