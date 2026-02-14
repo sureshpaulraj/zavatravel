@@ -1,9 +1,9 @@
 # Implementation Plan: Multi-Agent Social Media Content Creation System
 
-**Branch**: `001-social-media-agents` | **Date**: 2025-01-23 | **Spec**: [spec.md](./spec.md)
+**Branch**: `001-social-media-agents` | **Date**: 2025-01-23 | **Updated**: 2025-07-14 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/001-social-media-agents/spec.md`
 
-**Note**: This implementation plan is generated for the TechConnect Hackathon (100-minute time limit). The design prioritizes working demonstration over production-ready features.
+**Note**: This implementation plan was originally generated for the TechConnect Hackathon (100-minute time limit). The project has since been extended well beyond the original scope with full-stack web application, AI image generation, comprehensive testing, and enterprise-grade observability.
 
 ## Summary
 
@@ -13,19 +13,33 @@ Build an AI-powered multi-agent social media content creation system using Micro
 
 ## Technical Context
 
-**Language/Version**: Python 3.10+ (minimum version for Microsoft Agent Framework compatibility)  
+**Language/Version**: Python 3.11 (upgraded from 3.10 minimum)  
 **Primary Dependencies**: 
-- `agent-framework` (v0.1.0+) - Core orchestration and multi-agent patterns
+- `agent-framework` (v1.0.0b260210) - Core orchestration and multi-agent patterns
 - `agent-framework-azure` - Azure OpenAI client integration for Creator/Publisher agents
 - `agent-framework-github-copilot` (pre-release) - GitHub Copilot integration for Reviewer agent
-- `azure-identity` - DefaultAzureCredential for secure authentication
+- `azure-identity` - DefaultAzureCredential + ManagedIdentityCredential for secure authentication
 - `python-dotenv` - Environment variable management
-- `azure-ai-projects` - Optional Foundry SDK for advanced features (evaluation, monitoring)
+- `fastapi` (v0.128.8) - RESTful API server backend
+- `uvicorn` (v0.34.1) - ASGI server for FastAPI
+- `azure-ai-evaluation` (v1.15.0) - 5 quality evaluators (TaskAdherence, Coherence, Relevance, Groundedness, PlatformCompliance)
+- `azure-monitor-opentelemetry` (v1.8.6) - Distributed tracing with Azure Monitor
+- `opentelemetry-api` / `opentelemetry-sdk` (v1.39.0) - OpenTelemetry instrumentation
+- `azure-ai-contentsafety` (v1.0.0) - Two-layer content safety shield
+- `openai` - Azure OpenAI client for gpt-image-1.5 image generation
+
+**Frontend Stack**:
+- React 19 + Vite 7 - Modern web application framework
+- Fluent UI v9 (@fluentui/react-components) - UI component library with Zava Travel ocean-teal theme
+- TypeScript - Type-safe frontend development
+
+**Testing**:
+- Playwright Test - 84 automated end-to-end API tests
+- pytest - Brand filter tests (25/25 passing)
 
 **Storage**: Local filesystem for draft output (via MCP filesystem server); no database required  
-**Testing**: Manual testing during hackathon; pytest for post-hackathon refinement (out of scope for 100-minute limit)  
-**Target Platform**: Local development environment (Windows/macOS/Linux); Python virtual environment execution  
-**Project Type**: Single CLI-based application with agent orchestration workflow  
+**Target Platform**: Full-stack web application (FastAPI + React) running locally  
+**Project Type**: Full-stack web application with multi-agent orchestration backend  
 **Performance Goals**: Complete workflow (campaign brief → 3 platform posts) in under 3 minutes at normal Azure API latency  
 **Constraints**: 
 - 100-minute hackathon time limit (20min setup, 30min agents, 30min grounding/tools, 20min testing/docs)
@@ -150,48 +164,86 @@ specs/001-social-media-agents/
 ### Source Code (repository root)
 
 ```text
-hackathon-social-agents/   # New project root (NOT modifying existing repo structure)
+agentsleague-techconnect-main/   # Project root
 ├── .env.sample            # Placeholder configuration template (committed)
 ├── .gitignore             # Excludes .env, venv/, __pycache__, *.pyc
-├── requirements.txt       # Python dependencies
-├── README.md              # Setup, run instructions, example input, demo output
+├── requirements.txt       # Python dependencies (20+ packages)
+├── README.md              # Comprehensive setup, run instructions, architecture
+├── constitution.md        # Project governance and principles
 │
-├── workflow_social_media.py   # Main entry point (adapted from workflow_groupchat.py starter)
+├── workflow_social_media.py   # CLI entry point (original workflow)
+├── api_server.py              # FastAPI API server (FR-033) with /api/health, /api/generate
 │
 ├── agents/                # Agent configuration modules
 │   ├── __init__.py
-│   ├── creator.py         # Creator agent setup with Chain-of-Thought instructions
-│   ├── reviewer.py        # Reviewer agent setup with ReAct instructions (GitHub Copilot)
-│   └── publisher.py       # Publisher agent setup with Self-Reflection instructions
+│   ├── creator.py         # Creator agent: Chain-of-Thought reasoning
+│   ├── reviewer.py        # Reviewer agent: ReAct reasoning (GitHub Copilot)
+│   └── publisher.py       # Publisher agent: Self-Reflection reasoning
 │
 ├── orchestration/         # Group chat workflow logic
 │   ├── __init__.py
-│   ├── speaker_selection.py   # Round-robin speaker selector function
+│   ├── speaker_selection.py   # Router pattern: inspect → decide → dispatch
 │   └── termination.py         # Termination condition logic
 │
 ├── grounding/             # Grounding data and integration
 │   ├── __init__.py
 │   ├── file_search.py     # File Search setup for brand guidelines
-│   └── brand-guidelines.docx  # Synthetic brand guidelines (for demo)
+│   └── brand-guidelines.md  # Zava Travel brand guidelines
 │
 ├── tools/                 # MCP tool integrations
 │   ├── __init__.py
-│   └── filesystem_mcp.py  # Filesystem MCP server integration for saving drafts
+│   └── filesystem_mcp.py  # Filesystem MCP server for saving drafts
 │
 ├── config/                # Configuration management
 │   ├── __init__.py
 │   └── env_loader.py      # Load and validate environment variables
 │
-└── utils/                 # Helper utilities
-    ├── __init__.py
-    └── formatting.py      # Platform-specific formatting helpers
+├── monitoring/            # Observability & telemetry (FR-029)
+│   ├── __init__.py
+│   ├── tracing.py         # OpenTelemetry + Azure Monitor setup
+│   ├── agent_middleware.py # Per-agent child spans with reasoning pattern labels
+│   └── pii_middleware.py   # PII scrubbing for telemetry data (FR-038)
+│
+├── evaluation/            # Agentic evaluation (FR-031)
+│   ├── __init__.py
+│   ├── quality_metrics.py # 5 evaluators: TaskAdherence, Coherence, Relevance, Groundedness, PlatformCompliance
+│   ├── agent_runner.py    # Run workflow against eval dataset
+│   └── eval_dataset.jsonl # Test campaign briefs
+│
+├── safety/                # Content safety (FR-030)
+│   ├── __init__.py
+│   ├── content_shield.py  # Two-layer shield: Azure AI Content Safety + brand filters
+│   └── brand_filters.py   # Competitor mentions, off-brand detection (25/25 tests)
+│
+├── frontend/              # React web application (FR-034)
+│   ├── package.json       # React 19 + Vite 7 + Fluent UI v9
+│   ├── vite.config.ts     # Vite configuration with API proxy
+│   └── src/
+│       ├── App.tsx        # Main app with routing
+│       ├── pages/         # CreateContentPage, DashboardPage, LoginPage
+│       ├── components/    # Layout components
+│       ├── context/       # Auth context
+│       ├── services/      # API client (api.ts)
+│       └── theme/         # Zava Travel ocean-teal theme (zavaTheme.ts)
+│
+├── FunctionalTestCases/   # Playwright automated tests (FR-035)
+│   ├── package.json       # Playwright Test dependencies
+│   └── tests/             # 84 test cases
+│
+├── utils/                 # Helper utilities
+│   ├── __init__.py
+│   ├── formatting.py      # Platform-specific formatting helpers
+│   ├── markdown_formatter.py  # Output file formatting
+│   └── transcript_formatter.py # Conversation transcript formatting
+│
+└── output/                # Generated content output directory
 ```
 
-**Structure Decision**: Single CLI application structure chosen because:
-1. **Hackathon simplicity**: No web UI, no separate backend/frontend complexity
-2. **Starter code alignment**: `workflow_groupchat.py` is a single-file pattern; we modularize for clarity while maintaining simplicity
-3. **Local execution**: All processing happens in one Python process; no client-server architecture needed
-4. **Rapid iteration**: Clear module separation (agents/, orchestration/, grounding/, tools/) allows parallel development within 100-minute window
+**Structure Decision**: Full-stack web application structure chosen because:
+1. **Enhanced UX**: Web interface dramatically improves user experience for hackathon judging (15% UX criterion)
+2. **API-first design**: FastAPI provides clean separation of concerns between UI and agent workflow
+3. **Module separation**: Clear boundaries (agents/, orchestration/, monitoring/, evaluation/, safety/) enable independent development and testing
+4. **Enterprise patterns**: Observability, safety, and evaluation modules demonstrate production-readiness
 
 **Key Design Decisions**:
 - **Separate `agents/` module**: Each agent (creator.py, reviewer.py, publisher.py) is independently configurable, making reasoning pattern updates easy during testing
@@ -207,10 +259,13 @@ hackathon-social-agents/   # New project root (NOT modifying existing repo struc
 | Potential Complexity | Simplified Approach | Rationale |
 |---------------------|---------------------|-----------|
 | Multiple reasoning model providers | Single Azure OpenAI deployment for Creator & Publisher | Reduces setup time; GitHub Copilot provides provider diversity for Reviewer |
-| Multiple grounding sources | Single File Search with synthetic document | Faster than Bing Search API setup; sufficient for demo |
-| Production-grade error handling | Basic try/catch with clear messages | 100-minute time limit; comprehensive retry logic is post-hackathon |
+| Multiple grounding sources | Single File Search with brand guidelines markdown | Faster than Bing Search API setup; sufficient for demo |
+| ~~Production-grade error handling~~ | ~~Basic try/catch with clear messages~~ **IMPLEMENTED**: Full observability with OpenTelemetry + Azure Monitor + PII scrubbing | Enterprise-grade monitoring and tracing fully implemented |
 | Persistent storage/database | Ephemeral state + optional file output | No authentication/multi-user needs; simplifies architecture |
-| CI/CD and deployment | Local execution only | Hackathon scope; production deployment out of scope |
+| ~~CI/CD and deployment~~ | ~~Local execution only~~ **IMPLEMENTED**: Full-stack web app (FastAPI + React) with 84 Playwright tests | Web application with automated testing delivered |
+| ~~Visual content generation~~ | ~~Text-only output~~ **IMPLEMENTED**: AI image generation via gpt-image-1.5 | Images generated per platform with content_type selector |
+| Content safety | **IMPLEMENTED**: Two-layer shield (Azure AI Content Safety + brand filters) with managed identity auth | 25/25 brand filter tests passing, input + output screening |
+| Automated evaluation | **IMPLEMENTED**: 5 evaluators via azure-ai-evaluation SDK | TaskAdherence, Coherence, Relevance, Groundedness, PlatformCompliance |
 
 ---
 
@@ -643,15 +698,21 @@ Produce three platform versions with reflection:
 | Decision Area | Choice | Rationale | Alternatives Considered |
 |--------------|--------|-----------|------------------------|
 | **Orchestration Framework** | Microsoft Agent Framework (`GroupChatBuilder`) | Native multi-agent support; required for hackathon track | LangChain multi-agent (more complex), CrewAI (less Azure-native) |
+| **Orchestrator Pattern** | Router (inspect state → decide route → dispatch) | Smart routing: fast-tracks APPROVED to Publisher, follows round-robin otherwise | Pure round-robin (less intelligent), ad-hoc (no pattern) |
 | **Creator/Publisher Model** | Azure OpenAI (single deployment) | Simplifies setup; one model quota pool | Separate GPT-5.1 and GPT-5.2 deployments (time-consuming) |
+| **Image Generation** | Azure OpenAI gpt-image-1.5 | Platform-specific images with content_type selector | DALL-E 3 (older), Stable Diffusion (non-Azure) |
 | **Reviewer Model** | GitHub Copilot SDK | Demonstrates hybrid provider setup; required for diversity | Azure OpenAI second deployment (less interesting demo) |
-| **Grounding Method** | File Search with synthetic Word doc | Fastest path; M365 Copilot can generate brand guidelines | Bing Search (API keys), Custom index (complex setup) |
+| **Grounding Method** | File Search with brand guidelines markdown | Fastest path; direct integration with agent framework | Bing Search (API keys), Custom index (complex setup) |
 | **MCP Tool** | Filesystem server (save drafts) | Practical utility; easy setup with npm package | Microsoft Learn MCP (read-only, less utility), Custom MCP (time-consuming) |
-| **Authentication** | DefaultAzureCredential | Security best practice; no hardcoded keys | API keys in .env (violates constitution), Manual token management (complex) |
-| **Configuration** | python-dotenv with .env | Standard Python pattern; .gitignore friendly | Config files (harder to secure), Command-line args (verbose) |
+| **Authentication** | Three-tier: API Key → ManagedIdentity → DefaultAzureCredential | Production-grade security with fallbacks | Single DefaultAzureCredential (less robust) |
+| **API Server** | FastAPI + Uvicorn | Modern async framework with auto-generated OpenAPI docs | Flask (synchronous), Django (too heavy) |
+| **Frontend** | React 19 + Vite 7 + Fluent UI v9 | Fast development with Microsoft design system | Next.js (SSR unnecessary), Angular (too complex) |
+| **Testing** | Playwright (84 E2E tests) + pytest (25 unit tests) | Comprehensive coverage across API endpoints and safety | Jest (Node-only), unittest (less features) |
+| **Observability** | OpenTelemetry + Azure Monitor | Industry standard; distributed tracing across agent turns | Custom logging (non-standard), Datadog (non-Azure) |
+| **Content Safety** | Azure AI Content Safety + brand filters | Two-layer: harmful content + brand compliance | Manual review (not automated), OpenAI moderation (limited) |
+| **Evaluation** | azure-ai-evaluation SDK (5 evaluators) | Standardized quality metrics aligned with Azure AI | Custom metrics (non-standard), LLM-as-judge (less structured) |
 | **Streaming** | AgentRunUpdateEvent handler | Real-time feedback; better UX | Batch output after completion (poor demo experience) |
-| **Error Handling** | Basic try/catch + clear messages | Sufficient for 100-minute demo | Comprehensive retry logic (over-engineering for hackathon) |
-| **Testing** | Manual testing only | Time constraint; judging via demo | pytest suite (post-hackathon improvement) |
+| **Error Handling** | Graceful degradation with OpenTelemetry spans | Production-grade: each failure logged with trace context | Basic try/catch (insufficient for enterprise) |
 
 ---
 

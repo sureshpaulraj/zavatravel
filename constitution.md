@@ -20,9 +20,9 @@
 
 | Field | Value |
 |-------|-------|
-| **Constitution Version** | 1.0.0 |
+| **Constitution Version** | 1.1.0 |
 | **Ratification Date** | 2025-01-23 |
-| **Last Amended Date** | 2025-01-23 |
+| **Last Amended Date** | 2025-07-14 |
 | **Governance Model** | Hackathon Rapid Development |
 | **Scope** | TechConnect Hackathon Submission (100-minute build constraint) |
 
@@ -33,12 +33,19 @@
 Build an **AI-powered social media content creation system** for **Zava Travel Inc.** using a multi-agent group chat workflow that assists the communication team in generating, reviewing, and finalizing platform-ready social media posts for LinkedIn, X/Twitter, and Instagram — targeting Millennials & Gen-Z adventure seekers with an adventurous & inspiring brand voice.
 
 **Success Criteria**:
-- ✅ Functional multi-agent collaboration (Creator → Reviewer → Publisher)
-- ✅ Reasoning patterns demonstrated (Chain-of-Thought, ReAct, Self-Reflection)
-- ✅ Grounded content via File Search or Bing Search
-- ✅ External tool integration via MCP servers
+- ✅ Functional multi-agent collaboration (Orchestrator/Router → Creator → Reviewer → Publisher)
+- ✅ Reasoning patterns demonstrated (Chain-of-Thought, ReAct, Self-Reflection, Router)
+- ✅ Grounded content via File Search with Zava Travel brand guidelines
+- ✅ External tool integration via MCP filesystem server
 - ✅ Security compliance (no credentials, PII, or confidential data in public repository)
 - ✅ Submission meets judging criteria: Accuracy (25%), Reasoning (25%), Creativity (20%), UX (15%), Technical (15%)
+- ✅ **BONUS**: Full observability with OpenTelemetry + Azure Monitor distributed tracing
+- ✅ **BONUS**: Two-layer content safety shield (Azure AI Content Safety + brand filters)
+- ✅ **BONUS**: Automated quality evaluation (5 evaluators via azure-ai-evaluation SDK)
+- ✅ **EXTENDED**: Full-stack web application (FastAPI + React frontend with Fluent UI)
+- ✅ **EXTENDED**: AI image generation via gpt-image-1.5
+- ✅ **EXTENDED**: 84 Playwright automated end-to-end tests
+- ✅ **EXTENDED**: Managed identity authentication with PII scrubbing middleware
 
 ---
 
@@ -242,12 +249,14 @@ This constitution may be amended under the following conditions:
 
 Before submission, the following checklist MUST be completed:
 
-- [ ] **Security Audit**: No secrets in `git log --all` history
-- [ ] **Principle I Compliance**: `.env.sample` exists, `.env` is gitignored, `DefaultAzureCredential` used
-- [ ] **Principle II Compliance**: Three agents implemented, group chat orchestrator configured
-- [ ] **Principle III Compliance**: Reasoning patterns visible in output logs
-- [ ] **Principle IV Compliance**: At least one grounding source + one MCP tool integrated
-- [ ] **Principle V Compliance**: README includes setup, run instructions, and demo
+- [x] **Security Audit**: No secrets in `git log --all` history
+- [x] **Principle I Compliance**: `.env.sample` exists, `.env` is gitignored, `DefaultAzureCredential` used, `ManagedIdentityCredential` for Content Safety
+- [x] **Principle II Compliance**: Four components implemented (Orchestrator/Router + Creator + Reviewer + Publisher), group chat orchestrator configured
+- [x] **Principle III Compliance**: Reasoning patterns visible in output logs (Chain-of-Thought, ReAct, Self-Reflection, Router)
+- [x] **Principle IV Compliance**: File Search grounding + MCP filesystem tool integrated
+- [x] **Principle V Compliance**: README includes setup, run instructions, and demo; full-stack web app with 84 Playwright tests
+- [x] **Bonus Compliance**: Observability (OpenTelemetry + Azure Monitor), Content Safety (two-layer shield), Evaluation (5 evaluators)
+- [x] **Extended Compliance**: FastAPI API server, React frontend, AI image generation, Playwright testing
 
 **Review Cadence**: Continuous during development; formal check at minute 90 before final submission.
 
@@ -307,10 +316,14 @@ This constitution governs the following project artifacts:
 - Starter code: `workflow_groupchat.py` from aiagent-maf-githubcopilotsdk (external)
 
 **Follow-Up Actions**:
-- [ ] Create `.env.sample` with placeholder values for Azure endpoints
-- [ ] Initialize `.specify/` directory if adopting SpecKit workflow (optional)
-- [ ] Create brand guidelines document for File Search grounding (Milestone 3)
-- [ ] Identify MCP server for external tool integration (Milestone 4)
+- [x] Create `.env.sample` with placeholder values for Azure endpoints
+- [x] Initialize `.specify/` directory if adopting SpecKit workflow (optional) — specs/ directory used instead
+- [x] Create brand guidelines document for File Search grounding (Milestone 3) — `grounding/brand-guidelines.md`
+- [x] Identify MCP server for external tool integration (Milestone 4) — filesystem MCP server
+- [x] Implement all bonus features (Observability, Content Safety, Evaluation)
+- [x] Build full-stack web application (FastAPI + React)
+- [x] Add AI image generation (gpt-image-1.5)
+- [x] Create automated test suite (84 Playwright tests, 25 pytest brand filter tests)
 
 **No Deferred Placeholders**: All constitutional fields populated with project-specific values.
 
@@ -325,12 +338,20 @@ This constitution governs the following project artifacts:
 - **Documentation**: [Microsoft Foundry Agents Overview](https://learn.microsoft.com/azure/ai-foundry/agents/overview)
 
 ### Technology Stack
-- **Orchestration**: Microsoft Agent Framework (`agent-framework`, `agent-framework-azure`)
+- **Orchestration**: Microsoft Agent Framework (`agent-framework` v1.0.0b260210, `agent-framework-azure`)
+- **Orchestrator Pattern**: Router (inspect state → decide route → dispatch)
 - **Creator/Publisher**: Azure OpenAI via `AzureOpenAIChatClient`
 - **Reviewer**: GitHub Copilot SDK via `GitHubCopilotAgent`
-- **Authentication**: `azure-identity` (`DefaultAzureCredential`)
+- **Image Generation**: Azure OpenAI `gpt-image-1.5` deployment
+- **Authentication**: `azure-identity` (`DefaultAzureCredential`, `ManagedIdentityCredential`)
+- **API Server**: FastAPI v0.128.8 + Uvicorn v0.34.1
+- **Frontend**: React 19 + Vite 7 + Fluent UI v9
+- **Observability**: `azure-monitor-opentelemetry` v1.8.6 + OpenTelemetry v1.39.0
+- **Content Safety**: `azure-ai-contentsafety` v1.0.0 (two-layer shield)
+- **Evaluation**: `azure-ai-evaluation` v1.15.0 (5 evaluators)
+- **Testing**: Playwright (84 E2E tests) + pytest (25 brand filter tests)
 - **Configuration**: `python-dotenv`
-- **MCP Integration**: Model Context Protocol servers
+- **MCP Integration**: Model Context Protocol filesystem server
 
 ### Judging Rubric
 | Criterion | Weight | Alignment |

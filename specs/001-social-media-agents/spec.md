@@ -2,10 +2,13 @@
 
 **Feature Branch**: `001-social-media-agents`  
 **Created**: 2025-01-23  
-**Status**: Draft  
+**Updated**: 2025-07-14  
+**Status**: Implemented  
 **Governing Document**: [constitution.md](../../constitution.md)  
 **Technical Reference**: [starter-kits/2-reasoning-agents/spec.md](../../starter-kits/2-reasoning-agents/spec.md)  
 **Input**: "A multi-agent social media content creation system for the Reasoning Agents track of the TechConnect Hackathon. The system uses Microsoft Foundry + Microsoft Agent Framework + GitHub Copilot SDK to build a group chat workflow where Creator, Reviewer, and Publisher agents collaborate to produce platform-ready social media posts (LinkedIn, X/Twitter, Instagram) for a chosen brand/industry."
+
+**Implementation Notes**: All core features (US1-US5) and all bonus features (US6-US8) have been fully implemented. Additional features beyond the original spec have been delivered: full-stack web application (FastAPI + React), AI image generation (gpt-image-1.5), Playwright automated testing (84 test cases), Orchestrator/Router reasoning pattern, managed identity authentication, and PII scrubbing middleware.
 
 ## User Scenarios & Testing
 
@@ -99,7 +102,7 @@ As a communication team member, I need the system to save content drafts to my l
 
 ---
 
-### User Story 6 - Agent Observability and Monitoring (Priority: P3 - Bonus)
+### User Story 6 - Agent Observability and Monitoring (Priority: P3 - Bonus — IMPLEMENTED)
 
 As a communication team member, I need to monitor agent performance metrics and view tracing data for the workflow, so that I can understand system behavior, debug issues, and track resource usage.
 
@@ -117,7 +120,7 @@ As a communication team member, I need to monitor agent performance metrics and 
 
 ---
 
-### User Story 7 - Content Safety and Guardrails (Priority: P3 - Bonus)
+### User Story 7 - Content Safety and Guardrails (Priority: P3 - Bonus — IMPLEMENTED)
 
 As a communication team member, I need the system to automatically screen generated content for harmful, offensive, or brand-inappropriate material, so that only safe and on-brand content reaches final output.
 
@@ -135,7 +138,7 @@ As a communication team member, I need the system to automatically screen genera
 
 ---
 
-### User Story 8 - Automated Quality Evaluation (Priority: P3 - Bonus)
+### User Story 8 - Automated Quality Evaluation (Priority: P3 - Bonus — IMPLEMENTED)
 
 As a communication team member, I need the system to automatically evaluate the quality of generated content using standardized metrics, so that I can objectively assess content effectiveness and track quality trends.
 
@@ -150,6 +153,66 @@ As a communication team member, I need the system to automatically evaluate the 
 2. **Given** evaluation completes, **When** results are available, **Then** per-platform scores and aggregate quality metrics are logged and displayed in the output
 
 3. **Given** content scores below quality threshold (any metric < 3), **When** evaluation detects low scores, **Then** a warning flag is displayed recommending manual review or regeneration
+
+---
+
+### User Story 9 - AI Image Generation for Social Media Posts (Priority: P3 - Bonus — IMPLEMENTED)
+
+As a communication team member, I need the system to automatically generate visual content (images) tailored to each social media platform alongside text posts, so that I receive complete, ready-to-publish content packages without relying on separate design tools.
+
+**Why this priority**: This is a bonus feature that significantly enhances content quality and completeness. Visual content drives higher engagement on all social platforms.
+
+**Independent Test**: Can be tested by selecting "image" content type in the API request and verifying that platform-appropriate images are generated via Azure OpenAI gpt-image-1.5 deployment.
+
+**Acceptance Scenarios**:
+
+1. **Given** the content_type is set to "image" in the API request, **When** the workflow completes, **Then** the system generates AI images via gpt-image-1.5 tailored to each platform (square for Instagram, landscape for LinkedIn/Twitter)
+
+2. **Given** the image generation API call fails, **When** the error occurs, **Then** the system degrades gracefully and returns text-only content with a warning message
+
+3. **Given** generated images contain content, **When** brand guidelines are loaded, **Then** images reflect Zava Travel Inc. brand aesthetics (adventure travel, vibrant destinations)
+
+**Implementation Details**: Azure OpenAI gpt-image-1.5 deployment, integrated into `api_server.py` with content_type selector, base64 image encoding in API response.
+
+---
+
+### User Story 10 - Full-Stack Web Application (Priority: P3 - Bonus — IMPLEMENTED)
+
+As a communication team member, I need a web-based interface to submit campaign briefs and view generated content, so that I can interact with the system through a modern UI instead of the command line.
+
+**Why this priority**: This is a bonus feature that dramatically improves user experience and presentation for judging.
+
+**Independent Test**: Can be tested by starting the FastAPI server and React frontend, submitting a campaign brief through the UI, and viewing generated content with agent transcripts.
+
+**Acceptance Scenarios**:
+
+1. **Given** the FastAPI API server is running, **When** a POST request is sent to `/api/generate` with a campaign brief JSON, **Then** the server returns generated content with agent transcript, reasoning patterns, safety results, and evaluation scores
+
+2. **Given** the React frontend is running, **When** the user fills in the campaign form, **Then** the UI displays a content type selector (text/image), platform options, and submits to the API server
+
+3. **Given** the API server has a `/api/health` endpoint, **When** a GET request is sent, **Then** the server returns health status with uptime and configuration details
+
+**Implementation Details**: FastAPI backend (`api_server.py`) with CORS, React 19 + Vite 7 frontend with Fluent UI v9 (Zava Travel ocean-teal theme), OpenAPI spec at `/docs`.
+
+---
+
+### User Story 11 - Automated Functional Testing with Playwright (Priority: P3 - Bonus — IMPLEMENTED)
+
+As a development team member, I need automated end-to-end tests for the API server, so that I can verify system functionality across all endpoints, content types, and error scenarios.
+
+**Why this priority**: This is a bonus feature demonstrating software engineering best practices and test coverage for the hackathon submission.
+
+**Independent Test**: Can be tested by running `npx playwright test` against the running API server and verifying all 84 test cases pass.
+
+**Acceptance Scenarios**:
+
+1. **Given** the API server is running, **When** `npx playwright test` is executed, **Then** all 84 test cases pass covering health endpoint, content generation, error handling, content safety, and evaluation
+
+2. **Given** a test scenario tests the `/api/generate` endpoint, **When** a valid campaign brief is submitted, **Then** the response contains platform posts, agent transcript with reasoning patterns, and status 200
+
+3. **Given** a test scenario tests error handling, **When** invalid input is submitted (missing fields, empty brief), **Then** the API returns appropriate error codes (400, 422) with clear error messages
+
+**Implementation Details**: Playwright Test framework, 84 test cases in `FunctionalTestCases/tests/`, covering health, generation, safety, evaluation, and edge cases.
 
 ---
 
@@ -243,13 +306,29 @@ As a communication team member, I need the system to automatically evaluate the 
 
 - **FR-028**: Publisher agent MUST validate and revise any content that violates platform-specific character limits or formatting rules
 
-#### Bonus Features (Priority P3)
+#### Bonus Features (Priority P3 — ALL IMPLEMENTED)
 
-- **FR-029 (Bonus - Observability)**: System SHOULD integrate with Microsoft Foundry platform observability features including tracing, logging, and performance metrics for all agent interactions to enable monitoring and debugging
+- **FR-029 (Observability — IMPLEMENTED)**: System integrates OpenTelemetry + Azure Monitor for distributed tracing with per-agent child spans tracking turn duration, token estimates, reasoning patterns, and tool invocations. Implementation: `monitoring/tracing.py`, `monitoring/agent_middleware.py`, `monitoring/pii_middleware.py`.
 
-- **FR-030 (Bonus - Content Safety)**: System SHOULD integrate Azure AI Content Safety filters to ensure no harmful, offensive, or brand-inappropriate content is generated, with automated content screening before final output
+- **FR-030 (Content Safety — IMPLEMENTED)**: System integrates Azure AI Content Safety (two-layer shield) with ManagedIdentityCredential for input and output screening. Brand filters check for competitor mentions and off-brand content. 25/25 brand filter tests pass. Implementation: `safety/content_shield.py`, `safety/brand_filters.py`.
 
-- **FR-031 (Bonus - Agentic Evaluation)**: System SHOULD implement automated quality evaluation using Foundry Evaluation SDK to measure relevance, coherence, groundedness, and fluency of generated content with quantitative scores
+- **FR-031 (Agentic Evaluation — IMPLEMENTED)**: System implements 5 evaluators via azure-ai-evaluation SDK: TaskAdherence, Coherence, Relevance, Groundedness, PlatformCompliance. Evaluation runs on test briefs from `evaluation/eval_dataset.jsonl`. Implementation: `evaluation/quality_metrics.py`, `evaluation/agent_runner.py`.
+
+#### Extended Features (Beyond Original Spec — ALL IMPLEMENTED)
+
+- **FR-032 (Image Generation)**: System generates AI images via Azure OpenAI gpt-image-1.5 deployment when content_type is "image". Images are tailored per platform with base64 encoding in API response. Implementation: `api_server.py` image generation endpoint.
+
+- **FR-033 (FastAPI Backend)**: System provides a RESTful API via FastAPI with endpoints `/api/health` (GET) and `/api/generate` (POST). CORS enabled, OpenAPI spec at `/docs`. Integrates all agents, safety, evaluation in single workflow. Implementation: `api_server.py`.
+
+- **FR-034 (React Frontend)**: System provides a React 19 + Vite 7 web application with Fluent UI v9 components, Zava Travel ocean-teal theme, content type selector (text/image), campaign brief form, and result display. Implementation: `frontend/`.
+
+- **FR-035 (Playwright Testing)**: System has 84 automated end-to-end tests covering health endpoint, content generation, error handling, content safety, evaluation, and edge cases. Implementation: `FunctionalTestCases/tests/`.
+
+- **FR-036 (Orchestrator/Router Pattern)**: System labels the orchestrator with "Router" reasoning pattern in agent transcripts, API responses, and monitoring spans. Router pattern: inspects conversation state → decides route → dispatches to appropriate agent. Implementation: `orchestration/speaker_selection.py`, labeling in `api_server.py`, `monitoring/agent_middleware.py`.
+
+- **FR-037 (Managed Identity Authentication)**: System uses ManagedIdentityCredential with specific client_id for Azure AI Content Safety, with fallback to DefaultAzureCredential. Three-tier auth: API Key → ManagedIdentity → DefaultAzureCredential. Implementation: `safety/content_shield.py`.
+
+- **FR-038 (PII Scrubbing Middleware)**: System includes PII scrubbing middleware in the monitoring pipeline to redact sensitive data from telemetry spans before export. Implementation: `monitoring/pii_middleware.py`.
 
 **Acceptance Criteria for FR-029 (Observability)**:
 - Tracing data captures each agent turn with timestamps, model invocations, and token usage
@@ -464,19 +543,19 @@ The following assumptions were made to fill gaps in the feature description:
 
 3. **Reasoning Model Deployment**: The system assumes a reasoning-capable model (GPT-5.1, GPT-5.2, Claude Opus 4.5, or equivalent) is already deployed in Azure AI Foundry with sufficient quota (100k-300k TPM). Model deployment is a prerequisite, not part of the system scope.
 
-4. **Local Execution Environment**: The system runs locally on the developer's machine (Windows/macOS/Linux) using Python 3.10+. Cloud deployment, containerization, or web interface are out of scope.
+4. **~~Local Execution Environment~~**: ~~The system runs locally on the developer's machine using Python 3.10+. Cloud deployment, containerization, or web interface are out of scope.~~ **SUPERSEDED**: Full-stack web application implemented with FastAPI backend and React frontend (FR-033, FR-034).
 
 5. **GitHub Copilot CLI Availability**: GitHub Copilot CLI is installed, authenticated, and accessible via command line. The system does not handle Copilot installation or initial setup.
 
 6. **English Language Only**: All content generation, agent instructions, and campaign briefs are in English. Multi-language support is out of scope.
 
-7. **Text-Only Output**: The system generates text content for social media posts. Visual content creation (images, videos, graphics) is out of scope. Instagram posts include visual suggestions in [brackets] but do not generate actual images.
+7. **~~Text-Only Output~~**: ~~The system generates text content for social media posts. Visual content creation is out of scope.~~ **SUPERSEDED**: AI image generation implemented via gpt-image-1.5 deployment (FR-032). System supports both text and image content types.
 
 8. **No Scheduling or Publishing**: The system generates platform-ready content but does not schedule posts or integrate with social media platform APIs for direct publishing. Output is saved locally or displayed for manual copying.
 
-9. **Standard Azure Authentication**: The system assumes standard Azure authentication patterns (Azure CLI logged in, DefaultAzureCredential functioning). Complex authentication scenarios (service principals, managed identities in production) are simplified for hackathon scope.
+9. **~~Standard Azure Authentication~~**: ~~The system assumes standard Azure authentication patterns. Complex authentication scenarios are simplified for hackathon scope.~~ **SUPERSEDED**: Three-tier auth implemented: API Key → ManagedIdentityCredential (client_id) → DefaultAzureCredential (FR-037).
 
-10. **Error Recovery Simplicity**: Error handling is basic (try/catch, graceful degradation, clear messages). Advanced retry logic, exponential backoff, and comprehensive observability are bonus features (see FR-029 for bonus observability), not baseline requirements.
+10. **~~Error Recovery Simplicity~~**: ~~Error handling is basic. Advanced retry logic, exponential backoff, and comprehensive observability are bonus features, not baseline requirements.~~ **SUPERSEDED**: Full observability implemented with OpenTelemetry + Azure Monitor, distributed tracing, PII scrubbing middleware, and graceful degradation patterns (FR-029, FR-038).
 
 11. **Performance Baseline**: Success criteria for "3 minutes completion time" assumes normal Azure OpenAI API response times (1-5 seconds per agent turn). Extreme latency scenarios are out of scope.
 
@@ -492,10 +571,14 @@ The following assumptions were made to fill gaps in the feature description:
 - **Microsoft Agent Framework**: Python packages (`agent-framework`, `agent-framework-azure`, `agent-framework-github-copilot`)
 - **Starter Code Repository**: [aiagent-maf-githubcopilotsdk](https://github.com/sureshpaulraj/aiagent-maf-githubcopilotsdk) as foundation
 
-**Bonus Feature Dependencies (Priority P3)**:
-- **Microsoft Foundry Observability**: Platform tracing, logging, and monitoring capabilities
-- **Azure AI Content Safety**: Content moderation API for safety guardrails
-- **Foundry Evaluation SDK**: Python SDK for automated quality evaluation (`azure-ai-evaluation`)
+**Bonus Feature Dependencies (Priority P3 — ALL IMPLEMENTED)**:
+- **Azure Monitor OpenTelemetry**: `azure-monitor-opentelemetry>=1.8.6`, `opentelemetry-api>=1.39.0`, `opentelemetry-sdk>=1.39.0` for distributed tracing
+- **Azure AI Content Safety**: `azure-ai-contentsafety>=1.0.0` with ManagedIdentityCredential (client_id=5e928186-625b-4a62-89ca-f4533b6e30d1), endpoint: `https://zava-content-safety.cognitiveservices.azure.com/`
+- **Azure AI Evaluation SDK**: `azure-ai-evaluation>=1.15.0` with 5 evaluators (TaskAdherence, Coherence, Relevance, Groundedness, PlatformCompliance)
+- **FastAPI + Uvicorn**: `fastapi>=0.128.8`, `uvicorn>=0.34.1` for API server
+- **React + Vite**: React 19 + Vite 7 + Fluent UI v9 for frontend
+- **Playwright**: `@playwright/test` for 84 automated end-to-end tests
+- **Azure OpenAI Image**: `gpt-image-1.5` deployment for AI image generation
 
 ### External Constraints
 
@@ -507,19 +590,20 @@ The following assumptions were made to fill gaps in the feature description:
 
 ### Scope Boundaries
 
-**In Scope**:
+**In Scope (ALL IMPLEMENTED)**:
 - Three platforms: LinkedIn, X/Twitter, Instagram
-- Three agents: Creator, Reviewer, Publisher
-- One grounding source (File Search, Bing Search, or custom knowledge base)
-- One external tool integration via MCP
+- Four components: Orchestrator (Router), Creator, Reviewer, Publisher
+- One grounding source (File Search with Zava Travel brand guidelines)
+- One external tool integration via MCP (filesystem server)
 - Single campaign brief format
-- Text-only content generation
-- Local execution environment
-- **Bonus features (P3)**: Observability monitoring, content safety guardrails, automated quality evaluation
+- Text and image content generation (gpt-image-1.5)
+- Full-stack web application (FastAPI + React frontend)
+- API server with OpenAPI spec
+- **Bonus features (ALL IMPLEMENTED)**: Observability monitoring (OpenTelemetry + Azure Monitor), content safety guardrails (two-layer shield), automated quality evaluation (5 evaluators), AI image generation, Playwright automated testing (84 tests), managed identity auth, PII scrubbing middleware
 
 **Out of Scope**:
 - Additional platforms (Facebook, TikTok, YouTube, etc.)
-- Visual content generation (images, videos, graphics)
+- Video content generation
 - Direct publishing to social media platforms via APIs
 - Post scheduling or calendar management
 - Multi-user authentication or collaboration
@@ -528,7 +612,6 @@ The following assumptions were made to fill gaps in the feature description:
 - A/B testing or content optimization
 - Multi-language support
 - Production deployment (containers, cloud hosting, CI/CD)
-- Advanced monitoring or observability beyond basic logging
 
 ### Risks & Mitigations
 
