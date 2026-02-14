@@ -7,6 +7,7 @@ export interface CampaignBrief {
   key_message: string
   destinations: string
   platforms: string[]
+  content_type: 'text' | 'images' | 'both'
 }
 
 export interface AgentMessage {
@@ -22,9 +23,16 @@ export interface GeneratedPosts {
   instagram: string
 }
 
+export interface GeneratedImages {
+  linkedin?: string
+  twitter?: string
+  instagram?: string
+}
+
 export interface WorkflowResult {
   status: 'success' | 'error'
   posts: GeneratedPosts
+  images?: GeneratedImages
   transcript: AgentMessage[]
   duration_seconds: number
   termination_reason: string
@@ -57,6 +65,11 @@ export function getMockResult(): WorkflowResult {
       linkedin: `🌍 **The adventure of a lifetime doesn't have to cost a lifetime of savings.**\n\nAt Zava Travel, we believe extraordinary experiences and smart budgets aren't mutually exclusive. Our 2026 summer itineraries are live — from sunrise treks through Bali's emerald rice terraces to glacier hikes across Patagonia's untouched wilderness.\n\nEvery Zava itinerary is expert-curated, locally guided, and refreshingly affordable. Starting at just $699.\n\n👉 Explore summer itineraries: zavatravel.com\n\n#ZavaTravel #WanderMore #AdventureAwaits #BudgetTravel #SummerAdventure2026`,
       twitter: `Your dream adventure starts at $699 🌍 Bali rice terraces. Patagonia glaciers. Iceland hot springs. Real itineraries, real prices. Wander More, Spend Less → zavatravel.com #ZavaTravel #WanderMore`,
       instagram: `✈️🌅 Close your eyes. Imagine standing at the edge of a glacier in Patagonia, wind in your hair, knowing you didn't break the bank to get there.\n\nThat's Zava Travel — turning "someday" into "this summer." 🏔️🌊\n\nOur curated adventures start at $699:\n🇮🇩 Bali — sunrise rice terrace treks\n🇦🇷 Patagonia — glacier hikes & wildlife\n🇮🇸 Iceland — hot springs & waterfalls\n🇻🇳 Vietnam — street food & motorbike routes\n🇨🇷 Costa Rica — zip-lining & volcano hikes\n\nWhich adventure are you choosing? Drop a 🌍 below!\n\n👉 Link in bio → zavatravel.com\n\n#ZavaTravel #WanderMore #AdventureAwaits #TravelOnABudget #ExploreMore #BudgetTravel #SummerAdventure2026 #ZavaBali #ZavaPatagonia #TravelInspiration`,
+    },
+    images: {
+      linkedin: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&h=400&fit=crop',
+      twitter: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=400&fit=crop',
+      instagram: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=800&fit=crop',
     },
     transcript: [
       { agent_name: 'Creator', content: '**Step 1: Identify Objective**\nThe campaign aims to promote Zava Travel\'s summer adventure itineraries with the "Wander More, Spend Less" theme.\n\n**Step 2: Consider Audience**\nMillennials & Gen-Z adventure seekers who value authentic, budget-friendly experiences.\n\n**Step 3: Draft Hook**\n"The adventure of a lifetime doesn\'t have to cost a lifetime of savings."\n\n**Step 4: Build Body**\nHighlight flagship destinations and $699 starting price.\n\n**Step 5: Add CTA**\nDirect to zavatravel.com for itinerary exploration.', reasoning_pattern: 'Chain-of-Thought', timestamp: new Date().toISOString() },

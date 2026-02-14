@@ -15,12 +15,18 @@ import {
   Badge,
   TabList,
   Tab,
+  RadioGroup,
+  Radio,
+  Label,
   makeStyles,
 } from '@fluentui/react-components'
 import {
   SparkleRegular,
   DocumentCopyRegular,
   CheckmarkRegular,
+  ImageRegular,
+  TextFieldRegular,
+  ImageMultipleRegular,
 } from '@fluentui/react-icons'
 import { type CampaignBrief, generateContent, getMockResult, type WorkflowResult, type AgentMessage } from '../services/api'
 
@@ -97,6 +103,7 @@ const DEFAULT_BRIEF: CampaignBrief = {
   key_message: 'Wander More, Spend Less — affordable curated itineraries to dream destinations starting at $699',
   destinations: 'Bali, Patagonia, Iceland, Vietnam, Costa Rica',
   platforms: ['LinkedIn', 'Twitter', 'Instagram'],
+  content_type: 'both',
 }
 
 const PLATFORM_CONFIG: Record<string, { emoji: string; color: string; bg: string; label: string }> = {
@@ -182,6 +189,42 @@ export default function CreateContentPage() {
               <Input value={brief.destinations} onChange={(_, d) => updateBrief('destinations', d.value)} style={{ width: '100%' }} />
             </div>
 
+            <div>
+              <Label style={{ fontWeight: 600, marginBottom: '8px', display: 'block', fontSize: '12px' }}>
+                Content Type
+              </Label>
+              <RadioGroup
+                value={brief.content_type}
+                onChange={(_, d) => setBrief(prev => ({ ...prev, content_type: d.value as 'text' | 'images' | 'both' }))}
+                layout="horizontal"
+              >
+                <Radio
+                  value="text"
+                  label={
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                      <TextFieldRegular style={{ fontSize: '16px' }} /> Text Only
+                    </span>
+                  }
+                />
+                <Radio
+                  value="images"
+                  label={
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                      <ImageRegular style={{ fontSize: '16px' }} /> Images Only
+                    </span>
+                  }
+                />
+                <Radio
+                  value="both"
+                  label={
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                      <ImageMultipleRegular style={{ fontSize: '16px' }} /> Text + Images
+                    </span>
+                  }
+                />
+              </RadioGroup>
+            </div>
+
             <Button
               appearance="primary"
               icon={isGenerating ? <Spinner size="tiny" /> : <SparkleRegular />}
@@ -247,29 +290,49 @@ export default function CreateContentPage() {
                 <>
                   {Object.entries(result.posts).map(([platform, content]: [string, string]) => {
                     const config = PLATFORM_CONFIG[platform]
+                    const imageUrl = result.images?.[platform as keyof typeof result.images]
+                    const showText = brief.content_type !== 'images'
+                    const showImage = brief.content_type !== 'text' && imageUrl
                     return (
                       <Card key={platform} className={styles.postCard}>
                         <div className={styles.platformHeader}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <span style={{ fontSize: '24px' }}>{config.emoji}</span>
                             <Title3>{config.label}</Title3>
+                            {showImage && (
+                              <Badge appearance="filled" size="small" style={{ background: '#059669', fontSize: '10px' }}>
+                                📷 Image
+                              </Badge>
+                            )}
                           </div>
-                          <Button
-                            appearance="subtle"
-                            icon={copied === platform ? <CheckmarkRegular /> : <DocumentCopyRegular />}
-                            onClick={() => copyToClipboard(content, platform)}
-                          >
-                            {copied === platform ? 'Copied!' : 'Copy'}
-                          </Button>
+                          {showText && (
+                            <Button
+                              appearance="subtle"
+                              icon={copied === platform ? <CheckmarkRegular /> : <DocumentCopyRegular />}
+                              onClick={() => copyToClipboard(content, platform)}
+                            >
+                              {copied === platform ? 'Copied!' : 'Copy'}
+                            </Button>
+                          )}
                         </div>
-                        {platform === 'twitter' && (
+                        {showText && platform === 'twitter' && (
                           <div className={styles.charCount}>
                             <Caption1 style={{ color: content.length > 280 ? '#EF4444' : '#059669' }}>
                               {content.length}/280 characters
                             </Caption1>
                           </div>
                         )}
-                        <div className={styles.postContent}>{content}</div>
+                        {showImage && (
+                          <div style={{ marginTop: '12px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
+                            <img
+                              src={imageUrl}
+                              alt={`${config.label} campaign visual`}
+                              style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '400px', objectFit: 'cover' }}
+                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                            />
+                          </div>
+                        )}
+                        {showText && <div className={styles.postContent}>{content}</div>}
                       </Card>
                     )
                   })}

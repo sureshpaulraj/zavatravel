@@ -14,7 +14,7 @@ import re
 import sys
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from dotenv import load_dotenv
 
@@ -58,6 +58,7 @@ class CampaignBriefRequest(BaseModel):
     key_message: str
     destinations: str
     platforms: List[str] = ["LinkedIn", "Twitter", "Instagram"]
+    content_type: str = "both"  # 'text' | 'images' | 'both'
 
 
 class AgentMessage(BaseModel):
@@ -73,9 +74,16 @@ class GeneratedPosts(BaseModel):
     instagram: str
 
 
+class GeneratedImages(BaseModel):
+    linkedin: str | None = None
+    twitter: str | None = None
+    instagram: str | None = None
+
+
 class WorkflowResult(BaseModel):
     status: str
     posts: GeneratedPosts
+    images: GeneratedImages | None = None
     transcript: List[AgentMessage]
     duration_seconds: float
     termination_reason: str
@@ -179,7 +187,75 @@ def consolidate_messages(messages) -> list:
 # Workflow execution
 # ============================================================================
 
-async def run_workflow_api(brief_text: str) -> WorkflowResult:
+async def generate_campaign_images(
+    brand_name: str, destinations: str, key_message: str,
+) -> GeneratedImages:
+    """Generate campaign images using Azure OpenAI gpt-image-1.5."""
+    try:
+        from openai import AzureOpenAI
+        from azure.identity import get_bearer_token_provider
+
+        endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+        deployment = os.getenv("AZURE_OPENAI_IMAGE_DEPLOYMENT_NAME", "gpt-image-1.5")
+
+        credential = DefaultAzureCredential()
+        token_provider = get_bearer_token_provider(
+            credential, "https://cognitiveservices.azure.com/.default",
+        )
+
+        client = AzureOpenAI(
+            azure_endpoint=endpoint,
+            azure_ad_token_provider=token_provider,
+            api_version="2025-04-01-preview",
+        )
+
+        prompts = {
+            "linkedin": f"Professional travel photography for LinkedIn: {destinations}. {key_message}. Breathtaking landscape, golden hour, cinematic, 16:9 aspect ratio.",
+            "twitter": f"Eye-catching social media image for Twitter: {destinations}. {key_message}. Vibrant colors, adventure travel theme, square crop.",
+            "instagram": f"Beautiful Instagram-worthy travel photo: {destinations}. {key_message}. Stunning scenic view, warm tones, lifestyle travel aesthetic.",
+        }
+
+        images = {}
+        for platform, prompt in prompts.items():
+            try:
+                resp = client.images.generate(
+                    model=deployment,
+                    prompt=prompt,
+                    n=1,
+                    quality="low",
+                )
+                # gpt-image returns base64; build a data URI for the frontend
+                if resp.data[0].b64_json:
+                    images[platform] = f"data:image/png;base64,{resp.data[0].b64_json}"
+                elif resp.data[0].url:
+                    images[platform] = resp.data[0].url
+                else:
+                    images[platform] = None
+            except Exception as img_err:
+                print(f"\u26a0\ufe0f  gpt-image failed for {platform}: {img_err}")
+                images[platform] = None
+
+        return GeneratedImages(**images)
+
+    except ImportError:
+        print("\u26a0\ufe0f  openai package not installed \u2014 using placeholder images")
+        return _placeholder_images(brand_name, destinations)
+    except Exception as e:
+        print(f"\u26a0\ufe0f  Image generation error: {e}")
+        return _placeholder_images(brand_name, destinations)
+
+
+def _placeholder_images(brand_name: str, destinations: str) -> GeneratedImages:
+    """Return Unsplash placeholder images when DALL-E is unavailable."""
+    query = destinations.replace(" ", "+") if destinations else brand_name.replace(" ", "+")
+    return GeneratedImages(
+        linkedin=f"https://source.unsplash.com/1200x628/?travel,{query}",
+        twitter=f"https://source.unsplash.com/1200x675/?adventure,{query}",
+        instagram=f"https://source.unsplash.com/1080x1080/?destination,{query}",
+    )
+
+
+async def run_workflow_api(brief_text: str, content_type: str = "both", brand_name: str = "", destinations: str = "", key_message: str = "") -> WorkflowResult:
     """Run the full Creator → Reviewer → Publisher workflow."""
     print(f"\n{'='*60}")
     print("API: Starting content generation workflow")
@@ -282,9 +358,16 @@ async def run_workflow_api(brief_text: str) -> WorkflowResult:
 
     print(f"\n✅ Workflow completed in {duration:.1f}s\n")
 
+    # --- optional image generation ---
+    images = None
+    if content_type in ("images", "both"):
+        print("🎨 Generating campaign images...")
+        images = await generate_campaign_images(brand_name, destinations, key_message)
+
     return WorkflowResult(
         status="success",
         posts=GeneratedPosts(**posts),
+        images=images,
         transcript=transcript,
         duration_seconds=round(duration, 1),
         termination_reason=termination_reason,
@@ -339,7 +422,13 @@ async def generate(brief: CampaignBriefRequest):
     )
 
     try:
-        return await run_workflow_api(brief_text)
+        return await run_workflow_api(
+            brief_text,
+            content_type=brief.content_type,
+            brand_name=brief.brand_name,
+            destinations=brief.destinations,
+            key_message=brief.key_message,
+        )
     except HTTPException:
         raise
     except Exception as e:
