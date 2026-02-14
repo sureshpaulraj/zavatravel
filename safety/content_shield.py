@@ -83,21 +83,31 @@ class ContentSafetyShield:
             from azure.ai.contentsafety import ContentSafetyClient
 
             key = os.getenv("CONTENT_SAFETY_KEY")
+            managed_id = os.getenv("CONTENT_SAFETY_MANAGED_IDENTITY_CLIENT_ID")
+
             if key:
+                # Option A: API Key authentication
                 from azure.core.credentials import AzureKeyCredential
-                self._azure_client = ContentSafetyClient(
-                    endpoint=endpoint,
-                    credential=AzureKeyCredential(key),
-                )
+                credential = AzureKeyCredential(key)
+                auth_method = "API Key"
+            elif managed_id:
+                # Option B: Managed Identity with explicit client ID
+                from azure.identity import ManagedIdentityCredential
+                credential = ManagedIdentityCredential(client_id=managed_id)
+                auth_method = f"Managed Identity ({managed_id[:8]}…)"
             else:
+                # Option C: DefaultAzureCredential (az login / env vars)
                 from azure.identity import DefaultAzureCredential
-                self._azure_client = ContentSafetyClient(
-                    endpoint=endpoint,
-                    credential=DefaultAzureCredential(),
-                )
+                credential = DefaultAzureCredential()
+                auth_method = "DefaultAzureCredential"
+
+            self._azure_client = ContentSafetyClient(
+                endpoint=endpoint,
+                credential=credential,
+            )
 
             self._azure_enabled = True
-            print("✅ Azure Content Safety shield active")
+            print(f"✅ Azure Content Safety shield active ({auth_method})")
 
         except ImportError:
             print("⚠️  azure-ai-contentsafety not installed — using brand filters only")
