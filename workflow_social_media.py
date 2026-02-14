@@ -44,6 +44,12 @@ from grounding.file_search import create_grounded_agent
 from tools.filesystem_mcp import get_filesystem_tools, save_posts_manually, _cleanup_gateway
 from utils.transcript_formatter import format_conversation_transcript, format_workflow_summary
 from utils.markdown_formatter import format_posts_to_markdown
+from monitoring import configure_tracing, get_tracer, AgentTelemetryMiddleware
+from opentelemetry import trace
+
+# Initialise observability (no-op if APPLICATIONINSIGHTS_CONNECTION_STRING not set)
+configure_tracing()
+_tracer = get_tracer()
 
 
 # ============================================================================
@@ -183,6 +189,19 @@ async def run_workflow():
     current_agent = None
     
     try:
+        # Start observability span for the entire workflow
+        _span = _tracer.start_span(
+            "social-media-workflow",
+            attributes={
+                "workflow.type": "group_chat",
+                "workflow.campaign": "Wander More Spend Less",
+                "workflow.brand": "Zava Travel Inc.",
+            },
+        )
+
+        # Agent telemetry middleware — creates per-agent child spans
+        _agent_telemetry = AgentTelemetryMiddleware(parent_span=_span)
+
         stream = workflow.run(CAMPAIGN_BRIEF, stream=True)
         async for event in stream:
             # Print agent response updates as they stream
@@ -192,6 +211,7 @@ async def run_workflow():
                 participant = getattr(data, 'participant_name', None)
                 if participant:
                     # End of an agent's turn
+                    _agent_telemetry.on_agent_end(participant)
                     print(f"\n\n--- [{participant} finished] ---\n")
                     current_agent = None
                     continue
@@ -205,8 +225,10 @@ async def run_workflow():
                 text = getattr(data, 'text', None) or ""
                 if author and text:
                     if author != current_agent:
+                        _agent_telemetry.on_agent_start(author)
                         current_agent = author
                         print(f"\n\n[{author}]:\n", end="", flush=True)
+                    _agent_telemetry.on_agent_text(text)
                     print(text, end="", flush=True)
         
         # Get final result
@@ -224,16 +246,39 @@ async def run_workflow():
         print("WORKFLOW COMPLETE")
         print("="*70)
         print()
+
+        # Calculate duration
+        end_time = datetime.now()
+        duration = (end_time - start_time).total_seconds()
+
+        # End the trace span successfully
+        telemetry_summary = _agent_telemetry.finalise(
+            duration_seconds=duration,
+            total_rounds=len(messages),
+            success=True,
+        )
+        _span.set_attribute("workflow.total_turns", telemetry_summary["total_turns"])
+        _span.set_attribute("workflow.estimated_tokens", telemetry_summary["estimated_total_tokens"])
+        _span.set_status(trace.StatusCode.OK)
+        _span.end()
     
     except Exception as e:
+        if '_agent_telemetry' in locals():
+            _agent_telemetry.finalise(
+                duration_seconds=(datetime.now() - start_time).total_seconds(),
+                total_rounds=0,
+                success=False,
+                error=str(e),
+            )
+        if '_span' in locals():
+            _span.set_status(trace.StatusCode.ERROR, str(e))
+            _span.end()
         print(f"\n\n❌ Workflow error: {e}")
         import traceback
         traceback.print_exc()
         return
     
-    # Calculate duration
-    end_time = datetime.now()
-    duration = (end_time - start_time).total_seconds()
+    # duration already calculated inside try block
     
     # Display summary
     print(format_workflow_summary(

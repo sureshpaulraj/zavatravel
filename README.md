@@ -285,6 +285,14 @@ The system produces three platform-ready posts:
 ├── grounding/
 │   ├── file_search.py              # Brand guidelines grounding (embedded in instructions)
 │   └── brand-guidelines.md         # Zava Travel brand guidelines
+├── monitoring/
+│   ├── tracing.py                  # OpenTelemetry + Azure Monitor setup
+│   ├── pii_middleware.py           # PII scrubbing SpanProcessor
+│   └── agent_middleware.py         # Per-agent telemetry child spans
+├── evaluation/
+│   ├── agent_runner.py             # Runs workflow for each test brief
+│   ├── evaluate.py                 # 5 evaluators + report generation
+│   └── eval_dataset.jsonl          # 3 campaign brief test cases
 ├── tools/
 │   └── filesystem_mcp.py           # MCP filesystem (stdio + optional HTTP Streamable)
 ├── utils/
@@ -341,7 +349,121 @@ Final:  [polished post ready for publication]
 
 ---
 
-## 🔒 Security
+## � Agentic Evaluation
+
+The project includes a full evaluation pipeline using the **Azure AI Evaluation SDK** to measure content quality across multiple dimensions.
+
+### Evaluators
+
+| #   | Evaluator                  | Type       | What It Measures                                                  | Scale          |
+| --- | -------------------------- | ---------- | ----------------------------------------------------------------- | -------------- |
+| 1   | **TaskAdherenceEvaluator** | Built-in   | Did agents follow their instructions and produce expected output? | Binary (Pass/Fail) |
+| 2   | **CoherenceEvaluator**     | Built-in   | Is the output natural, well-written, and logically structured?    | 1–5            |
+| 3   | **RelevanceEvaluator**     | Built-in   | Does the output address the campaign brief?                       | 1–5            |
+| 4   | **GroundednessEvaluator**  | Built-in   | Is content grounded in the brand guidelines?                      | 1–5            |
+| 5   | **PlatformComplianceEvaluator** | Custom code | Twitter ≤280 chars, Instagram has emojis/hashtags, no banned words | 1–5        |
+
+### Test Dataset
+
+Three campaign briefs in `evaluation/eval_dataset.jsonl`:
+
+| ID     | Brief                                           |
+| ------ | ----------------------------------------------- |
+| CB-001 | Summer Adventure Campaign (5 destinations)      |
+| CB-002 | Vietnam Itinerary Launch (Hanoi → HCMC)         |
+| CB-003 | 48-Hour Flash Sale on Bali (30% off)            |
+
+### Running Evaluation
+
+```powershell
+# Step 1 — Generate agent responses for each test brief
+$env:PYTHONIOENCODING="utf-8"
+.\venv\Scripts\python.exe evaluation/agent_runner.py
+
+# Step 2 — Run evaluators and produce report
+.\venv\Scripts\python.exe evaluation/evaluate.py
+```
+
+Results are saved to `evaluation/eval_report.json` with per-row scores and aggregate metrics.
+
+### Latest Results
+
+| Evaluator            | Score          |
+| -------------------- | -------------- |
+| Task Adherence       | PASS ✅        |
+| Coherence            | 4.67 / 5       |
+| Groundedness         | 5.0 / 5        |
+| Relevance            | 5.0 / 5        |
+| Platform Compliance  | 4.47 / 5       |
+
+---
+
+## 📡 Monitoring & Observability
+
+Full distributed tracing with **OpenTelemetry** + **Azure Monitor** (Application Insights). Every workflow run, agent turn, and API call is captured as a trace.
+
+### Components
+
+| Module                  | File                          | Purpose                                                      |
+| ----------------------- | ----------------------------- | ------------------------------------------------------------ |
+| **Tracing Setup**       | `monitoring/tracing.py`       | Configures Azure Monitor exporter, enables auto-instrumentation (FastAPI, requests, httpx, azure_sdk), gracefully degrades if not configured |
+| **PII Scrubber**        | `monitoring/pii_middleware.py`| OpenTelemetry `SpanProcessor` that scrubs PII from span attributes before export |
+| **Agent Telemetry**     | `monitoring/agent_middleware.py` | Creates per-agent child spans with turn duration, char counts, token estimates, and reasoning pattern labels |
+
+### PII Patterns Scrubbed
+
+| Pattern            | Example Input                     | Redacted As          |
+| ------------------ | --------------------------------- | -------------------- |
+| Email addresses    | `user@example.com`                | `[EMAIL_REDACTED]`   |
+| Phone numbers      | `+1-555-123-4567`                 | `[PHONE_REDACTED]`   |
+| Credit card numbers| `4111-1111-1111-1111`             | `[CC_REDACTED]`      |
+| IPv4 addresses     | `192.168.1.1`                     | `[IP_REDACTED]`      |
+| Bearer/API tokens  | `Bearer sk-abc123...`             | `Bearer [TOKEN_REDACTED]` |
+
+### Per-Agent Span Attributes
+
+Each agent turn creates a child span under the workflow root span with:
+
+- `agent.name` — Creator, Reviewer, Publisher, or Orchestrator
+- `agent.reasoning_pattern` — Chain-of-Thought, ReAct, Self-Reflection, or GroupChat
+- `agent.turn_index` — Sequential turn number (1, 2, 3, …)
+- `agent.output_chars` — Character count of the agent's response
+- `agent.estimated_output_tokens` — Approximate token estimate (chars ÷ 4)
+- `agent.turn_duration_ms` — Wall-clock time for the turn in milliseconds
+
+### Setup
+
+1. **Create an Application Insights resource** in Azure Portal
+2. **Copy the connection string** and add it to `.env`:
+
+```env
+APPLICATIONINSIGHTS_CONNECTION_STRING=InstrumentationKey=<key>;IngestionEndpoint=https://<region>.in.applicationinsights.azure.com/;...
+```
+
+3. **Install dependencies** (already in `requirements.txt`):
+
+```powershell
+pip install azure-monitor-opentelemetry opentelemetry-api opentelemetry-sdk
+```
+
+4. **Run the workflow** — tracing activates automatically:
+
+```powershell
+$env:PYTHONIOENCODING="utf-8"
+.\venv\Scripts\python.exe workflow_social_media.py
+# Output: 🛡️ PII scrubbing middleware attached to trace pipeline
+#         ✅ Observability enabled — traces → Application Insights
+```
+
+5. **View traces** in Azure Portal → Application Insights → Transaction Search → End-to-end tracing
+
+### Graceful Degradation
+
+If `APPLICATIONINSIGHTS_CONNECTION_STRING` is not set or `azure-monitor-opentelemetry` is not installed, the workflow runs normally without tracing — no errors, no side effects.
+
+---
+
+## �🔒 Security
 
 - ✅ `DefaultAzureCredential` — no hardcoded API keys
 - ✅ `.env` excluded via `.gitignore`
@@ -364,9 +486,9 @@ Final:  [polished post ready for publication]
 
 | Feature            | Package                       | Status   |
 | ------------------ | ----------------------------- | -------- |
-| Observability      | `azure-monitor-opentelemetry` | 📋 Ready |
+| Observability      | `azure-monitor-opentelemetry` | ✅ Done  |
 | Content Safety     | `azure-ai-contentsafety`      | 📋 Ready |
-| Agentic Evaluation | `azure-ai-evaluation`         | 📋 Ready |
+| Agentic Evaluation | `azure-ai-evaluation`         | ✅ Done  |
 
 ---
 

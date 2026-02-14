@@ -45,6 +45,12 @@ from orchestration.speaker_selection import speaker_selector
 from orchestration.termination import should_terminate
 from grounding.file_search import create_grounded_agent
 from tools.filesystem_mcp import get_filesystem_tools, _cleanup_gateway
+from monitoring import configure_tracing, get_tracer, AgentTelemetryMiddleware
+from opentelemetry import trace
+
+# Initialise observability
+configure_tracing()
+_tracer = get_tracer()
 
 
 # ============================================================================
@@ -311,14 +317,27 @@ async def run_workflow_api(brief_text: str, content_type: str = "both", brand_na
 
     start_time = datetime.now()
     messages = []
+    current_agent = None
+
+    # Agent telemetry middleware for per-agent spans
+    _agent_telemetry = AgentTelemetryMiddleware()
 
     stream = workflow.run(brief_text, stream=True)
     async for event in stream:
         if event.type == "group_chat" and event.data is not None:
             data = event.data
+            participant = getattr(data, "participant_name", None)
+            if participant:
+                _agent_telemetry.on_agent_end(participant)
+                current_agent = None
+                continue
             author = getattr(data, "author_name", None) or ""
             text = getattr(data, "text", None) or ""
             if author and text:
+                if author != current_agent:
+                    _agent_telemetry.on_agent_start(author)
+                    current_agent = author
+                _agent_telemetry.on_agent_text(text)
                 print(f"  [{author}] {text[:80]}…", flush=True)
 
     result = await stream.get_final_response()
@@ -330,6 +349,13 @@ async def run_workflow_api(brief_text: str, content_type: str = "both", brand_na
             messages.append(output)
 
     duration = (datetime.now() - start_time).total_seconds()
+
+    # Finalise agent telemetry
+    _agent_telemetry.finalise(
+        duration_seconds=duration,
+        total_rounds=len(messages),
+        success=True,
+    )
 
     # --- transform results ---
     turns = consolidate_messages(messages)
@@ -412,31 +438,39 @@ async def health():
 @app.post("/api/generate", response_model=WorkflowResult)
 async def generate(brief: CampaignBriefRequest):
     """Run the multi-agent workflow with the given campaign brief."""
-    brief_text = (
-        f"Create social media content for {brief.brand_name}'s campaign.\n\n"
-        f"Brand: {brief.brand_name}\n"
-        f"Industry: {brief.industry}\n"
-        f"Target Audience: {brief.target_audience}\n"
-        f"Key Message: {brief.key_message}\n"
-        f"Destinations: {brief.destinations}\n"
-        f"Tone: Adventurous and inspiring\n"
-        f"Platforms: {', '.join(brief.platforms)}\n"
-    )
-
-    try:
-        return await run_workflow_api(
-            brief_text,
-            content_type=brief.content_type,
-            brand_name=brief.brand_name,
-            destinations=brief.destinations,
-            key_message=brief.key_message,
+    with _tracer.start_as_current_span(
+        "api-generate-content",
+        attributes={
+            "workflow.brand": brief.brand_name,
+            "workflow.content_type": brief.content_type,
+            "workflow.platforms": ", ".join(brief.platforms),
+        },
+    ):
+        brief_text = (
+            f"Create social media content for {brief.brand_name}'s campaign.\n\n"
+            f"Brand: {brief.brand_name}\n"
+            f"Industry: {brief.industry}\n"
+            f"Target Audience: {brief.target_audience}\n"
+            f"Key Message: {brief.key_message}\n"
+            f"Destinations: {brief.destinations}\n"
+            f"Tone: Adventurous and inspiring\n"
+            f"Platforms: {', '.join(brief.platforms)}\n"
         )
-    except HTTPException:
-        raise
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+
+        try:
+            return await run_workflow_api(
+                brief_text,
+                content_type=brief.content_type,
+                brand_name=brief.brand_name,
+                destinations=brief.destinations,
+                key_message=brief.key_message,
+            )
+        except HTTPException:
+            raise
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
