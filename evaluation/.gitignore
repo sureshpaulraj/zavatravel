@@ -1,0 +1,6 @@
+# Evaluation outputs (generated at runtime)
+eval_results.jsonl
+eval_output_*/
+eval_report.json
+eval_processed_*.jsonl
+eval_summary.json

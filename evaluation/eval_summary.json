@@ -1,0 +1,25 @@
+{
+  "timestamp": "20260213_190727",
+  "dataset_rows": 3,
+  "metrics": {
+    "task_adherence.task_adherence": 1.0,
+    "coherence.coherence": 5.0,
+    "coherence.gpt_coherence": 5.0,
+    "relevance.relevance": 5.0,
+    "relevance.gpt_relevance": 5.0,
+    "groundedness.groundedness": 5.0,
+    "groundedness.gpt_groundedness": 5.0,
+    "platform_compliance.platform_compliance": 3.9,
+    "task_adherence.binary_aggregate": 1.0,
+    "coherence.binary_aggregate": 1.0,
+    "relevance.binary_aggregate": 1.0,
+    "groundedness.binary_aggregate": 1.0
+  },
+  "evaluators": [
+    "TaskAdherenceEvaluator",
+    "CoherenceEvaluator",
+    "RelevanceEvaluator",
+    "GroundednessEvaluator",
+    "PlatformComplianceEvaluator (custom)"
+  ]
+}

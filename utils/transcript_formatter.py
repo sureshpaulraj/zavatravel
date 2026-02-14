@@ -4,24 +4,62 @@ Conversation Transcript Formatting
 Formats multi-agent conversation history for display and export.
 """
 
+import re
 from datetime import datetime
 from typing import List, Dict, Any
+
+
+def _infer_agent_name(text: str) -> str:
+    """
+    Try to extract the real agent name from the message content.
+
+    The agent-framework GroupChat orchestrator sometimes delivers messages
+    whose ``author_name`` is *None* — typically for the Reviewer (whose
+    system prompt self-identifies via ``[Agent Name: Reviewer]``) and for
+    the orchestrator itself when it re-injects the campaign brief for a
+    second iteration.
+
+    Returns the inferred name, or ``"Orchestrator"`` when no agent tag is
+    found (i.e. the message is an orchestrator-injected brief).
+    """
+    m = re.match(r"\[Agent Name:\s*(\w+)\]", text)
+    if m:
+        return m.group(1)
+    # No [Agent Name: …] tag → orchestrator re-injecting the original brief
+    return "Orchestrator"
+
+
+def _strip_agent_tag(text: str) -> str:
+    """Remove the leading ``[Agent Name: X]`` tag from a message body."""
+    return re.sub(r"^\[Agent Name:\s*\w+\]\s*\n?", "", text).strip()
 
 
 def _consolidate_messages(messages: List[Any]) -> List[Dict[str, str]]:
     """
     Consolidate consecutive messages from the same author into single entries.
     Handles both token-level streaming fragments and full messages.
+
+    When ``author_name`` is missing (None / empty) on a message object, we
+    fall back to parsing the ``[Agent Name: X]`` prefix that agents embed in
+    their responses, or label the message as "Orchestrator".
     """
     consolidated = []
     for msg in messages:
         if hasattr(msg, 'author_name'):
-            name = msg.author_name or 'Unknown'
+            name = msg.author_name or ''
             text = getattr(msg, 'text', '') or ''
         else:
-            name = msg.get('author_name', msg.get('agent_name', 'Unknown'))
+            name = msg.get('author_name', msg.get('agent_name', ''))
             text = msg.get('text', msg.get('content', ''))
-        
+
+        if not text:
+            continue
+
+        # Resolve "Unknown" / empty names by inspecting the text body
+        if not name:
+            name = _infer_agent_name(text)
+            text = _strip_agent_tag(text)
+
         if not text:
             continue
         

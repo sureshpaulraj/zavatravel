@@ -73,10 +73,12 @@ const useStyles = makeStyles({
     border: '1px solid #E2E8F0',
   },
   transcriptMsg: {
-    padding: '16px',
+    padding: '16px 20px',
     borderRadius: '8px',
-    marginBottom: '12px',
+    marginBottom: '16px',
     borderLeft: '4px solid',
+    overflowWrap: 'break-word' as const,
+    wordBreak: 'break-word' as const,
   },
   charCount: {
     display: 'flex',
@@ -356,7 +358,29 @@ export default function CreateContentPage() {
                             {msg.reasoning_pattern}
                           </Badge>
                         </div>
-                        <Body2 style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{msg.content}</Body2>
+                        <div style={{ lineHeight: 1.7, fontSize: '14px', overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+                          {msg.content.split('\n').map((line: string, li: number) => {
+                            // Bold: **text**
+                            const parts = line.split(/(\*\*.*?\*\*)/g)
+                            const rendered = parts.map((part: string, pi: number) => {
+                              if (part.startsWith('**') && part.endsWith('**')) {
+                                const inner = part.slice(2, -2)
+                                // Section headers (Step 1:, Step 2:, etc.)
+                                if (/^Step \d/.test(inner) || /POST\*?$/.test(inner) || /^(STRENGTHS|Action|Result|VERDICT|Reflection|Character count)/i.test(inner)) {
+                                  return <strong key={pi} style={{ display: 'block', marginTop: '12px', marginBottom: '4px', fontSize: '15px', color: '#1E3A5F' }}>{inner}</strong>
+                                }
+                                return <strong key={pi}>{inner}</strong>
+                              }
+                              return <span key={pi}>{part}</span>
+                            })
+                            return (
+                              <span key={li}>
+                                {rendered}
+                                {li < msg.content.split('\n').length - 1 && <br />}
+                              </span>
+                            )
+                          })}
+                        </div>
                       </div>
                     )
                   })}

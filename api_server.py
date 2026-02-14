@@ -158,16 +158,18 @@ def consolidate_messages(messages) -> list:
     """Merge consecutive messages from the same author into single turns."""
     consolidated = []
     for msg in messages:
-        name = getattr(msg, "author_name", None) or "Unknown"
+        name = getattr(msg, "author_name", None) or ""
         text = getattr(msg, "text", "") or ""
         if not text:
             continue
 
-        # Heuristic: extract agent name from [Agent Name: X] prefix
-        if name == "Unknown":
+        # Resolve empty author_name by inspecting text body
+        if not name:
             m = re.match(r"\[Agent Name:\s*(\w+)\]", text)
             if m:
                 name = m.group(1)
+            else:
+                name = "Orchestrator"
 
         # Strip [Agent Name: ...] prefix from text
         text = re.sub(r"^\[Agent Name:\s*\w+\]\s*\n?", "", text).strip()
