@@ -293,6 +293,9 @@ The system produces three platform-ready posts:
 │   ├── agent_runner.py             # Runs workflow for each test brief
 │   ├── evaluate.py                 # 5 evaluators + report generation
 │   └── eval_dataset.jsonl          # 3 campaign brief test cases
+├── safety/
+│   ├── content_shield.py           # Two-layer shield (Azure CS + brand filters)
+│   └── brand_filters.py            # Local regex filters (competitors, banned words, PII, jailbreak)
 ├── tools/
 │   └── filesystem_mcp.py           # MCP filesystem (stdio + optional HTTP Streamable)
 ├── utils/
@@ -462,7 +465,85 @@ $env:PYTHONIOENCODING="utf-8"
 If `APPLICATIONINSIGHTS_CONNECTION_STRING` is not set or `azure-monitor-opentelemetry` is not installed, the workflow runs normally without tracing — no errors, no side effects.
 
 ---
+## 🛡️ Content Safety
 
+Two-layer content safety shield that screens both **input** (campaign briefs) and **output** (agent-generated content) before it reaches the user.
+
+### Architecture
+
+```
+User Brief ──► [INPUT SHIELD] ──► Agents ──► [OUTPUT SHIELD] ──► Response
+                 │                              │
+                 ├─ Azure Content Safety         ├─ Azure Content Safety
+                 │   (Hate/Violence/Sexual/      │   (Hate/Violence/Sexual/
+                 │    Self-Harm)                  │    Self-Harm)
+                 └─ Jailbreak Detection          ├─ Competitor Mentions
+                                                 ├─ Banned Word Filter
+                                                 ├─ Unsafe Activity Filter
+                                                 └─ PII Detection
+```
+
+### Layer 1 — Azure AI Content Safety (Cloud)
+
+Uses the `azure-ai-contentsafety` SDK to screen text against 4 harm categories:
+
+| Category  | Blocks At       | Warns At       |
+| --------- | --------------- | -------------- |
+| Hate      | Severity ≥ 4/6  | Severity ≥ 2/6 |
+| Violence  | Severity ≥ 4/6  | Severity ≥ 2/6 |
+| Sexual    | Severity ≥ 4/6  | Severity ≥ 2/6 |
+| Self-Harm | Severity ≥ 4/6  | Severity ≥ 2/6 |
+
+Gracefully degrades if `CONTENT_SAFETY_ENDPOINT` is not configured — brand filters still run.
+
+### Layer 2 — Brand-Specific Filters (Local)
+
+Pure-Python regex filters — no cloud dependency, always active:
+
+| Filter              | Severity  | What It Catches                                                 |
+| ------------------- | --------- | --------------------------------------------------------------- |
+| Competitor mentions  | 🔴 Block | VoyageNow, CookTravel, WanderPath                              |
+| Banned words         | 🟡 Warn  | "cheap", "tourist", "package deal", "discount", "basic" (with suggestions) |
+| Unsafe activities    | 🔴 Block | Dangerous without safety gear, binge drinking, cultural insensitivity |
+| PII in content       | 🔴 Block | Email addresses, phone numbers, SSN-like patterns               |
+| Jailbreak detection  | 🔴 Block | "Ignore previous instructions", DAN mode, system prompt injection |
+
+### Setup
+
+1. **(Optional)** Create an Azure AI Content Safety resource and add to `.env`:
+
+```env
+CONTENT_SAFETY_ENDPOINT=https://<resource>.cognitiveservices.azure.com
+# CONTENT_SAFETY_KEY=<key>  # Or use DefaultAzureCredential (recommended)
+```
+
+2. Brand filters work out of the box — no configuration needed.
+
+### Integration Points
+
+- **CLI workflow** (`workflow_social_media.py`): Screens campaign brief before agents run + screens publisher output before saving
+- **API server** (`api_server.py`): `POST /api/generate` screens input (returns `400` if blocked) + screens output (adds `safety` field to response)
+
+### API Response — Safety Field
+
+```json
+{
+  "status": "success",
+  "posts": { ... },
+  "safety": {
+    "status": "passed",
+    "flags": []
+  }
+}
+```
+
+Possible `safety.status` values: `"passed"`, `"warnings"`, `"blocked"`.
+
+### Test Results
+
+Validated against all 16 project safety test cases — **25/25 filter tests passed**.
+
+---
 ## �🔒 Security
 
 - ✅ `DefaultAzureCredential` — no hardcoded API keys
@@ -487,7 +568,7 @@ If `APPLICATIONINSIGHTS_CONNECTION_STRING` is not set or `azure-monitor-opentele
 | Feature            | Package                       | Status   |
 | ------------------ | ----------------------------- | -------- |
 | Observability      | `azure-monitor-opentelemetry` | ✅ Done  |
-| Content Safety     | `azure-ai-contentsafety`      | 📋 Ready |
+| Content Safety     | `azure-ai-contentsafety`      | ✅ Done  |
 | Agentic Evaluation | `azure-ai-evaluation`         | ✅ Done  |
 
 ---

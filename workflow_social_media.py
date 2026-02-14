@@ -46,10 +46,14 @@ from utils.transcript_formatter import format_conversation_transcript, format_wo
 from utils.markdown_formatter import format_posts_to_markdown
 from monitoring import configure_tracing, get_tracer, AgentTelemetryMiddleware
 from opentelemetry import trace
+from safety import ContentSafetyShield
 
 # Initialise observability (no-op if APPLICATIONINSIGHTS_CONNECTION_STRING not set)
 configure_tracing()
 _tracer = get_tracer()
+
+# Initialise content safety shield
+_safety_shield = ContentSafetyShield()
 
 
 # ============================================================================
@@ -172,7 +176,22 @@ async def run_workflow():
     print(CAMPAIGN_BRIEF)
     print("-" * 70)
     print()
-    
+
+    # ── Content Safety: Screen input ──────────────────────────────────
+    print("🛡️  Screening campaign brief...")
+    input_check = _safety_shield.screen_input(CAMPAIGN_BRIEF)
+    if not input_check.allowed:
+        print("❌ Campaign brief blocked by content safety:")
+        for flag in input_check.flags:
+            print(f"   ⛔ {flag.detail}")
+        return
+    if input_check.flags:
+        for flag in input_check.flags:
+            print(f"   ⚠️  {flag.detail}")
+    else:
+        print("✅ Campaign brief passed safety screening")
+    print()
+
     # Build workflow
     workflow = build_group_chat()
     
@@ -302,6 +321,20 @@ async def run_workflow():
             publisher_content = getattr(msg, 'text', None) or str(msg)
             break
     
+    # ── Content Safety: Screen output ─────────────────────────────────
+    if publisher_content:
+        print("🛡️  Screening agent output...")
+        output_check = _safety_shield.screen_output(publisher_content)
+        if output_check.flags:
+            for flag in output_check.flags:
+                icon = "⛔" if flag.severity == "blocked" else "⚠️"
+                print(f"   {icon} {flag.detail}")
+                if flag.suggestion:
+                    print(f"      💡 {flag.suggestion}")
+        else:
+            print("✅ Output passed safety screening")
+        print()
+
     if publisher_content:
         # Format as markdown
         markdown_content = format_posts_to_markdown(

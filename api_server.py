@@ -47,10 +47,14 @@ from grounding.file_search import create_grounded_agent
 from tools.filesystem_mcp import get_filesystem_tools, _cleanup_gateway
 from monitoring import configure_tracing, get_tracer, AgentTelemetryMiddleware
 from opentelemetry import trace
+from safety import ContentSafetyShield
 
 # Initialise observability
 configure_tracing()
 _tracer = get_tracer()
+
+# Initialise content safety shield
+_safety_shield = ContentSafetyShield()
 
 
 # ============================================================================
@@ -86,6 +90,11 @@ class GeneratedImages(BaseModel):
     instagram: str | None = None
 
 
+class SafetyCheckResult(BaseModel):
+    status: str  # "passed" | "warnings" | "blocked"
+    flags: List[str] = []
+
+
 class WorkflowResult(BaseModel):
     status: str
     posts: GeneratedPosts
@@ -93,6 +102,7 @@ class WorkflowResult(BaseModel):
     transcript: List[AgentMessage]
     duration_seconds: float
     termination_reason: str
+    safety: SafetyCheckResult | None = None
 
 
 # ============================================================================
@@ -457,8 +467,16 @@ async def generate(brief: CampaignBriefRequest):
             f"Platforms: {', '.join(brief.platforms)}\n"
         )
 
+        # ── Content Safety: Screen input ──────────────────────────────
+        input_check = _safety_shield.screen_input(brief_text)
+        if not input_check.allowed:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Content safety blocked the request: {input_check.summary}",
+            )
+
         try:
-            return await run_workflow_api(
+            result = await run_workflow_api(
                 brief_text,
                 content_type=brief.content_type,
                 brand_name=brief.brand_name,
@@ -472,6 +490,23 @@ async def generate(brief: CampaignBriefRequest):
             traceback.print_exc()
             raise HTTPException(status_code=500, detail=str(e))
 
+        # ── Content Safety: Screen output ─────────────────────────────
+        combined_posts = (
+            f"{result.posts.linkedin}\n"
+            f"{result.posts.twitter}\n"
+            f"{result.posts.instagram}"
+        )
+        output_check = _safety_shield.screen_output(combined_posts)
+        result.safety = SafetyCheckResult(
+            status=(
+                "blocked" if not output_check.allowed
+                else "warnings" if output_check.flags
+                else "passed"
+            ),
+            flags=[f.detail for f in output_check.flags],
+        )
+
+        return result
 
 if __name__ == "__main__":
     import uvicorn
